@@ -87,6 +87,77 @@ assert_cmd_success() {
   fi
 }
 
+assert_file_not_exists() {
+  local path="$1"
+  local message="${2:-File does not exist: $path}"
+  TOTAL=$((TOTAL + 1))
+  if [ ! -f "$path" ]; then
+    echo "  PASS: $message"
+    PASS=$((PASS + 1))
+  else
+    echo "  FAIL: $message (file exists: $path)"
+    FAIL=$((FAIL + 1))
+  fi
+}
+
+assert_dir_not_exists() {
+  local path="$1"
+  local message="${2:-Directory does not exist: $path}"
+  TOTAL=$((TOTAL + 1))
+  if [ ! -d "$path" ]; then
+    echo "  PASS: $message"
+    PASS=$((PASS + 1))
+  else
+    echo "  FAIL: $message (directory exists: $path)"
+    FAIL=$((FAIL + 1))
+  fi
+}
+
+assert_file_contains() {
+  local file="$1"
+  local substring="$2"
+  local message="${3:-File $file contains '$substring'}"
+  TOTAL=$((TOTAL + 1))
+  if [ -f "$file" ] && grep -qF "$substring" "$file"; then
+    echo "  PASS: $message"
+    PASS=$((PASS + 1))
+  else
+    echo "  FAIL: $message (substring '$substring' not found in $file)"
+    FAIL=$((FAIL + 1))
+  fi
+}
+
+assert_file_not_contains() {
+  local file="$1"
+  local substring="$2"
+  local message="${3:-File $file does not contain '$substring'}"
+  TOTAL=$((TOTAL + 1))
+  if [ -f "$file" ] && ! grep -qF "$substring" "$file"; then
+    echo "  PASS: $message"
+    PASS=$((PASS + 1))
+  else
+    echo "  FAIL: $message (substring '$substring' found in $file)"
+    FAIL=$((FAIL + 1))
+  fi
+}
+
+assert_count() {
+  local dir="$1"
+  local pattern="$2"
+  local expected="$3"
+  local message="${4:-Count of $pattern in $dir is $expected}"
+  TOTAL=$((TOTAL + 1))
+  local actual
+  actual=$(find "$dir" -name "$pattern" | wc -l | tr -d ' ')
+  if [ "$actual" = "$expected" ]; then
+    echo "  PASS: $message"
+    PASS=$((PASS + 1))
+  else
+    echo "  FAIL: $message (expected $expected, got $actual)"
+    FAIL=$((FAIL + 1))
+  fi
+}
+
 print_summary() {
   echo ""
   echo "========================================="

@@ -2,6 +2,24 @@
 
 All notable changes to solana-claude-config.
 
+## [1.2.0] - 2026-03-31
+
+### Added
+- `test_settings_deep.sh` — deep validation of settings.json structure (env, sandbox, plugins, permissions, hooks, model defaults)
+- `test_cross_references.sh` — Ripple Map enforcer: cross-validates agent/command/MCP counts and names across README, QUICK-START, and CLAUDE-solana.md
+- `test_install_idempotent.sh` — verifies double-install safety (backups, no duplicates, preserved local files)
+- `test_cleanup.sh` — simulates /cleanup command contract (scaffolding removal, config preservation)
+- `test_resync.sh` — static analysis of resync.sh integrity and submodule state
+- 5 new assertion helpers: `assert_file_not_exists`, `assert_dir_not_exists`, `assert_file_contains`, `assert_file_not_contains`, `assert_count`
+- CI OS matrix: ubuntu-latest + macos-latest (fail-fast: false)
+- CI smoke-test job: fresh install + agents-mode install validation
+- CI badge in README.md
+
+### Changed
+- `test_update.sh` rewritten: 8 → 22 assertions (dry-run, upstream detection, protected files, agents mode)
+- CI JSON validation switched from `jq` to `python3` for portability
+- Total test assertions: ~195 → 340 across 14 suites (was 9)
+
 ## [1.1.0] - 2026-03-31
 
 ### Added

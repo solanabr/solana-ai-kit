@@ -1,5 +1,7 @@
 # Solana Claude Configuration
 
+[![CI](https://github.com/solanabr/solana-claude-config/actions/workflows/ci.yml/badge.svg)](https://github.com/solanabr/solana-claude-config/actions/workflows/ci.yml)
+
 Production-ready Claude Code configuration for full-stack Solana development. Combines best practices from multiple sources into an agent-optimized, token-efficient config you can install and adapt to your specific project.
 
 The idea here is to provide a generic CLAUDE.md that relies on subagents to plan and execute actions, dynamically loading markdown files, saving tokens and context in the end of the day. This config fully leverages the official Claude Code config recommendations:

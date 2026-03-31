@@ -8,7 +8,11 @@ on:
 
 jobs:
   validate:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -16,13 +20,38 @@ jobs:
 
       - name: Validate JSON files
         run: |
-          echo "Checking .claude/settings.json..."
-          jq empty .claude/settings.json
-          echo "Checking .claude/mcp.json..."
-          jq empty .claude/mcp.json
+          python3 -c "import json; json.load(open('.claude/settings.json'))"
+          python3 -c "import json; json.load(open('.claude/mcp.json'))"
 
       - name: Run validation
         run: bash validate.sh
 
       - name: Run test suite
         run: bash tests/run_all.sh
+
+  smoke-test:
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Smoke test — fresh install
+        run: |
+          TEMP_DIR=$(mktemp -d)
+          (cd "$TEMP_DIR" && git init -q)
+          SOLANA_CLAUDE_LOCAL_SRC="$GITHUB_WORKSPACE" bash install.sh "$TEMP_DIR"
+          test -d "$TEMP_DIR/.claude/agents"
+          test -f "$TEMP_DIR/.claude/settings.json"
+          python3 -c "import json; json.load(open('$TEMP_DIR/.claude/settings.json'))"
+          echo "✓ Fresh install smoke test passed"
+
+      - name: Smoke test — agents mode
+        run: |
+          TEMP_DIR=$(mktemp -d)
+          (cd "$TEMP_DIR" && git init -q)
+          SOLANA_CLAUDE_LOCAL_SRC="$GITHUB_WORKSPACE" bash install.sh --agents "$TEMP_DIR"
+          test -d "$TEMP_DIR/.agents/agents"
+          test ! -d "$TEMP_DIR/.claude"
+          echo "✓ Agents mode smoke test passed"
