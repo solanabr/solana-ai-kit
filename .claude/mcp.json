@@ -26,6 +26,13 @@
     "memsearch": {
       "command": "npx",
       "args": ["-y", "memsearch-mcp@latest"]
+    },
+    "kuka-glossary": {
+      "command": "node",
+      "args": ["node_modules/@stbr/kuka-mcp/dist/server.js"],
+      "env": {
+        "GLOSSARY_DATA_DIR": "${GLOSSARY_DATA_DIR}"
+      }
     }
   }
 }
