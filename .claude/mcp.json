@@ -15,9 +15,9 @@
       "command": "npx",
       "args": ["-y", "@upstash/context7-mcp@latest"]
     },
-    "puppeteer": {
+    "playwright": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-puppeteer@latest"]
+      "args": ["-y", "@playwright/mcp@latest", "--headless"]
     },
     "context-mode": {
       "command": "npx",

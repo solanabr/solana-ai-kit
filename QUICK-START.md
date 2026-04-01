@@ -26,7 +26,7 @@ After setup, run `/setup-mcp` in Claude Code to configure:
 - **Helius** — On-chain data, DAS API, webhooks (needs API key from helius.dev)
 - **solana-dev** — Solana Foundation official docs and API references (no key needed)
 - **Context7** — Library documentation lookup (no key needed)
-- **Puppeteer** — Browser automation for dApp testing (no key needed)
+- **Playwright** — Browser automation for dApp testing (no key needed)
 - **context-mode** — Context window optimization for large responses (no key needed)
 - **memsearch** — Persistent AI memory across sessions (no key needed)
 

@@ -55,7 +55,7 @@ MCP servers are configured in `.claude/mcp.json`. API keys go in `.env` (never i
 - **Helius** — 60+ tools: RPC, DAS API, webhooks, priority fees, token metadata
 - **solana-dev** — Solana Foundation official MCP: docs, guides, API references
 - **Context7** — Up-to-date library documentation lookup
-- **Puppeteer** — Browser automation for dApp testing
+- **Playwright** — Browser automation for dApp testing
 - **context-mode** — Compresses large RPC responses and build logs to save context
 - **memsearch** — Persistent memory across sessions with semantic search
 

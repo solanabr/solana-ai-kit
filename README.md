@@ -23,7 +23,7 @@ A complete `.claude/` configuration that turns Claude into a Solana development 
 
 - **15 specialized agents** for different tasks (architecture, Anchor, Pinocchio, DeFi, tokens, frontend, mobile, backend, DevOps, QA, docs, games, Unity, learning, research)
 - **24 workflow commands** for building, testing, deploying, profiling, migrating, and committing
-- **6 MCP server integrations** for on-chain data (Helius), Solana docs (solana-dev), library docs (Context7), browser automation (Puppeteer), context optimization (context-mode), and persistent memory (memsearch)
+- **6 MCP server integrations** for on-chain data (Helius), Solana docs (solana-dev), library docs (Context7), browser automation (Playwright), context optimization (context-mode), and persistent memory (memsearch)
 - **Agent teams** for multi-step workflows (architect → engineer → QA)
 - **Progressive skill loading** that only loads context when needed (saves tokens)
 - **Auto-loading rules** that enforce best practices based on file patterns
@@ -130,7 +130,7 @@ Pre-configured MCP servers in `.claude/mcp.json` (API keys go in `.env`):
 | **Helius** | 60+ tools: RPC, DAS API, webhooks, priority fees, token metadata, NFT data |
 | **solana-dev** | Solana Foundation official MCP — Solana docs, guides, and API references |
 | **Context7** | Up-to-date library documentation lookup |
-| **Puppeteer** | Browser automation for dApp testing and visual verification |
+| **Playwright** | Browser automation for dApp testing and visual verification |
 | **context-mode** | Context window optimization — compresses large RPC responses, build logs, and code analysis |
 | **memsearch** | Persistent AI memory across sessions — auto-captures summaries, semantic search, git-friendly storage |
 

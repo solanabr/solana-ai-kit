@@ -2,6 +2,11 @@
 
 All notable changes to solana-claude-config.
 
+## [1.2.3] - 2026-03-31
+
+### Changed
+- Replaced Puppeteer MCP server with Playwright (`@playwright/mcp`) — actively maintained by Microsoft, Puppeteer MCP is unmaintained
+
 ## [1.2.1] - 2026-03-31
 
 ### Fixed
