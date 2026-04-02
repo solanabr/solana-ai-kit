@@ -78,6 +78,7 @@ All tools accept a `locale` parameter: `"en"`, `"pt"`, `"es"`.
 
 | Capability | What It Does |
 |---|---|
+| **Menu / Help** | Say "help", "ajuda", or "menu" to see all capabilities organized by intent |
 | **Term Lookup** | Resolve any term by ID, alias, or natural language — adapted to skill level |
 | **Knowledge Graph** | Walk cross-references to show concept clusters and connections |
 | **Learning Paths** | Progressive sequences from beginner to advanced within any category |
