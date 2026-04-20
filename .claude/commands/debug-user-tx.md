@@ -127,13 +127,20 @@ Record the handler name.
 
 ## Step 4: Map the Error to Source
 
-**Fast path — scan `meta.logMessages` first.** Anchor emits a line of the form:
+**Fast path — scan `meta.logMessages` first.** Anchor emits one of these formats depending on how the error was raised:
 
 ```
+# From err!() / return Err(ErrorCode::X.into()) — includes source file:line directly
+Program log: AnchorError thrown in <path/to/file.rs>:<line>. Error Code: <CodeName>. Error Number: <N>. Error Message: "<msg>".
+
+# From a constraint violation in #[derive(Accounts)]
 Program log: AnchorError caused by account: <account_name>. Error Code: <CodeName>. Error Number: <N>.
+
+# Generic form
+Program log: AnchorError occurred. Error Code: <CodeName>. Error Number: <N>. Error Message: "<msg>".
 ```
 
-When present, this skips discriminator math entirely: you get the failing account name, the error variant name, and the code in one line. Always check for it before falling back to error-code lookups.
+When any of these are present, this skips discriminator math entirely: you get the error variant name and often the source location in one line. The `thrown in <file>:<line>` form is the gold standard — quote it directly in the report. Always scan for all three before falling back to error-code lookups.
 
 Based on `meta.err`:
 
