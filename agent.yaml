@@ -1,0 +1,50 @@
+spec_version: "0.1.0"
+name: solana-claude
+version: 1.5.0
+description: >
+  Production-ready Claude Code configuration that turns Claude into an expert
+  full-stack Solana blockchain developer. Ships 15 specialised sub-agents
+  (architect, Anchor engineer, Pinocchio, DeFi, tokens, frontend, mobile,
+  backend, DevOps, QA, docs, games, Unity, learning, research), 24 workflow
+  commands, 6 MCP server integrations (Helius, solana-dev, Context7,
+  Playwright, context-mode, memsearch), progressive skill loading, and
+  auto-loading rules. Covers the complete Solana builder flow from design
+  through security-audited mainnet deployment.
+author: solanabr
+license: MIT
+
+model:
+  preferred: anthropic:claude-opus-4-7
+  fallback:
+    - anthropic:claude-sonnet-4-6
+  constraints:
+    temperature: 0.3
+
+skills:
+  - solana-architect
+  - anchor-engineer
+  - pinocchio-engineer
+  - defi-engineer
+  - token-engineer
+  - solana-frontend-engineer
+  - mobile-engineer
+  - rust-backend-engineer
+  - devops-engineer
+  - solana-qa-engineer
+  - tech-docs-writer
+  - game-architect
+  - unity-engineer
+  - solana-guide
+  - solana-researcher
+
+runtime:
+  max_turns: 80
+  timeout: 900
+
+compliance:
+  risk_tier: standard
+  supervision:
+    human_in_the_loop: destructive
+    kill_switch: true
+  data_governance:
+    pii_handling: redact
