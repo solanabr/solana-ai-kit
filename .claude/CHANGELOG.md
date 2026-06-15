@@ -16,6 +16,7 @@ All notable changes to solana-ai-kit.
 - **Permissions**: deny `Bash(curl *convex.cloud*)` — backstop against upstream telemetry preambles
 
 ### Changed
+- **Resynced ext submodules to upstream HEADs** (9 advanced): sendai (−drift +phoenix/ranger-finance/lavarage/lifi/arcium/birdeye/wallet-analysis/carbium/sol-incinerator), cloudflare (agents-sdk folds in MCP/AI-agent deployment; +sandbox-sdk), qedgen, safe-solana-builder, solana-dev, solana-mobile, trailofbits, colosseum, vercel; defending-code/ghostsecurity/solana-game/solana-new already at upstream HEAD. Hub SKILL.md routing refreshed (drift row dropped, perps→ranger-finance, +cross-chain/encrypted-compute rows); README sendai purpose de-references Drift
 - **Project renamed** solana-claude-config → **solana-ai-kit** (repo URL `solanabr/solana-ai-kit`): all docs, installer, and update-tooling references updated; env vars renamed to `SOLANA_AI_KIT_*` (`SOLANA_AI_KIT_LOCAL_SRC`, `SOLANA_AI_KIT_UPSTREAM`, `SOLANA_AI_KIT_BRANCH`) with `SOLANA_CLAUDE_*` back-compat fallbacks; VERSION package name updated
 - Enriched `solana-researcher` (DeFi market research + competitive landscape), `rust-backend-engineer` (indexer non-negotiables), `solana-guide` (EVM→Solana concept map + incubator loop), `token-engineer` (tokenomics pre-launch checklist), `/debug-user-tx` (common pitfalls encyclopedia), `/deploy` + `deployment.md` (upgrade-authority staging timeline)
 - Skills hub (`SKILL.md`) routing for GTM journey skills and the new security submodules

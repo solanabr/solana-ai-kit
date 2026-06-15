@@ -36,7 +36,9 @@ Protocol-specific skills from [SendAI](ext/sendai/skills/):
 | Protocol | Skill | Use for |
 |----------|-------|---------|
 | Jupiter | [jupiter/](ext/sendai/skills/jupiter/) | Swaps, DCA, limit orders |
-| Drift | [drift/](ext/sendai/skills/drift/) | Perpetuals, margin trading |
+| Phoenix | [phoenix/](ext/sendai/skills/phoenix/) | Perpetual futures (Rise SDK) |
+| Ranger Finance | [ranger-finance/](ext/sendai/skills/ranger-finance/) | Perps aggregation, leverage routing |
+| Lavarage | [lavarage/](ext/sendai/skills/lavarage/) | Leveraged trading for any SPL token |
 | Raydium | [raydium/](ext/sendai/skills/raydium/) | AMM, CLMM pools |
 | Meteora | [meteora/](ext/sendai/skills/meteora/) | DLMM, dynamic pools |
 | Orca | [orca/](ext/sendai/skills/orca/) | Whirlpools, concentrated liquidity |
@@ -50,7 +52,13 @@ Protocol-specific skills from [SendAI](ext/sendai/skills/):
 | Squads | [squads/](ext/sendai/skills/squads/) | Multisig |
 | Helius | [helius/](ext/sendai/skills/helius/) | RPC, webhooks, DAS |
 | DeBridge | [debridge/](ext/sendai/skills/debridge/) | Cross-chain bridging |
+| LI.FI | [lifi/](ext/sendai/skills/lifi/) | Cross-chain swaps, bridging, route discovery |
+| Arcium | [arcium/](ext/sendai/skills/arcium/) | Encrypted compute: dark pools, sealed-bid auctions |
 | Light Protocol | [light-protocol/](ext/sendai/skills/light-protocol/) | ZK compression |
+| Birdeye | [birdeye/](ext/sendai/skills/birdeye/) | Real-time DeFi data, prices, OHLCV |
+| Wallet Analysis | [wallet-analysis/](ext/sendai/skills/wallet-analysis/) | Portfolio value, positions, PnL (Zerion) |
+| Carbium | [carbium/](ext/sendai/skills/carbium/) | Bare-metal RPC, gRPC streaming, DEX aggregation |
+| SOL Incinerator | [sol-incinerator/](ext/sendai/skills/sol-incinerator/) | Burn tokens/NFTs, close accounts |
 | Solana Agent Kit | [solana-agent-kit/](ext/sendai/skills/solana-agent-kit/) | AI agent framework |
 | Phantom Connect | [phantom-connect/](ext/sendai/skills/phantom-connect/) | Phantom wallet connection |
 | MagicBlock | [magicblock/](ext/sendai/skills/magicblock/) | On-chain game engine |
@@ -97,9 +105,8 @@ From [QEDGen](ext/qedgen/):
 From [Cloudflare](ext/cloudflare/skills/):
 
 - [workers-best-practices/](ext/cloudflare/skills/workers-best-practices/) — Cloudflare Workers deployment
-- [agents-sdk/](ext/cloudflare/skills/agents-sdk/) — Agents SDK
-- [building-mcp-server-on-cloudflare/](ext/cloudflare/skills/building-mcp-server-on-cloudflare/) — MCP server deployment
-- [building-ai-agent-on-cloudflare/](ext/cloudflare/skills/building-ai-agent-on-cloudflare/) — AI agent deployment on Workers
+- [agents-sdk/](ext/cloudflare/skills/agents-sdk/) — Agents SDK (MCP server + AI agent deployment, codemode, durable execution)
+- [sandbox-sdk/](ext/cloudflare/skills/sandbox-sdk/) — Sandboxed code execution on Workers
 - [durable-objects/](ext/cloudflare/skills/durable-objects/) — Durable Objects patterns
 - [wrangler/](ext/cloudflare/skills/wrangler/) — Wrangler CLI usage
 
@@ -171,6 +178,9 @@ From [Vercel](ext/vercel/):
 | Backend API, indexer | backend-async.md |
 | Deploy to devnet/mainnet | deployment.md |
 | DeFi integration (swaps, lending) | ext/sendai → protocol-specific skill |
+| Perpetuals, leverage, margin trading | ext/sendai → ranger-finance/ (also phoenix/, jupiter/ perps) |
+| Cross-chain swaps, bridging | ext/sendai → lifi/ (also debridge/) |
+| Encrypted compute, dark pools, sealed auctions | ext/sendai → arcium/ |
 | NFT standards, metadata | ext/sendai → metaplex/ |
 | Payment flows, checkout | ext/solana-dev → payments.md |
 | Generated clients, IDL | ext/solana-dev → idl-codegen.md |
