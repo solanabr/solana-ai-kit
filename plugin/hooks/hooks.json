@@ -1,0 +1,95 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -f \"${CLAUDE_PROJECT_DIR:-.}/.claude/VERSION\" ]; then exit 0; fi\nV=$(awk 'NF{print $NF; exit}' \"${CLAUDE_PLUGIN_ROOT}/VERSION\" 2>/dev/null)\n[ -n \"$V\" ] || V=dev\nif [ -z \"${NO_COLOR:-}\" ] && printf %s \"${COLORTERM:-}\" | grep -qiE 'truecolor|24bit'; then\n  G1=$(printf '\\033[38;2;153;69;255m'); G2=$(printf '\\033[38;2;131;98;237m')\n  G3=$(printf '\\033[38;2;109;126;220m'); G4=$(printf '\\033[38;2;86;155;202m')\n  G5=$(printf '\\033[38;2;64;184;184m'); G6=$(printf '\\033[38;2;42;212;167m')\n  G7=$(printf '\\033[38;2;20;241;149m')\n  DM=$(printf '\\033[2m'); RS=$(printf '\\033[0m')\nelse\n  G1=; G2=; G3=; G4=; G5=; G6=; G7=; DM=; RS=\nfi\nprintf '%s%s%s\\n' \"$G1\" '   _____ ____  __    ___    _   _____' \"$RS\"\nprintf '%s%s%s\\n' \"$G2\" '  / ___// __ \\/ /   /   |  / | / /   |' \"$RS\"\nprintf '%s%s%s\\n' \"$G3\" '  \\__ \\/ / / / /   / /| | /  |/ / /| |' \"$RS\"\nprintf '%s%s%s\\n' \"$G4\" ' ___/ / /_/ / /___/ ___ |/ /|  / ___ |' \"$RS\"\nprintf '%s%s%s\\n' \"$G5\" '/____/\\____/_____/_/  |_/_/ |_/_/  |_|' \"$RS\"\nprintf '%s%s%s\\n' \"$G6\" '           \u2584\u2580\u2588 \u2588   \u2588\u2584\u2580 \u2588 \u2580\u2588\u2580' \"$RS\"\nprintf '%s%s%s\\n' \"$G7\" '           \u2588\u2580\u2588 \u2588   \u2588 \u2588 \u2588  \u2588' \"$RS\"\nprintf '%s\\n\\n' \"${DM}v$V \u2014 by @SuperteamBR \ud83c\udde7\ud83c\uddf7${RS}\"\nif command -v solana >/dev/null 2>&1; then\n  echo \"\ud83d\udd17 $(solana config get | grep 'RPC URL' | awk '{print $3}')\"\n  echo \"\ud83d\udc5b $(solana address 2>/dev/null || echo 'No wallet configured')\"\nelse\n  echo '\u26a0\ufe0f  Solana CLI not found'\nfi"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "for f in $(git diff --cached --name-only 2>/dev/null); do\n  case \"$f\" in\n    *.rs) command -v rustfmt >/dev/null 2>&1 && rustfmt \"$f\" 2>/dev/null || true ;;\n    *.ts|*.tsx|*.js|*.jsx|*.json) command -v npx >/dev/null 2>&1 && npx prettier --write \"$f\" 2>/dev/null || true ;;\n  esac\ndone"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo \"\ud83e\udd16 Agent completed: ${CLAUDE_SUBAGENT_NAME:-unknown}\""
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -z \"$CLAUDE_FILE_PATH\" ]; then exit 0; fi\n\ncase \"$CLAUDE_FILE_PATH\" in\n  *.rs)\n    command -v rustfmt >/dev/null 2>&1 && rustfmt \"$CLAUDE_FILE_PATH\" || true\n    ;;\n  *.ts|*.tsx|*.js|*.jsx|*.json|*.md)\n    command -v npx >/dev/null 2>&1 && npx prettier --write \"$CLAUDE_FILE_PATH\" || true\n    ;;\nesac"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "when": {
+          "command_matches": "cargo test|anchor test"
+        },
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo \"\"\necho \"\ud83d\udcca Test Summary:\";\nif [ \"$CLAUDE_TOOL_EXIT_CODE\" -eq 0 ]; then\n  echo \"\u2705 All tests passed!\"\nelse\n  echo \"\u274c Some tests failed. Review output above.\"\nfi"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "when": {
+          "command_matches": "dotnet test|unity-editor.*-runTests"
+        },
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo \"\"\necho \"\ud83d\udcca .NET Test Summary:\";\nif [ \"$CLAUDE_TOOL_EXIT_CODE\" -eq 0 ]; then\n  echo \"\u2705 All tests passed!\"\nelse\n  echo \"\u274c Some tests failed. Review output above.\"\nfi"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "when": {
+          "command_matches": "git commit"
+        },
+        "hooks": [
+          {
+            "type": "command",
+            "command": "set -e\n\necho \"\ud83d\udd0d Running pre-commit checks...\"\n\nif [ -f \"Anchor.toml\" ] || grep -q \"solana-program\" Cargo.toml 2>/dev/null; then\n  cargo fmt --check || { cargo fmt; exit 1; }\n  cargo clippy --all-targets -- -D warnings || exit 1\n  cargo test --lib || exit 1\nfi\n\nif [ -f \"package.json\" ]; then\n  npx prettier --check \"**/*.{ts,tsx,js,jsx,json}\" || { npx prettier --write \"**/*.{ts,tsx,js,jsx,json}\"; exit 1; }\n  [ -f \"tsconfig.json\" ] && npx tsc --noEmit || exit 1\nfi\n\necho \"\u2705 Pre-commit checks passed\""
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "when": {
+          "command_matches": "solana program deploy|anchor deploy"
+        },
+        "hooks": [
+          {
+            "type": "command",
+            "command": "set -e\n\necho \"\ud83d\udea8 PRE-DEPLOY CHECKS\"\nNETWORK=$(solana config get | grep \"RPC URL\" | awk '{print $3}')\necho \"Network: $NETWORK\"\n\nif echo \"$NETWORK\" | grep -q mainnet; then\n  echo \"\u26a0\ufe0f MAINNET DEPLOY\"\n  echo \"Type 'DEPLOY TO MAINNET' to continue:\";\n  read -r CONFIRM;\n  [ \"$CONFIRM\" = \"DEPLOY TO MAINNET\" ] || exit 1\nfi\n\nif [ -f \"Anchor.toml\" ]; then\n  ls target/deploy/*.so >/dev/null 2>&1 || { echo \"\u274c No build found\"; exit 1; }\nfi\n\necho \"\u2705 Pre-deploy checks passed\""
+          }
+        ]
+      }
+    ]
+  }
+}

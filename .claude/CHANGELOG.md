@@ -15,6 +15,7 @@ All notable changes to solana-ai-kit.
 - **`.claude/context/` phase-handoff convention**: gitignored scratch dir for idea→build→launch context files
 - **Permissions**: deny `Bash(curl *convex.cloud*)` — backstop against upstream telemetry preambles
 - **Surfpool MCP server in the standard install** (keyless; agent-driven local-validator / mainnet-fork control; requires the surfpool CLI) — MCP servers 6→7
+- **Claude Code plugin distribution** — in-repo marketplace (`.claude-plugin/marketplace.json`) + symlinked `plugin/` core-plugin (agents, commands, local skills, MCP, hooks); commands namespace as `/solana-ai-kit:<name>`. `install.sh` remains the full install for `.claude/rules`, the permissions/sandbox policy, and the 18 ext/ submodules (plugins can't carry submodules); `/doctor` gains a dual-install guard
 
 ### Changed
 - **Resynced ext submodules to upstream HEADs** (9 advanced): sendai (−drift +phoenix/ranger-finance/lavarage/lifi/arcium/birdeye/wallet-analysis/carbium/sol-incinerator), cloudflare (agents-sdk folds in MCP/AI-agent deployment; +sandbox-sdk), qedgen, safe-solana-builder, solana-dev, solana-mobile, trailofbits, colosseum, vercel; defending-code/ghostsecurity/solana-game/solana-new already at upstream HEAD. Hub SKILL.md routing refreshed (drift row dropped, perps→ranger-finance, +cross-chain/encrypted-compute rows); README sendai purpose de-references Drift

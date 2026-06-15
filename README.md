@@ -77,6 +77,27 @@ After installation, configure MCP servers for enhanced capabilities:
 
 This guides you through API key configuration for Helius, Context7, and other MCP servers.
 
+## Install as a Claude Code plugin
+
+solana-ai-kit is also its own Claude Code marketplace serving one **core plugin**. From inside Claude Code:
+
+```text
+/plugin marketplace add solanabr/solana-ai-kit
+/plugin install solana-ai-kit@solana-ai-kit
+```
+
+The plugin ships the **core kit**: the 15 agents, 29 commands, the local go-to-market + registry skills (idea-sprint, pitch-deck, hackathon, registry), the 7 MCP servers, and the dev hooks (banner, formatter, pre-deploy/commit gates). Commands and skills are namespaced — `/deploy` becomes `/solana-ai-kit:deploy`.
+
+What the plugin **cannot** carry (Claude Code plugins are plain git clones — they can't init submodules or ship a permissions/sandbox policy), so these stay exclusive to the **full install** (`install.sh`):
+
+- the lazy-loaded `.claude/rules/*` code-style law (Rust, Anchor, Pinocchio, TypeScript, .NET)
+- the curated permissions allowlist + sandbox policy
+- the 18 `ext/` skill submodules (protocol, security, infra, ecosystem depth)
+
+For protocol-skill depth in plugin form, add the upstream marketplaces instead (routing, not copying) — e.g. `/plugin marketplace add sendaifun/skills`, `ghostsecurity/skills`, `trailofbits/skills`, `cloudflare/skills`. The plugin's skill hub and the `registry` skill list the current targets.
+
+The two paths are complementary: individuals wanting Solana agents/commands across **all** their projects → plugin at user scope; project teams working in one repo → `install.sh` (full kit). If you enable both in the same project, `/doctor` warns about duplicate commands/hooks/MCP and advises picking one. Plugin auto-update is off by default for third-party marketplaces — refresh with `/plugin marketplace update` + `claude plugin update`.
+
 ## Key Features
 
 ## External Skill Submodules
@@ -393,6 +414,16 @@ This project builds on excellent work from the community:
 - **cso** by **gstack** - The infrastructure-first security audit methodology shipped in sendaifun/solana-new, the basis of our `/audit-infra` command (adapted telemetry-free).
 
 - **[ghostsecurity/skills](https://github.com/ghostsecurity/skills)** and **[anthropics/defending-code-reference-harness](https://github.com/anthropics/defending-code-reference-harness)** - AppSec scanning skills and Anthropic's vulnerability-discovery reference harness, both included as submodules under their Apache-2.0 licenses.
+
+- **[jup-ag/agent-skills](https://github.com/jup-ag/agent-skills)** - Jupiter's official agent skills (Ultra swap, Lend, swap migration, VRFD), included as a submodule under the MIT license.
+
+- **[metaplex-foundation/skill](https://github.com/metaplex-foundation/skill)** - Metaplex's official NFT-standards skill (Core, Token Metadata, Bubblegum, Candy Machine, Genesis), included as a submodule under the Apache-2.0 license.
+
+- **[helius-labs/core-ai](https://github.com/helius-labs/core-ai)** - Helius's official infrastructure skill plus its SVM-internals skill, included as a submodule under the MIT license. Home repo of the Helius MCP server shipped in this kit.
+
+- **[quiknode-labs/solana-anchor-claude-skill](https://github.com/quiknode-labs/solana-anchor-claude-skill)** - QuickNode's Anchor / financial-math / Quasar reference material, included as a submodule under the MIT license (quarantined — reference files only; `.claude/rules/anchor.md` governs code style).
+
+- **[solana-foundation/eth-to-sol-skill](https://github.com/solana-foundation/eth-to-sol-skill)** - The Solana Foundation's EVM/Solidity → Anchor two-pass porting skill, included as a submodule.
 
 ## License
 

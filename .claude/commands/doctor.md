@@ -103,6 +103,23 @@ fi
 - ! Server listed but its API key failed Check 5 → fix-it: `/setup-mcp`
 - ! `.mcp.json` lists `surfpool` but the `surfpool` CLI is missing → fix-it: `curl -L https://surfpool.run/install | sh` (or `brew install txtx/taps/surfpool`)
 
+## Check 8: Dual-Install Guard (plugin + full install)
+
+solana-ai-kit ships two ways: the **plugin** (`/plugin install solana-ai-kit@solana-ai-kit`) and the **full install** (`install.sh` → project `.claude/`). Running both in one project double-loads commands, hooks, and MCP servers (e.g. `/deploy` and `/solana-ai-kit:deploy`, banner prints twice). Detect (names only, read-only):
+
+```bash
+# Plugin enabled at project scope? (user-scope lives in ~/.claude/settings.json)
+PLUGIN_ON=$(grep -lE '"solana-ai-kit@[^"]*"[[:space:]]*:[[:space:]]*true' \
+  .claude/settings.json "$HOME/.claude/settings.json" 2>/dev/null | head -1)
+# Full install present?
+[ -f .claude/VERSION ] && echo "FULL_INSTALL present"
+[ -n "$PLUGIN_ON" ] && echo "PLUGIN enabled (in: $PLUGIN_ON)"
+```
+
+- ✓ Exactly one install path active (plugin **or** full install) → no conflict
+- ✓ Neither detected here → n/a (`-`)
+- ! BOTH the plugin (`enabledPlugins` has `solana-ai-kit`) AND a project `.claude/` full install are active → double commands/hooks/MCP → fix-it: pick one — either `/plugin uninstall solana-ai-kit` (keep the full install for rules/permissions/submodules) **or** remove the project `.claude/` and rely on the plugin (note: rules + permissions/sandbox + ext/ submodules then no longer apply)
+
 ## Output
 
 Render exactly one summary table, then fix-its for non-✓ rows only:
@@ -119,6 +136,7 @@ Render exactly one summary table, then fix-its for non-✓ rows only:
 | 5 | .env keys          | !      | HELIUS_API_KEY empty            |
 | 6 | Config version     | ✓      | 1.5.0 = upstream                |
 | 7 | MCP config         | ✓      | 7 servers parsed                |
+| 8 | Dual-install guard | ✓      | full install only (no plugin)   |
 
 ### Fix-its (run in order)
 1. `git submodule update --init --recursive`

@@ -33,6 +33,21 @@ After setup, run `/setup-mcp` in Claude Code to configure:
 
 ---
 
+## Install as a plugin
+
+Prefer Claude Code's plugin system? solana-ai-kit is its own marketplace. From inside Claude Code:
+
+```text
+/plugin marketplace add solanabr/solana-ai-kit
+/plugin install solana-ai-kit@solana-ai-kit
+```
+
+The plugin ships the core kit — agents, commands, the local go-to-market + registry skills, the 7 MCP servers, and the dev hooks. Commands namespace as `/solana-ai-kit:<name>` (e.g. `/solana-ai-kit:deploy`).
+
+Plugins are plain git clones, so they can't carry the 18 `ext/` submodules, the `.claude/rules/*` code-style law, or the permissions/sandbox policy — those need the **full install** (the `install.sh` one-liner above). For protocol-skill depth in plugin form, add the upstream marketplaces instead (`/plugin marketplace add sendaifun/skills`, etc.). Running both the plugin and the full install in one project double-loads commands/hooks/MCP — `/doctor` flags it; pick one.
+
+---
+
 ## What You Get
 
 ### 15 Specialized Agents

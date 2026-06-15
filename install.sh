@@ -208,6 +208,10 @@ BOX_LINES=(
   "  2. Edit .env to add your API keys (Helius, RPC, etc.)"
   "  3. Run 'claude' to start Claude Code with Solana config"
   "  4. Try /build-program or /audit-solana commands"
+  ""
+  "This is the full install. If you also enable the solana-ai-kit"
+  "plugin, prefer one path — both double-load commands/hooks/MCP"
+  "(run /doctor to check)."
 )
 if [ "$AGENTS_ONLY" = true ]; then
   BOX_LINES+=("")

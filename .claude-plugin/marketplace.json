@@ -1,0 +1,21 @@
+{
+  "$schema": "https://code.claude.com/schemas/marketplace.json",
+  "name": "solana-ai-kit",
+  "owner": {
+    "name": "SuperteamBR",
+    "url": "https://github.com/solanabr"
+  },
+  "metadata": {
+    "description": "Solana AI Kit — Claude Code configuration for Solana development: specialized agents, workflow commands, go-to-market skills, MCP servers, and hooks.",
+    "version": "2.0.0"
+  },
+  "plugins": [
+    {
+      "name": "solana-ai-kit",
+      "source": "./plugin",
+      "description": "Core Solana dev kit: 15 agents, 29 commands, idea→pitch→hackathon→registry skills, 7 MCP servers, and dev hooks. (Full install via install.sh adds .claude/rules, the permissions/sandbox policy, and 18 ext/ submodules.)",
+      "category": "Development",
+      "strict": true
+    }
+  ]
+}

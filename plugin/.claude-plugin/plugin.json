@@ -1,0 +1,25 @@
+{
+  "$schema": "https://code.claude.com/schemas/plugin.json",
+  "name": "solana-ai-kit",
+  "version": "2.0.0",
+  "description": "Core Solana dev kit: agents, workflow commands, go-to-market skills, MCP servers, and dev hooks. The full install (install.sh) additionally ships .claude/rules, the permissions/sandbox policy, and 18 ext/ submodules.",
+  "author": {
+    "name": "SuperteamBR",
+    "url": "https://github.com/solanabr"
+  },
+  "homepage": "https://github.com/solanabr/solana-ai-kit",
+  "repository": "https://github.com/solanabr/solana-ai-kit",
+  "license": "MIT",
+  "keywords": [
+    "solana",
+    "anchor",
+    "rust",
+    "web3",
+    "defi",
+    "blockchain",
+    "agents",
+    "mcp"
+  ],
+  "mcpServers": "./.mcp.json",
+  "hooks": "./hooks/hooks.json"
+}

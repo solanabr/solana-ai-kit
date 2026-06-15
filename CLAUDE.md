@@ -66,6 +66,7 @@ When X changes, also update Y:
 | Add/remove **submodule** | .gitmodules, README.md submodules table + tree, QUICK-START.md tree, .claude/skills/SKILL.md routing |
 | Modify **install.sh** | Test: `bash tests/test_install.sh` in temp dir |
 | Modify **CLAUDE-solana.md** | This ships to ALL user projects — different audience than this repo |
+| Bump **`.claude/VERSION`** | Also bump `plugin/.claude-plugin/plugin.json` `version` (must match VERSION semver — `tests/test_plugin.sh` enforces) + `claude plugin tag` on release |
 
 ## Submodule Pitfalls
 
@@ -82,6 +83,7 @@ When X changes, also update Y:
 | **Commands** | `.claude/commands/` | Atomic (one command, one purpose); document inputs/outputs |
 | **Rules** | `.claude/rules/` | Minimal — they load on every matching file; use `globs` in frontmatter |
 | **MCP Servers** | `.mcp.json` | Document env vars; test connectivity; update setup-mcp command |
+| **Plugin** | `.claude-plugin/marketplace.json` + `plugin/` | In-repo marketplace + symlinked core-plugin subtree (agents/commands/.mcp.json/local skills are **symlinks** into `.claude/`; only `hooks/hooks.json` + plugin-variant `skills/SKILL.md` are real files). Keep `plugin.json` version = `.claude/VERSION`. `plugin/skills/SKILL.md` must have NO `ext/` links (submodules absent in plugin installs). Validate: `claude plugin validate .` + `./plugin`. `install.sh` stays the full install (rules/permissions/submodules) |
 
 ## Agent Teams
 
