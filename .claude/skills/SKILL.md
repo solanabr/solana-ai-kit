@@ -35,7 +35,7 @@ Key references within:
 
 ## Vault & Escrow Development
 
-- [pda-vault/](pda-vault/) — Build production-grade PDA vaults on Solana: single-signer, time-lock, multi-sig, and escrow vault patterns with Anchor 1.0+ and Pinocchio. Covers PDA derivation, CPI signing, balance tracking, seed strategies, and security checklist
+- [pda-vault/skill/](pda-vault/skill/) — Build production-grade PDA vaults on Solana: single-signer, time-lock, multi-sig, and escrow vault patterns with Anchor 1.0+ and Pinocchio. Covers PDA derivation, CPI signing, balance tracking, seed strategies, and security checklist
 
 ## Token Extensions
 
@@ -228,7 +228,7 @@ From [quiknode-labs/solana-anchor-claude-skill](ext/quicknode-anchor/) — **ref
 | NFT standards, metadata, cNFT, candy machine | ext/metaplex → skills/metaplex/SKILL.md (official) |
 | Helius RPC, DAS, webhooks, Sender, priority fees | ext/helius → helius-skills/helius/SKILL.md (official) |
 | SVM/protocol internals (execution, consensus, validators, SIMDs) | ext/helius → helius-skills/svm/SKILL.md |
-| PDA vaults, escrows, time-locks, multi-sig vaults | pda-vault/ |
+| PDA vaults, escrows, time-locks, multi-sig vaults | pda-vault/skill/ |
 | Payment flows, checkout | ext/solana-dev → payments.md |
 | Generated clients, IDL | ext/solana-dev → idl-codegen.md |
 | Unity game development | ext/solana-game → unity-sdk.md |
