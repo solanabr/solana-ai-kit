@@ -596,7 +596,7 @@
       "name": "Solana Security Watch",
       "type": "skill",
       "domain": "solana-infra",
-      "description": "Continuous security monitoring for Solana/Anchor programs (not a one-shot audit): a daily watch loop that pulls fresh exploit/CVE/RUSTSEC/auditor disclosures and re-confronts the target program against each new technique. Ships a 14-class Anchor/SPL vuln checklist with grep patterns + an executable /security-watch command (dep scan + risky-pattern grep + advisory search -> dated report). Complements one-shot audit skills (trailofbits, ghostsecurity).",
+      "description": "Continuous security monitoring for Solana/Anchor programs (not a one-shot audit): a daily watch loop that pulls fresh exploit/CVE/RUSTSEC/auditor disclosures and re-confronts the target program against each new technique. Ships an 18-class Anchor/SPL vuln checklist with grep patterns + an executable /security-watch command (dep scan + risky-pattern grep + advisory search -> dated report). Complements one-shot audit skills (trailofbits, ghostsecurity).",
       "source": "https://github.com/OxToF/solana-security-watch",
       "install": { "method": "submodule", "command": "git submodule add https://github.com/OxToF/solana-security-watch .claude/skills/ext/security-watch", "env": [] },
       "license": "MIT",
