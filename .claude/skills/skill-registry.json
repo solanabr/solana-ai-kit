@@ -590,6 +590,21 @@
       "default_installed": false,
       "safety": "caution: SaaS data-routing — queries and API key sent to mcp.nansen.ai (Nansen servers); key passed in request header; free tier 100 credits, paid ~$0.001/credit or $0.01–$0.05/x402 call; opt-in only",
       "tags": ["analytics", "wallet-labeling", "smart-money", "on-chain-data", "solana", "multi-chain", "paid"]
+    },
+    {
+      "id": "solana-security-watch",
+      "name": "Solana Security Watch",
+      "type": "skill",
+      "domain": "solana-infra",
+      "description": "Continuous security monitoring for Solana/Anchor programs (not a one-shot audit): a daily watch loop that pulls fresh exploit/CVE/RUSTSEC/auditor disclosures and re-confronts the target program against each new technique. Ships a 14-class Anchor/SPL vuln checklist with grep patterns + an executable /security-watch command (dep scan + risky-pattern grep + advisory search -> dated report). Complements one-shot audit skills (trailofbits, ghostsecurity).",
+      "source": "https://github.com/OxToF/solana-security-watch",
+      "install": { "method": "submodule", "command": "git submodule add https://github.com/OxToF/solana-security-watch .claude/skills/ext/security-watch", "env": [] },
+      "license": "MIT",
+      "maintainer": "OxToF",
+      "signal": { "stars": 0, "last_commit": "2026-06-19", "reputability": "individual" },
+      "default_installed": false,
+      "safety": "clean (MIT; reference-only markdown + one command scoped to read-only Bash(grep/find/cat/cargo audit), Read, Glob, Grep, WebSearch; no hooks, no install scripts, no telemetry, no curl|sh)",
+      "tags": ["security", "audit", "anchor", "spl", "vulnerability-watch", "monitoring", "defi"]
     }
   ]
 }
