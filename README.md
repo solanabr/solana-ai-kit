@@ -56,7 +56,7 @@ cd /path/to/your-project && git submodule update --init --recursive
 /plugin install solana-ai-kit@stbr
 # Commands then namespace as /solana-ai-kit:<name>. The plugin is the CORE kit
 # (agents/commands/local skills/MCP/hooks); the curl one-liner (Option 1) is the
-# FULL install, adding rules + permissions/sandbox + the 18 ext/ submodules.
+# FULL install, adding rules + permissions/sandbox + the 19 ext/ submodules.
 # Details: see "Install as a Claude Code plugin" below.
 
 # Start Claude Code
@@ -104,7 +104,7 @@ What the plugin **cannot** carry (Claude Code plugins are plain git clones — t
 
 - the lazy-loaded `.claude/rules/*` code-style law (Rust, Anchor, Pinocchio, TypeScript, .NET)
 - the curated permissions allowlist + sandbox policy
-- the 18 `ext/` skill submodules (protocol, security, infra, ecosystem depth)
+- the 19 `ext/` skill submodules (protocol, security, infra, ecosystem depth)
 
 For protocol-skill depth in plugin form, add the upstream marketplaces instead (routing, not copying) — e.g. `/plugin marketplace add sendaifun/skills`, `ghostsecurity/skills`, `trailofbits/skills`, `cloudflare/skills`. The plugin's skill hub and `skill-registry.json` list the current targets.
 
@@ -132,6 +132,7 @@ The two paths are complementary: individuals wanting Solana agents/commands acro
 | `ext/helius` | [helius-labs/core-ai](https://github.com/helius-labs/core-ai) | Official Helius infra skill + unique SVM internals skill |
 | `ext/quicknode-anchor` | [quiknode-labs/solana-anchor-claude-skill](https://github.com/quiknode-labs/solana-anchor-claude-skill) | Anchor/financial-math/Quasar reference files (quarantined — refs only) |
 | `ext/eth-to-sol` | [solana-foundation/eth-to-sol-skill](https://github.com/solana-foundation/eth-to-sol-skill) | EVM/Solidity → Anchor two-pass porting |
+| `ext/program-upgrade` | [mitgajera/solana-program-upgrade-skill](https://github.com/mitgajera/solana-program-upgrade-skill) | Safe program upgrades + on-chain account migration (versioning, realloc, Squads, fork sim, rollback) |
 
 ### Agent Teams
 

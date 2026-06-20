@@ -132,6 +132,18 @@ From [Cloudflare](ext/cloudflare/skills/):
 Local:
 - [deployment.md](deployment.md) — Devnet/mainnet workflows, verifiable builds, multisig, CI/CD
 
+From [solana-program-upgrade](ext/program-upgrade/skill/) — safe live-program upgrades + on-chain account-data migration (addon to solana-dev; read when changing an `#[account]` struct, redeploying, hitting `AccountDidNotDeserialize`, managing upgrade authority, or making a program immutable):
+
+- [ext/program-upgrade/skill/SKILL.md](ext/program-upgrade/skill/SKILL.md) — Upgrade + migration hub: golden rules, workflow, routing table
+- [account-versioning.md](ext/program-upgrade/skill/account-versioning.md) — Version tags, discriminator vs version, safe vs breaking layout changes
+- [realloc-migration.md](ext/program-upgrade/skill/realloc-migration.md) — In-place realloc/resize migration, lazy vs eager, idempotency, 10 KB cap
+- [anchor-migration-type.md](ext/program-upgrade/skill/anchor-migration-type.md) — Anchor `Migration<From, To>` type (verify availability)
+- [program-deploy-upgrade.md](ext/program-upgrade/skill/program-deploy-upgrade.md) — Buffer flow, `extend`, IDL, `--final`, in-place vs new program id
+- [upgrade-authority.md](ext/program-upgrade/skill/upgrade-authority.md) — Squads v4 multisig, timelock, immutability, key management
+- [fork-simulation.md](ext/program-upgrade/skill/fork-simulation.md) — Surfpool fork + LiteSVM/Mollusk, byte diffs, idempotency proof
+- [rollback-recovery.md](ext/program-upgrade/skill/rollback-recovery.md) — Keep prior `.so`, half-migration recovery, pause/guard
+- [migration-strategies.md](ext/program-upgrade/skill/migration-strategies.md) — Eager vs lazy vs copy-to-new; crank for large account sets
+
 ## Game Development
 
 From [solana-game-skill](ext/solana-game/skill/):
