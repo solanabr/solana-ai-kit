@@ -52,3 +52,6 @@
 [submodule ".claude/skills/ext/eth-to-sol"]
 	path = .claude/skills/ext/eth-to-sol
 	url = https://github.com/solana-foundation/eth-to-sol-skill
+[submodule ".claude/skills/ext/solana-roast"]
+	path = .claude/skills/ext/solana-roast
+	url = https://github.com/Shawnchee/solana-roast-skill

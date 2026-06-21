@@ -56,7 +56,7 @@ cd /path/to/your-project && git submodule update --init --recursive
 /plugin install solana-ai-kit@stbr
 # Commands then namespace as /solana-ai-kit:<name>. The plugin is the CORE kit
 # (agents/commands/local skills/MCP/hooks); the curl one-liner (Option 1) is the
-# FULL install, adding rules + permissions/sandbox + the 18 ext/ submodules.
+# FULL install, adding rules + permissions/sandbox + the 19 ext/ submodules.
 # Details: see "Install as a Claude Code plugin" below.
 
 # Start Claude Code
@@ -104,7 +104,7 @@ What the plugin **cannot** carry (Claude Code plugins are plain git clones — t
 
 - the lazy-loaded `.claude/rules/*` code-style law (Rust, Anchor, Pinocchio, TypeScript, .NET)
 - the curated permissions allowlist + sandbox policy
-- the 18 `ext/` skill submodules (protocol, security, infra, ecosystem depth)
+- the 19 `ext/` skill submodules (protocol, security, infra, ecosystem depth)
 
 For protocol-skill depth in plugin form, add the upstream marketplaces instead (routing, not copying) — e.g. `/plugin marketplace add sendaifun/skills`, `ghostsecurity/skills`, `trailofbits/skills`, `cloudflare/skills`. The plugin's skill hub and `skill-registry.json` list the current targets.
 
@@ -123,6 +123,7 @@ The two paths are complementary: individuals wanting Solana agents/commands acro
 | `ext/solana-mobile` | [solana-mobile/solana-mobile-dev-skill](https://github.com/solana-mobile/solana-mobile-dev-skill) | Mobile Wallet Adapter, Genesis Token, SKR address resolution |
 | `ext/colosseum` | [ColosseumOrg/colosseum-copilot](https://github.com/ColosseumOrg/colosseum-copilot) | Startup research, idea validation, hackathon projects |
 | `ext/safe-solana-builder` | [frankcastleauditor/safe-solana-builder](https://github.com/frankcastleauditor/safe-solana-builder) | Security-first code generation (70+ audit-derived rules) |
+| `ext/solana-roast` | [Shawnchee/solana-roast-skill](https://github.com/Shawnchee/solana-roast-skill) | Pre-audit design & security interrogation (9 branches, one question at a time) + teaching "lecture" mode grounded in real exploits |
 | `ext/vercel` | [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) | Vercel deployment, Next.js, AI SDK, v0, edge functions |
 | `ext/solana-new` | [sendaifun/solana-new](https://github.com/sendaifun/solana-new) | 32 idea→launch journey skills + idea datasets/knowledge base; routed via local wrappers |
 | `ext/ghostsecurity` | [ghostsecurity/skills](https://github.com/ghostsecurity/skills) | 7 AppSec skills: SAST criteria, SCA, secrets, validation |
@@ -254,6 +255,7 @@ See [`skill-registry.json`](.claude/skills/skill-registry.json) for the complete
     │   │   ├── solana-mobile/           # Mobile Wallet Adapter, Genesis Token
     │   │   ├── colosseum/              # Colosseum Copilot (startup research)
     │   │   ├── safe-solana-builder/   # Security-first code generation
+    │   │   ├── solana-roast/          # Pre-audit design & security interrogation + lecture
     │   │   ├── vercel/                # Vercel deployment, Next.js, AI SDK
     │   │   ├── solana-new/            # SendAI idea→launch journey skills + datasets
     │   │   ├── ghostsecurity/         # Ghost Security AppSec skills
