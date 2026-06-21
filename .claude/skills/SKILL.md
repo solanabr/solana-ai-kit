@@ -131,6 +131,7 @@ From [Cloudflare](ext/cloudflare/skills/):
 
 Local:
 - [deployment.md](deployment.md) — Devnet/mainnet workflows, verifiable builds, multisig, CI/CD
+- [solana-rpc-reliability/SKILL.md](solana-rpc-reliability/SKILL.md) — RPC health diagnostics, transaction send/confirm reliability, blockhash expiry, priority fee, endpoint failover, and production incident workflows
 
 ## Game Development
 
