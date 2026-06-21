@@ -152,6 +152,8 @@ From [solana-payments-skill](ext/solana-payments/skill/):
 - [stablecoins.md](ext/solana-payments/skill/stablecoins.md) — USDC/USDG/PYUSD, Token-2022 gotchas
 - [fiat-rails.md](ext/solana-payments/skill/fiat-rails.md) — On/off-ramp, Pix (Brazil), SDP
 - [gasless.md](ext/solana-payments/skill/gasless.md) — Sponsored transactions for users without SOL
+- [merchant-server.md](ext/solana-payments/skill/merchant-server.md) — Order state machine, webhooks, reconciliation, idempotency
+- [frontend.md](ext/solana-payments/skill/frontend.md) — Checkout UX, QR rendering, polling, mobile deep links
 
 ## Mobile Development
 
