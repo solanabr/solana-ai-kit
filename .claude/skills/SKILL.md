@@ -1,6 +1,6 @@
 ---
 name: solana-dev
-description: Unified skill hub for Solana development. Routes to external submodule skills (solana-foundation, sendai, solana-game, trailofbits, cloudflare, qedgen, colosseum, solana-new, ghostsecurity, defending-code) and local skills. Progressive disclosure — read only what you need.
+description: Unified skill hub for Solana development. Routes to external submodule skills (solana-foundation, sendai, solana-game, trailofbits, solana-audit, cloudflare, qedgen, colosseum, solana-new, ghostsecurity, defending-code) and local skills. Progressive disclosure — read only what you need.
 user-invocable: true
 ---
 
@@ -101,6 +101,10 @@ From [Trail of Bits](ext/trailofbits/plugins/building-secure-contracts/skills/):
 From [safe-solana-builder](ext/safe-solana-builder/):
 
 - [ext/safe-solana-builder/SKILL.md](ext/safe-solana-builder/SKILL.md) — Security-first Solana program scaffolding: 5-step workflow enforcing vulnerability prevention during code generation. Covers Anchor, native Rust, and Pinocchio. 70+ audit-derived security rules.
+
+From [solana-audit](ext/solana-audit/skill/):
+
+- [ext/solana-audit/skill/SKILL.md](ext/solana-audit/skill/SKILL.md) — Evidence-backed audit lifecycle for Anchor/native review, taxonomy-mapped findings, transaction/payment review, Token-2022 policy review, release gates, remediation verification, formal-verification handoff, and final audit reports.
 
 From [Ghost Security](ext/ghostsecurity/plugins/ghost/skills/) — 7 AppSec skills: SAST criteria, SCA, secrets, validation:
 
@@ -213,7 +217,8 @@ From [quiknode-labs/solana-anchor-claude-skill](ext/quicknode-anchor/) — **ref
 | Anchor program code | ext/solana-dev → programs/anchor.md |
 | CU optimization, Pinocchio | ext/solana-dev → programs/pinocchio.md |
 | Unit testing, CU benchmarks | ext/solana-dev → testing.md (MCP available: `surfpool mcp` for agent-driven local-validator / mainnet-fork control) |
-| Security review, audit | ext/solana-dev → security.md + ext/trailofbits |
+| Solana or Anchor audit lifecycle, findings, release gates | ext/solana-audit → skill/SKILL.md |
+| Security checklist, vulnerability scanning | ext/solana-dev → security.md + ext/trailofbits |
 | Backend API, indexer | backend-async.md |
 | Deploy to devnet/mainnet | deployment.md |
 | Jupiter swaps, lend, perps, trigger, DCA | ext/jupiter → integrating-jupiter/SKILL.md (official) |
