@@ -34,6 +34,6 @@ for f in "$CMDS_DIR"/*.md; do
 done
 
 echo ""
-assert_eq "29" "$COUNT" "Total command count is 29"
+assert_eq "31" "$COUNT" "Total command count is 31"
 
 print_summary

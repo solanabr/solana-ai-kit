@@ -53,6 +53,6 @@ for f in "$AGENTS_DIR"/*.md; do
 done
 
 echo ""
-assert_eq "15" "$COUNT" "Total agent count is 15"
+assert_eq "16" "$COUNT" "Total agent count is 16"
 
 print_summary

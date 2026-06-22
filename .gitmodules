@@ -52,3 +52,6 @@
 [submodule ".claude/skills/ext/eth-to-sol"]
 	path = .claude/skills/ext/eth-to-sol
 	url = https://github.com/solana-foundation/eth-to-sol-skill
+[submodule ".claude/skills/ext/solana-fiat-rails"]
+	path = .claude/skills/ext/solana-fiat-rails
+	url = https://github.com/solanabr/solana-fiat-rails-skill.git

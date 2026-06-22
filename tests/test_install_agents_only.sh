@@ -46,11 +46,11 @@ assert_json_valid "$TEMP_DIR/.agents/settings.json" ".agents/settings.json is va
 
 # Count agents (should match full install)
 AGENT_COUNT=$(find "$TEMP_DIR/.agents/agents" -name "*.md" | wc -l | tr -d ' ')
-assert_eq "15" "$AGENT_COUNT" "Agent count is 15"
+assert_eq "16" "$AGENT_COUNT" "Agent count is 16"
 
 # Count commands (should match full install)
 CMD_COUNT=$(find "$TEMP_DIR/.agents/commands" -name "*.md" | wc -l | tr -d ' ')
-assert_eq "29" "$CMD_COUNT" "Command count is 29"
+assert_eq "31" "$CMD_COUNT" "Command count is 31"
 
 # CLAUDE.md should exist at project root
 assert_file_exists "$TEMP_DIR/CLAUDE.md" "CLAUDE.md exists at project root"

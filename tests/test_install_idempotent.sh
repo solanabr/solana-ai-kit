@@ -41,8 +41,8 @@ assert_file_exists "$TEMP_DIR/CLAUDE.md.bak" "CLAUDE.md.bak created on 2nd insta
 assert_dir_exists "$TEMP_DIR/.claude" ".claude/ still valid after 2nd install"
 assert_dir_exists "$TEMP_DIR/.claude/agents" "agents/ preserved after 2nd install"
 assert_dir_exists "$TEMP_DIR/.claude/commands" "commands/ preserved after 2nd install"
-assert_count "$TEMP_DIR/.claude/agents" "*.md" "15" "Agent count correct after 2nd install"
-assert_count "$TEMP_DIR/.claude/commands" "*.md" "29" "Command count correct after 2nd install"
+assert_count "$TEMP_DIR/.claude/agents" "*.md" "16" "Agent count correct after 2nd install"
+assert_count "$TEMP_DIR/.claude/commands" "*.md" "31" "Command count correct after 2nd install"
 
 # Verify specific files have content (not empty from bad copy)
 assert_file_exists "$TEMP_DIR/.claude/agents/anchor-engineer.md" "Specific agent exists after 2nd install"

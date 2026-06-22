@@ -12,16 +12,16 @@ echo ""
 # --- Agent count cross-references ---
 echo "[agents]"
 AGENT_COUNT=$(find "$REPO_ROOT/.claude/agents" -name "*.md" | wc -l | tr -d ' ')
-assert_eq "15" "$AGENT_COUNT" "Actual agent count is 15"
-assert_file_contains "$REPO_ROOT/README.md" "15 specialized agents" "README.md references 15 specialized agents"
-assert_file_contains "$REPO_ROOT/QUICK-START.md" "15 Specialized Agents" "QUICK-START.md references 15 Specialized Agents"
+assert_eq "16" "$AGENT_COUNT" "Actual agent count is 16"
+assert_file_contains "$REPO_ROOT/README.md" "16 specialized agents" "README.md references 16 specialized agents"
+assert_file_contains "$REPO_ROOT/QUICK-START.md" "16 Specialized Agents" "QUICK-START.md references 16 Specialized Agents"
 
 # --- Command count cross-references ---
 echo "[commands]"
 CMD_COUNT=$(find "$REPO_ROOT/.claude/commands" -name "*.md" | wc -l | tr -d ' ')
-assert_eq "29" "$CMD_COUNT" "Actual command count is 29"
-assert_file_contains "$REPO_ROOT/README.md" "29 workflow commands" "README.md references 29 workflow commands"
-assert_file_contains "$REPO_ROOT/QUICK-START.md" "29 Slash Commands" "QUICK-START.md references 29 Slash Commands"
+assert_eq "31" "$CMD_COUNT" "Actual command count is 31"
+assert_file_contains "$REPO_ROOT/README.md" "31 workflow commands" "README.md references 31 workflow commands"
+assert_file_contains "$REPO_ROOT/QUICK-START.md" "31 Slash Commands" "QUICK-START.md references 31 Slash Commands"
 
 # --- MCP server count cross-references ---
 echo "[mcp]"

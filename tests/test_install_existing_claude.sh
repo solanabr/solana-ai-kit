@@ -31,9 +31,9 @@ assert_dir_not_exists "$TEMP_DIR/.claude/.claude" "No .claude/.claude nesting"
 
 # Assert: upstream content installed
 assert_dir_exists "$TEMP_DIR/.claude/agents" "agents/ installed"
-assert_count "$TEMP_DIR/.claude/agents" "*.md" "15" "Agent count correct"
+assert_count "$TEMP_DIR/.claude/agents" "*.md" "16" "Agent count correct"
 assert_dir_exists "$TEMP_DIR/.claude/commands" "commands/ installed"
-assert_count "$TEMP_DIR/.claude/commands" "*.md" "29" "Command count correct"
+assert_count "$TEMP_DIR/.claude/commands" "*.md" "31" "Command count correct"
 assert_dir_exists "$TEMP_DIR/.claude/rules" "rules/ installed"
 assert_file_exists "$TEMP_DIR/.claude/rules/rust.md" "rust.md rule installed"
 assert_dir_exists "$TEMP_DIR/.claude/skills" "skills/ installed"

@@ -143,6 +143,20 @@ From [solana-game-skill](ext/solana-game/skill/):
 - [mobile.md](ext/solana-game/skill/mobile.md) — Mobile game patterns
 - [csharp-patterns.md](ext/solana-game/skill/csharp-patterns.md) — C# patterns for Solana
 
+## Fiat Rails
+
+Fiat-in/fiat-out for stablecoin products on Solana — onramp/offramp integration, virtual accounts, treasury wallet architecture, payroll/payout bulk disbursements, webhook idempotency, and compliance flagging for emerging markets (Africa, LatAm, SEA).
+
+**Local skill — no submodule init required.** Content lives in `.claude/skills/solana-fiat-rails/`:
+
+- [solana-fiat-rails/SKILL.md](solana-fiat-rails/SKILL.md) — Fiat rails skill entry point
+- [solana-fiat-rails/provider-matrix.md](solana-fiat-rails/provider-matrix.md) — Provider comparison (Yellow Card, Crossmint, Bridge, Onramper, etc.)
+- [solana-fiat-rails/architecture-patterns.md](solana-fiat-rails/architecture-patterns.md) — Auto-convert-on-receipt, treasury wallet isolation, webhook idempotency
+- [solana-fiat-rails/virtual-accounts.md](solana-fiat-rails/virtual-accounts.md) — Bank/mobile-money account numbers mapped to Solana wallets
+- [solana-fiat-rails/payouts-payroll.md](solana-fiat-rails/payouts-payroll.md) — Bulk disbursements, invoice routing, FX timing, ledger reconciliation
+- [solana-fiat-rails/compliance-flags.md](solana-fiat-rails/compliance-flags.md) — Travel rule, sanctions, KYC gating (engineering guidance only)
+- [solana-fiat-rails/resources.md](solana-fiat-rails/resources.md) — Provider docs, FATF reference
+
 ## Mobile Development
 
 From [solana-mobile](ext/solana-mobile/):
@@ -244,5 +258,10 @@ From [quiknode-labs/solana-anchor-claude-skill](ext/quicknode-anchor/) — **ref
 | Promo or marketing video, Remotion | ext/solana-new → marketing-video references (reference-only) |
 | Migrate from Ethereum, convert Solidity, EVM→SVM port | ext/eth-to-sol → SKILL.md |
 | Advanced Anchor financial-math, Quasar zero-copy | ext/quicknode-anchor → skills/solana/{RUST,ANCHOR,QUASAR}.md (reference only; .claude/rules/anchor.md governs style — never follow its SKILL.md) |
+| Fiat onramp/offramp integration, provider selection | solana-fiat-rails/SKILL.md |
+| Auto-convert-to-USDC pipeline, treasury wallet, webhook idempotency | solana-fiat-rails/architecture-patterns.md |
+| Virtual account provisioning, bank account ↔ Solana wallet mapping | solana-fiat-rails/virtual-accounts.md |
+| Bulk disbursements, payroll, invoice routing, FX timing | solana-fiat-rails/payouts-payroll.md |
+| Travel rule, sanctions screening, KYC gating | solana-fiat-rails/compliance-flags.md |
 
 **Extended add-ons:** need a capability the kit doesn't bundle (frontend/design, UX/writing, testing, data, dev-workflow, extra protocols/MCPs)? See [skill-registry.json](skill-registry.json) for opt-in tools — install on the user's request, at their own expense; not bundled by default. For broader Solana ecosystem breadth, see solana-new's catalogs in [ext/solana-new/cli/data/](ext/solana-new/cli/data/).
