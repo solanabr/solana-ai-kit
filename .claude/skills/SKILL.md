@@ -1,6 +1,6 @@
 ---
 name: solana-dev
-description: Unified skill hub for Solana development. Routes to external submodule skills (solana-foundation, sendai, solana-game, trailofbits, cloudflare, qedgen, colosseum, solana-new, ghostsecurity, defending-code) and local skills. Progressive disclosure — read only what you need.
+description: Unified skill hub for Solana development. Routes to external submodule skills (solana-foundation, sendai, solana-game, trailofbits, cloudflare, qedgen, colosseum, solana-new, ghostsecurity, defending-code, sign-safe) and local skills. Progressive disclosure — read only what you need.
 user-invocable: true
 ---
 
@@ -113,6 +113,12 @@ From [Anthropic defending-code](ext/defending-code/) — vuln-discovery referenc
 - [threat-model/](ext/defending-code/.claude/skills/threat-model/), [vuln-scan/](ext/defending-code/.claude/skills/vuln-scan/), [triage/](ext/defending-code/.claude/skills/triage/) (FP-reducing methodology), [patch/](ext/defending-code/.claude/skills/patch/)
 - [docs/](ext/defending-code/docs/) — pipeline, triage, and security methodology papers
 
+## Signing-Time Safety (Pre-Sign Gate)
+
+From [sign-safe](ext/sign-safe/skill/SKILL.md) — offline, deterministic transaction-safety gate (complements the program-source auditors above; this one reviews the bytes you are about to sign):
+
+- [ext/sign-safe/skill/SKILL.md](ext/sign-safe/skill/SKILL.md) — Decode an opaque base64 transaction/message (legacy + v0/ALT), classify danger primitives (SetAuthority, BPF upgrade, durable nonce, delegate, large outflow, Token-2022 traps), compute signer-perspective outflow, and emit a **SIGN / HOLD / REJECT** verdict + `verdict.json` for autonomous-agent gating. Pre-signature and fail-closed — NOT a program audit (use ext/solana-dev → security.md or `/audit-solana`) and NOT a landed-tx debugger (`/debug-user-tx`). Motivated by the 2026 Drift blind-signing / durable-nonce incident.
+
 ## Formal Verification
 
 From [QEDGen](ext/qedgen/):
@@ -214,6 +220,7 @@ From [quiknode-labs/solana-anchor-claude-skill](ext/quicknode-anchor/) — **ref
 | CU optimization, Pinocchio | ext/solana-dev → programs/pinocchio.md |
 | Unit testing, CU benchmarks | ext/solana-dev → testing.md (MCP available: `surfpool mcp` for agent-driven local-validator / mainnet-fork control) |
 | Security review, audit | ext/solana-dev → security.md + ext/trailofbits |
+| Is this tx safe to sign? decode a base64 tx, blind-signing, Squads proposal review | ext/sign-safe → skill/SKILL.md |
 | Backend API, indexer | backend-async.md |
 | Deploy to devnet/mainnet | deployment.md |
 | Jupiter swaps, lend, perps, trigger, DCA | ext/jupiter → integrating-jupiter/SKILL.md (official) |
