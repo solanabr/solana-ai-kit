@@ -2,6 +2,14 @@
 
 All notable changes to solana-ai-kit.
 
+## [2.0.3] - 2026-06-22
+
+### Added
+- **solana-fiat-rails-skill** — fiat-in/fiat-out layer for stablecoin products on Solana: onramp/offramp provider integration (Yellow Card, Crossmint, Bridge, Onramper), auto-convert-on-receipt pipeline, treasury wallet isolation, virtual account provisioning, bulk payout/payroll batch design, webhook idempotency with reconciliation backstop, and compliance flagging (travel rule, sanctions, KYC). Local skill at `.claude/skills/solana-fiat-rails/` (+ `.gitmodules` entry for future submodule). See [solana-fiat-rails/SKILL.md](skills/solana-fiat-rails/SKILL.md).
+- **fiat-rails-engineer agent** — sonnet-tier agent for onramp/offramp integration, treasury architecture, and payout plumbing
+- **/integrate-onramp command** — 7-step workflow for integrating fiat onramp/offramp providers with Solana wallet flow
+- **/audit-money-flow command** — trace fiat→USDC→payout path for reconciliation gaps
+
 ## [2.0.2] - 2026-06-16
 
 ### Security

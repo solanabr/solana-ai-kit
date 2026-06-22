@@ -29,11 +29,11 @@ assert_json_valid "$TEMP_DIR/.claude/settings.json" "settings.json is valid JSON
 
 # Count agents
 AGENT_COUNT=$(find "$TEMP_DIR/.claude/agents" -name "*.md" | wc -l | tr -d ' ')
-assert_eq "15" "$AGENT_COUNT" "Agent count is 15"
+assert_eq "16" "$AGENT_COUNT" "Agent count is 16"
 
 # Count commands
 CMD_COUNT=$(find "$TEMP_DIR/.claude/commands" -name "*.md" | wc -l | tr -d ' ')
-assert_eq "29" "$CMD_COUNT" "Command count is 29"
+assert_eq "31" "$CMD_COUNT" "Command count is 31"
 
 # Check .gitignore was updated
 assert_file_exists "$TEMP_DIR/.gitignore" ".gitignore exists"

@@ -23,8 +23,8 @@ If you installed manually, remember to rename ./CLAUDE-solana.md back to ./CLAUD
 
 A complete `.claude/` configuration that turns Claude into a Solana development expert with:
 
-- **15 specialized agents** for different tasks (architecture, Anchor, Pinocchio, DeFi, tokens, frontend, mobile, backend, DevOps, QA, docs, games, Unity, learning, research)
-- **29 workflow commands** for building, testing, deploying, profiling, migrating, and committing
+- **16 specialized agents** for different tasks (architecture, Anchor, Pinocchio, DeFi, tokens, frontend, mobile, backend, DevOps, QA, docs, games, Unity, fiat rails, learning, research)
+- **31 workflow commands** for building, testing, deploying, profiling, migrating, committing, integrating onramps, and auditing money flow
 - **7 MCP server integrations** for on-chain data (Helius), Solana docs (solana-dev), library docs (Context7), browser automation (Playwright), context optimization (context-mode), persistent memory (memsearch), and local-validator / mainnet-fork control (Surfpool)
 - **Agent teams** for multi-step workflows (architect → engineer → QA)
 - **Progressive skill loading** that only loads context when needed (saves tokens)
@@ -56,7 +56,7 @@ cd /path/to/your-project && git submodule update --init --recursive
 /plugin install solana-ai-kit@stbr
 # Commands then namespace as /solana-ai-kit:<name>. The plugin is the CORE kit
 # (agents/commands/local skills/MCP/hooks); the curl one-liner (Option 1) is the
-# FULL install, adding rules + permissions/sandbox + the 18 ext/ submodules.
+# FULL install, adding rules + permissions/sandbox + the 19 ext/ submodules.
 # Details: see "Install as a Claude Code plugin" below.
 
 # Start Claude Code
@@ -98,13 +98,13 @@ solana-ai-kit is also its own Claude Code marketplace serving one **core plugin*
 /plugin install solana-ai-kit@stbr
 ```
 
-The plugin ships the **core kit**: the 15 agents, 29 commands, the local go-to-market + registry skills (idea-sprint, pitch-deck, hackathon), the 7 MCP servers, and the dev hooks (banner, formatter, pre-deploy/commit gates). Commands and skills are namespaced — `/deploy` becomes `/solana-ai-kit:deploy`.
+The plugin ships the **core kit**: the 16 agents, 31 commands, the local go-to-market + registry skills (idea-sprint, pitch-deck, hackathon, solana-fiat-rails), the 7 MCP servers, and the dev hooks (banner, formatter, pre-deploy/commit gates). Commands and skills are namespaced — `/deploy` becomes `/solana-ai-kit:deploy`.
 
 What the plugin **cannot** carry (Claude Code plugins are plain git clones — they can't init submodules or ship a permissions/sandbox policy), so these stay exclusive to the **full install** (`install.sh`):
 
 - the lazy-loaded `.claude/rules/*` code-style law (Rust, Anchor, Pinocchio, TypeScript, .NET)
 - the curated permissions allowlist + sandbox policy
-- the 18 `ext/` skill submodules (protocol, security, infra, ecosystem depth)
+- the 19 `ext/` skill submodules (protocol, security, infra, fiat rails, ecosystem depth)
 
 For protocol-skill depth in plugin form, add the upstream marketplaces instead (routing, not copying) — e.g. `/plugin marketplace add sendaifun/skills`, `ghostsecurity/skills`, `trailofbits/skills`, `cloudflare/skills`. The plugin's skill hub and `skill-registry.json` list the current targets.
 
@@ -132,6 +132,7 @@ The two paths are complementary: individuals wanting Solana agents/commands acro
 | `ext/helius` | [helius-labs/core-ai](https://github.com/helius-labs/core-ai) | Official Helius infra skill + unique SVM internals skill |
 | `ext/quicknode-anchor` | [quiknode-labs/solana-anchor-claude-skill](https://github.com/quiknode-labs/solana-anchor-claude-skill) | Anchor/financial-math/Quasar reference files (quarantined — refs only) |
 | `ext/eth-to-sol` | [solana-foundation/eth-to-sol-skill](https://github.com/solana-foundation/eth-to-sol-skill) | EVM/Solidity → Anchor two-pass porting |
+| `ext/solana-fiat-rails` | [solanabr/solana-fiat-rails-skill](https://github.com/solanabr/solana-fiat-rails-skill) | Fiat rails: onramp/offramp, treasury wallets, payroll, compliance |
 
 ### Agent Teams
 
@@ -237,11 +238,11 @@ See [`skill-registry.json`](.claude/skills/skill-registry.json) for the complete
 │   └── claude.yml                   # @claude mention responder (issues/PRs)
 └── .claude/
     ├── VERSION                  # Semver version (e.g. 2.0.0)
-    ├── agents/                  # 15 specialized agents
+    ├── agents/                  # 16 specialized agents
     ├── bin/
     │   ├── update.sh                # In-place update from upstream
     │   └── resync.sh                # Submodule resync script
-    ├── commands/                # 29 workflow commands
+    ├── commands/                # 31 workflow commands
     ├── skills/                  # Progressive-loading knowledge
     │   ├── SKILL.md                 # Unified hub routing to all skills
     │   ├── ext/                     # External skill submodules
@@ -262,11 +263,13 @@ See [`skill-registry.json`](.claude/skills/skill-registry.json) for the complete
     │   │   ├── metaplex/              # Official Metaplex (NFT, candy machine)
     │   │   ├── helius/                # Official Helius infra + SVM internals
     │   │   ├── quicknode-anchor/      # Anchor/Quasar reference files (quarantined)
-    │   │   └── eth-to-sol/            # EVM/Solidity → Anchor porting
+    │   │   ├── eth-to-sol/            # EVM/Solidity → Anchor porting
+    │   │   └── solana-fiat-rails/     # Fiat rails: onramp/offramp, treasury, payroll
     │   ├── skill-registry.json     # Opt-in add-on catalog (repos/skills/MCPs)
     │   ├── idea-sprint/             # Wrapper: find + validate crypto ideas (GTM)
     │   ├── pitch-deck/              # Wrapper: pitch decks for crypto projects (GTM)
     │   ├── hackathon/               # Wrapper: hackathon submissions + grants (GTM)
+    │   ├── solana-fiat-rails/       # Fiat rails: onramp/offramp, treasury, payroll
     │   ├── token-2022.md            # Token Extensions guide (local)
     │   ├── backend-async.md         # Axum/Tokio patterns (local)
     │   └── deployment.md            # Deployment workflows (local)
@@ -292,7 +295,9 @@ See [`skill-registry.json`](.claude/skills/skill-registry.json) for the complete
 | **game-architect** | Solana game design, Unity architecture, on-chain game state, PlaySolana | Opus |
 | **unity-engineer** | Unity/C# implementation, Solana.Unity-SDK, wallet integration, NFT display | Sonnet |
 | **solana-guide** | Learning, tutorials, concept explanations, progressive learning paths | Sonnet |
+| **fiat-rails-engineer** | Onramp/offramp integration, treasury wallet architecture, payout plumbing, compliance flagging | Sonnet |
 | **solana-researcher** | Ecosystem research, protocol investigation, SDK analysis | Sonnet |
+| **fiat-rails-engineer** | Onramp/offramp integration, treasury wallet architecture, payout plumbing, compliance flagging | Sonnet |
 
 ## Commands
 
@@ -325,6 +330,12 @@ See [`skill-registry.json`](.claude/skills/skill-registry.json) for the complete
 | `/deploy` | Deploy to devnet (always first) or mainnet |
 | `/migrate-web3` | Migrate from @solana/web3.js to @solana/kit |
 | `/generate-idl-client` | Generate typed clients from IDL (Codama/Shank) |
+
+### Fiat Rails
+| Command | Purpose |
+|---------|---------|
+| `/integrate-onramp` | Integrate fiat onramp/offramp provider with Solana wallet flow |
+| `/audit-money-flow` | Trace fiat → USDC → payout path for reconciliation gaps |
 
 ### Workflow & Setup
 | Command | Purpose |
