@@ -154,6 +154,7 @@ From [solana-payments-skill](ext/solana-payments/skill/):
 - [gasless.md](ext/solana-payments/skill/gasless.md) — Sponsored transactions for users without SOL
 - [merchant-server.md](ext/solana-payments/skill/merchant-server.md) — Order state machine, webhooks, reconciliation, idempotency
 - [frontend.md](ext/solana-payments/skill/frontend.md) — Checkout UX, QR rendering, polling, mobile deep links
+- [kit-interop.md](ext/solana-payments/skill/kit-interop.md) — @solana/pay is kit-native; bridging legacy web3.js code into it
 
 ## Mobile Development
 
