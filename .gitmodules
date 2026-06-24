@@ -52,3 +52,18 @@
 [submodule ".claude/skills/ext/eth-to-sol"]
 	path = .claude/skills/ext/eth-to-sol
 	url = https://github.com/solana-foundation/eth-to-sol-skill
+[submodule ".claude/skills/ext/solana-incident-response"]
+	path = .claude/skills/ext/solana-incident-response
+	url = https://github.com/Stan-lee13/solana-incident-response-skill.git
+[submodule ".claude/skills/ext/solana-depin-builder"]
+	path = .claude/skills/ext/solana-depin-builder
+	url = https://github.com/Stan-lee13/solana-depin-builder-skill.git
+[submodule ".claude/skills/ext/solana-observability"]
+	path = .claude/skills/ext/solana-observability
+	url = https://github.com/Stan-lee13/Solana-observabilty-skill.git
+[submodule ".claude/skills/ext/solana-ux"]
+	path = .claude/skills/ext/solana-ux
+	url = https://github.com/Stan-lee13/solana-ux-skill.git
+[submodule ".claude/skills/ext/solana-token-launch"]
+	path = .claude/skills/ext/solana-token-launch
+	url = https://github.com/Stan-lee13/solana-token-launch-skill.git

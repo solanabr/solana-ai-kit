@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "updated": "2026-06-15",
+  "updated": "2026-06-24",
   "entries": [
     {
       "id": "anthropic-skills",
@@ -9,13 +9,29 @@
       "domain": "productivity",
       "description": "Anthropic's official skill collection; net-new sub-skills not in the bundled office set: theme-factory, mcp-builder, webapp-testing, canvas-design, algorithmic-art, web-artifacts-builder.",
       "source": "https://github.com/anthropics/skills",
-      "install": { "method": "plugin-marketplace", "command": "/plugin marketplace add anthropics/skills", "env": [] },
+      "install": {
+        "method": "plugin-marketplace",
+        "command": "/plugin marketplace add anthropics/skills",
+        "env": []
+      },
       "license": "mixed: example-skills Apache-2.0; docx/pdf/pptx/xlsx source-available (not OSS)",
       "maintainer": "anthropics",
-      "signal": { "stars": 151000, "last_commit": "2026-06-09", "reputability": "official" },
+      "signal": {
+        "stars": 151000,
+        "last_commit": "2026-06-09",
+        "reputability": "official"
+      },
       "default_installed": false,
-      "safety": "clean (curl references are Claude-API doc examples, not installers); doc set is source-available — note the license split",
-      "tags": ["theme-factory", "mcp-builder", "webapp-testing", "canvas-design", "algorithmic-art", "web-artifacts-builder", "official"]
+      "safety": "clean (curl references are Claude-API doc examples, not installers); doc set is source-available \u2014 note the license split",
+      "tags": [
+        "theme-factory",
+        "mcp-builder",
+        "webapp-testing",
+        "canvas-design",
+        "algorithmic-art",
+        "web-artifacts-builder",
+        "official"
+      ]
     },
     {
       "id": "anthropic-claude-code-plugins",
@@ -24,13 +40,27 @@
       "domain": "dev-workflow",
       "description": "Anthropic-authored Claude Code plugins: code-review, pr-review-toolkit, feature-dev, security-guidance. Complementary to the kit's /diff-review + cso/audit-infra (note the overlap).",
       "source": "https://github.com/anthropics/claude-code",
-      "install": { "method": "plugin-marketplace", "command": "/plugin marketplace add anthropics/claude-code", "env": [] },
+      "install": {
+        "method": "plugin-marketplace",
+        "command": "/plugin marketplace add anthropics/claude-code",
+        "env": []
+      },
       "license": "Anthropic-commercial-ToS (not OSI)",
       "maintainer": "anthropics",
-      "signal": { "stars": 132567, "last_commit": "2026-06-15", "reputability": "official" },
+      "signal": {
+        "stars": 132567,
+        "last_commit": "2026-06-15",
+        "reputability": "official"
+      },
       "default_installed": false,
       "safety": "clean (Anthropic-authored; security-guidance is itself a safety hook); overlaps the kit's /diff-review + cso/audit-infra",
-      "tags": ["code-review", "pr-review", "feature-dev", "security-guidance", "official"]
+      "tags": [
+        "code-review",
+        "pr-review",
+        "feature-dev",
+        "security-guidance",
+        "official"
+      ]
     },
     {
       "id": "wshobson-agents",
@@ -39,13 +69,26 @@
       "domain": "dev-workflow",
       "description": "Multi-harness agent/command/skill plugin marketplace for general dev workflows.",
       "source": "https://github.com/wshobson/agents",
-      "install": { "method": "plugin-marketplace", "command": "/plugin marketplace add wshobson/agents", "env": [] },
+      "install": {
+        "method": "plugin-marketplace",
+        "command": "/plugin marketplace add wshobson/agents",
+        "env": []
+      },
       "license": "MIT",
       "maintainer": "wshobson",
-      "signal": { "stars": 36800, "last_commit": "2026-06-15", "reputability": "individual" },
+      "signal": {
+        "stars": 36800,
+        "last_commit": "2026-06-15",
+        "reputability": "individual"
+      },
       "default_installed": false,
       "safety": "clean",
-      "tags": ["agents", "commands", "workflow", "marketplace"]
+      "tags": [
+        "agents",
+        "commands",
+        "workflow",
+        "marketplace"
+      ]
     },
     {
       "id": "get-shit-done",
@@ -54,13 +97,27 @@
       "domain": "dev-workflow",
       "description": "Spec-driven / meta-prompting workflow system (agents + commands).",
       "source": "https://github.com/gsd-build/get-shit-done",
-      "install": { "method": "git-clone", "command": "git clone https://github.com/gsd-build/get-shit-done", "env": [] },
+      "install": {
+        "method": "git-clone",
+        "command": "git clone https://github.com/gsd-build/get-shit-done",
+        "env": []
+      },
       "license": "MIT",
       "maintainer": "gsd-build",
-      "signal": { "stars": 64000, "last_commit": "2026-05-31", "reputability": "org" },
+      "signal": {
+        "stars": 64000,
+        "last_commit": "2026-05-31",
+        "reputability": "org"
+      },
       "default_installed": false,
       "safety": "clean (star count is web-search-inflated; treat as a floor)",
-      "tags": ["spec-driven", "meta-prompting", "workflow", "agents", "commands"]
+      "tags": [
+        "spec-driven",
+        "meta-prompting",
+        "workflow",
+        "agents",
+        "commands"
+      ]
     },
     {
       "id": "get-shit-pretty",
@@ -69,13 +126,32 @@
       "domain": "frontend-design",
       "description": "Design-engineering system for AI coding agents (the design counterpart to GSD): 45+ skills + 13 sub-agents covering brand strategy, identity, design systems, UI build, accessibility, and critique via a dual-diamond pipeline, with 35 style presets. Not Solana-specific.",
       "source": "https://github.com/jubscodes/get-shit-pretty",
-      "install": { "method": "npx", "command": "pnpm dlx get-shit-pretty   # or: bunx get-shit-pretty", "env": ["FIGMA_ACCESS_TOKEN (optional, for the bundled Figma MCP)"] },
+      "install": {
+        "method": "npx",
+        "command": "pnpm dlx get-shit-pretty   # or: bunx get-shit-pretty",
+        "env": [
+          "FIGMA_ACCESS_TOKEN (optional, for the bundled Figma MCP)"
+        ]
+      },
       "license": "MIT",
       "maintainer": "jubscodes",
-      "signal": { "stars": 43, "last_commit": "2026-06-07", "reputability": "individual" },
+      "signal": {
+        "stars": 43,
+        "last_commit": "2026-06-07",
+        "reputability": "individual"
+      },
       "default_installed": false,
-      "safety": "caution: ships auto-running Claude Code hooks (gsp/hooks/hooks.json) + bin/install.js merges hooks+statusline into settings.json — review before installing; otherwise MIT, no telemetry/curl|sh",
-      "tags": ["design", "branding", "design-systems", "ui-polish", "frontend", "accessibility", "claude-code", "hooks"]
+      "safety": "caution: ships auto-running Claude Code hooks (gsp/hooks/hooks.json) + bin/install.js merges hooks+statusline into settings.json \u2014 review before installing; otherwise MIT, no telemetry/curl|sh",
+      "tags": [
+        "design",
+        "branding",
+        "design-systems",
+        "ui-polish",
+        "frontend",
+        "accessibility",
+        "claude-code",
+        "hooks"
+      ]
     },
     {
       "id": "dev-browser",
@@ -84,13 +160,26 @@
       "domain": "testing-qa",
       "description": "Gives the agent a real web browser for frontend QA, testing, and scraping.",
       "source": "https://github.com/SawyerHood/dev-browser",
-      "install": { "method": "submodule", "command": "git submodule add https://github.com/SawyerHood/dev-browser .claude/skills/ext/dev-browser", "env": [] },
+      "install": {
+        "method": "submodule",
+        "command": "git submodule add https://github.com/SawyerHood/dev-browser .claude/skills/ext/dev-browser",
+        "env": []
+      },
       "license": "MIT",
       "maintainer": "SawyerHood",
-      "signal": { "stars": 6300, "last_commit": "2026-06-05", "reputability": "individual" },
+      "signal": {
+        "stars": 6300,
+        "last_commit": "2026-06-05",
+        "reputability": "individual"
+      },
       "default_installed": false,
       "safety": "clean",
-      "tags": ["browser", "testing", "qa", "frontend"]
+      "tags": [
+        "browser",
+        "testing",
+        "qa",
+        "frontend"
+      ]
     },
     {
       "id": "ios-simulator-skill",
@@ -99,13 +188,27 @@
       "domain": "testing-qa",
       "description": "xcodebuild wrapper to drive the iOS Simulator; pairs with the kit's build-mobile.",
       "source": "https://github.com/conorluddy/ios-simulator-skill",
-      "install": { "method": "submodule", "command": "git submodule add https://github.com/conorluddy/ios-simulator-skill .claude/skills/ext/ios-simulator", "env": [] },
+      "install": {
+        "method": "submodule",
+        "command": "git submodule add https://github.com/conorluddy/ios-simulator-skill .claude/skills/ext/ios-simulator",
+        "env": []
+      },
       "license": "MIT",
       "maintainer": "conorluddy",
-      "signal": { "stars": 1100, "last_commit": "2026-06-14", "reputability": "individual" },
+      "signal": {
+        "stars": 1100,
+        "last_commit": "2026-06-14",
+        "reputability": "individual"
+      },
       "default_installed": false,
       "safety": "clean",
-      "tags": ["ios", "simulator", "xcode", "mobile", "testing"]
+      "tags": [
+        "ios",
+        "simulator",
+        "xcode",
+        "mobile",
+        "testing"
+      ]
     },
     {
       "id": "frontend-slides",
@@ -114,13 +217,27 @@
       "domain": "frontend-design",
       "description": "Build animation-rich HTML slide decks (synergy with the kit's pitch-deck).",
       "source": "https://github.com/zarazhangrui/frontend-slides",
-      "install": { "method": "submodule", "command": "git submodule add https://github.com/zarazhangrui/frontend-slides .claude/skills/ext/frontend-slides", "env": [] },
+      "install": {
+        "method": "submodule",
+        "command": "git submodule add https://github.com/zarazhangrui/frontend-slides .claude/skills/ext/frontend-slides",
+        "env": []
+      },
       "license": "MIT",
       "maintainer": "zarazhangrui",
-      "signal": { "stars": 21785, "last_commit": "2026-06-13", "reputability": "individual" },
+      "signal": {
+        "stars": 21785,
+        "last_commit": "2026-06-13",
+        "reputability": "individual"
+      },
       "default_installed": false,
       "safety": "clean",
-      "tags": ["slides", "presentation", "html", "animation", "frontend"]
+      "tags": [
+        "slides",
+        "presentation",
+        "html",
+        "animation",
+        "frontend"
+      ]
     },
     {
       "id": "anydesign",
@@ -129,13 +246,26 @@
       "domain": "frontend-design",
       "description": "Turn an image / URL / Figma reference into design.md design tokens; closest genre-mate to animation-principles.",
       "source": "https://github.com/uxKero/anydesign",
-      "install": { "method": "submodule", "command": "git submodule add https://github.com/uxKero/anydesign .claude/skills/ext/anydesign", "env": [] },
+      "install": {
+        "method": "submodule",
+        "command": "git submodule add https://github.com/uxKero/anydesign .claude/skills/ext/anydesign",
+        "env": []
+      },
       "license": "MIT",
       "maintainer": "uxKero",
-      "signal": { "stars": 109, "last_commit": "2026-06-11", "reputability": "individual" },
+      "signal": {
+        "stars": 109,
+        "last_commit": "2026-06-11",
+        "reputability": "individual"
+      },
       "default_installed": false,
       "safety": "clean",
-      "tags": ["design-tokens", "figma", "ui", "frontend"]
+      "tags": [
+        "design-tokens",
+        "figma",
+        "ui",
+        "frontend"
+      ]
     },
     {
       "id": "webgpu-claude-skill",
@@ -144,13 +274,26 @@
       "domain": "frontend-design",
       "description": "WebGPU + Three.js graphics skill for the browser.",
       "source": "https://github.com/dgreenheck/webgpu-claude-skill",
-      "install": { "method": "submodule", "command": "git submodule add https://github.com/dgreenheck/webgpu-claude-skill .claude/skills/ext/webgpu", "env": [] },
+      "install": {
+        "method": "submodule",
+        "command": "git submodule add https://github.com/dgreenheck/webgpu-claude-skill .claude/skills/ext/webgpu",
+        "env": []
+      },
       "license": "none/unspecified",
       "maintainer": "dgreenheck",
-      "signal": { "stars": 1000, "last_commit": "2026-04-10", "reputability": "individual" },
+      "signal": {
+        "stars": 1000,
+        "last_commit": "2026-04-10",
+        "reputability": "individual"
+      },
       "default_installed": false,
-      "safety": "clean (no license — do not vendor/redistribute until clarified)",
-      "tags": ["webgpu", "three.js", "graphics", "frontend"]
+      "safety": "clean (no license \u2014 do not vendor/redistribute until clarified)",
+      "tags": [
+        "webgpu",
+        "three.js",
+        "graphics",
+        "frontend"
+      ]
     },
     {
       "id": "swiftui-design-skill",
@@ -159,13 +302,27 @@
       "domain": "frontend-design",
       "description": "Anti-AI-slop SwiftUI design rules for Apple/mobile builders.",
       "source": "https://github.com/Wholiver/swiftui-design-skill",
-      "install": { "method": "submodule", "command": "git submodule add https://github.com/Wholiver/swiftui-design-skill .claude/skills/ext/swiftui-design", "env": [] },
+      "install": {
+        "method": "submodule",
+        "command": "git submodule add https://github.com/Wholiver/swiftui-design-skill .claude/skills/ext/swiftui-design",
+        "env": []
+      },
       "license": "MIT",
       "maintainer": "Wholiver",
-      "signal": { "stars": 138, "last_commit": "2026-05-01", "reputability": "individual" },
+      "signal": {
+        "stars": 138,
+        "last_commit": "2026-05-01",
+        "reputability": "individual"
+      },
       "default_installed": false,
       "safety": "clean",
-      "tags": ["swiftui", "design", "apple", "mobile", "ios"]
+      "tags": [
+        "swiftui",
+        "design",
+        "apple",
+        "mobile",
+        "ios"
+      ]
     },
     {
       "id": "animation-principles",
@@ -174,13 +331,26 @@
       "domain": "frontend-design",
       "description": "Genre-template skill for motion / animation design principles (pure prose).",
       "source": "https://github.com/dylantarre/animation-principles",
-      "install": { "method": "submodule", "command": "git submodule add https://github.com/dylantarre/animation-principles .claude/skills/ext/animation-principles", "env": [] },
+      "install": {
+        "method": "submodule",
+        "command": "git submodule add https://github.com/dylantarre/animation-principles .claude/skills/ext/animation-principles",
+        "env": []
+      },
       "license": "MIT",
       "maintainer": "dylantarre",
-      "signal": { "stars": 47, "last_commit": "2025-12-30", "reputability": "individual" },
+      "signal": {
+        "stars": 47,
+        "last_commit": "2025-12-30",
+        "reputability": "individual"
+      },
       "default_installed": false,
-      "safety": "clean — pure-prose, zero scripts/installers; stale (~Dec 2025), unmaintained",
-      "tags": ["animation", "motion", "ui", "frontend"]
+      "safety": "clean \u2014 pure-prose, zero scripts/installers; stale (~Dec 2025), unmaintained",
+      "tags": [
+        "animation",
+        "motion",
+        "ui",
+        "frontend"
+      ]
     },
     {
       "id": "emilkowalski-skill",
@@ -189,13 +359,26 @@
       "domain": "frontend-design",
       "description": "Motion / interaction design skill from a renowned motion author (Sonner, Vaul).",
       "source": "https://github.com/emilkowalski/skill",
-      "install": { "method": "submodule", "command": "git submodule add https://github.com/emilkowalski/skill .claude/skills/ext/emilkowalski-skill", "env": [] },
+      "install": {
+        "method": "submodule",
+        "command": "git submodule add https://github.com/emilkowalski/skill .claude/skills/ext/emilkowalski-skill",
+        "env": []
+      },
       "license": "none/unspecified",
       "maintainer": "emilkowalski",
-      "signal": { "stars": 2400, "last_commit": "2026-03-25", "reputability": "individual" },
+      "signal": {
+        "stars": 2400,
+        "last_commit": "2026-03-25",
+        "reputability": "individual"
+      },
       "default_installed": false,
-      "safety": "clean (no license — do not vendor/redistribute until clarified); stale (~Mar 2026)",
-      "tags": ["motion", "animation", "interaction", "frontend"]
+      "safety": "clean (no license \u2014 do not vendor/redistribute until clarified); stale (~Mar 2026)",
+      "tags": [
+        "motion",
+        "animation",
+        "interaction",
+        "frontend"
+      ]
     },
     {
       "id": "brand-design-md",
@@ -204,13 +387,25 @@
       "domain": "frontend-design",
       "description": "Brand-design reference in markdown.",
       "source": "https://github.com/zephyrwang6/brand-design-md",
-      "install": { "method": "submodule", "command": "git submodule add https://github.com/zephyrwang6/brand-design-md .claude/skills/ext/brand-design-md", "env": [] },
+      "install": {
+        "method": "submodule",
+        "command": "git submodule add https://github.com/zephyrwang6/brand-design-md .claude/skills/ext/brand-design-md",
+        "env": []
+      },
       "license": "none/unspecified",
       "maintainer": "zephyrwang6",
-      "signal": { "stars": 88, "last_commit": "2026-04-10", "reputability": "individual" },
+      "signal": {
+        "stars": 88,
+        "last_commit": "2026-04-10",
+        "reputability": "individual"
+      },
       "default_installed": false,
-      "safety": "clean (no license — do not vendor/redistribute until clarified); overlaps solana-new brand-design",
-      "tags": ["branding", "design", "frontend"]
+      "safety": "clean (no license \u2014 do not vendor/redistribute until clarified); overlaps solana-new brand-design",
+      "tags": [
+        "branding",
+        "design",
+        "frontend"
+      ]
     },
     {
       "id": "ux-writing-skill",
@@ -219,13 +414,26 @@
       "domain": "ux-writing",
       "description": "Systematic UX microcopy: onboarding, error, empty-state and button copy with quality standards.",
       "source": "https://github.com/content-designer/ux-writing-skill",
-      "install": { "method": "submodule", "command": "git submodule add https://github.com/content-designer/ux-writing-skill .claude/skills/ext/ux-writing", "env": [] },
+      "install": {
+        "method": "submodule",
+        "command": "git submodule add https://github.com/content-designer/ux-writing-skill .claude/skills/ext/ux-writing",
+        "env": []
+      },
       "license": "MIT",
       "maintainer": "content-designer",
-      "signal": { "stars": 112, "last_commit": "2026-05-26", "reputability": "individual" },
+      "signal": {
+        "stars": 112,
+        "last_commit": "2026-05-26",
+        "reputability": "individual"
+      },
       "default_installed": false,
       "safety": "clean (one build-skill.sh builder, not runtime)",
-      "tags": ["ux-writing", "microcopy", "content-design", "onboarding"]
+      "tags": [
+        "ux-writing",
+        "microcopy",
+        "content-design",
+        "onboarding"
+      ]
     },
     {
       "id": "design-skills",
@@ -234,13 +442,27 @@
       "domain": "ux-writing",
       "description": "UX-process breadth: 10 skills incl. ux-research, design-critique, journey-mapping, a11y-audit.",
       "source": "https://github.com/cuellarfr/design-skills",
-      "install": { "method": "submodule", "command": "git submodule add https://github.com/cuellarfr/design-skills .claude/skills/ext/design-skills", "env": [] },
+      "install": {
+        "method": "submodule",
+        "command": "git submodule add https://github.com/cuellarfr/design-skills .claude/skills/ext/design-skills",
+        "env": []
+      },
       "license": "MIT",
       "maintainer": "cuellarfr",
-      "signal": { "stars": 31, "last_commit": "2026-05-04", "reputability": "individual" },
+      "signal": {
+        "stars": 31,
+        "last_commit": "2026-05-04",
+        "reputability": "individual"
+      },
       "default_installed": false,
       "safety": "clean",
-      "tags": ["ux-research", "design-critique", "journey-mapping", "accessibility", "ux"]
+      "tags": [
+        "ux-research",
+        "design-critique",
+        "journey-mapping",
+        "accessibility",
+        "ux"
+      ]
     },
     {
       "id": "scientific-agent-skills",
@@ -249,13 +471,26 @@
       "domain": "data",
       "description": "140 science skills + 100 database connectors; best-in-class for data-heavy builders.",
       "source": "https://github.com/K-Dense-AI/scientific-agent-skills",
-      "install": { "method": "submodule", "command": "git submodule add https://github.com/K-Dense-AI/scientific-agent-skills .claude/skills/ext/scientific-agent-skills", "env": [] },
+      "install": {
+        "method": "submodule",
+        "command": "git submodule add https://github.com/K-Dense-AI/scientific-agent-skills .claude/skills/ext/scientific-agent-skills",
+        "env": []
+      },
       "license": "MIT",
       "maintainer": "K-Dense-AI",
-      "signal": { "stars": 28300, "last_commit": "2026-06-15", "reputability": "org" },
+      "signal": {
+        "stars": 28300,
+        "last_commit": "2026-06-15",
+        "reputability": "org"
+      },
       "default_installed": false,
       "safety": "clean",
-      "tags": ["science", "data", "database-connectors", "research"]
+      "tags": [
+        "science",
+        "data",
+        "database-connectors",
+        "research"
+      ]
     },
     {
       "id": "claude-d3js-skill",
@@ -264,13 +499,26 @@
       "domain": "data",
       "description": "D3 data-visualization skill for dashboards.",
       "source": "https://github.com/chrisvoncsefalvay/claude-d3js-skill",
-      "install": { "method": "submodule", "command": "git submodule add https://github.com/chrisvoncsefalvay/claude-d3js-skill .claude/skills/ext/d3js", "env": [] },
+      "install": {
+        "method": "submodule",
+        "command": "git submodule add https://github.com/chrisvoncsefalvay/claude-d3js-skill .claude/skills/ext/d3js",
+        "env": []
+      },
       "license": "none/unspecified",
       "maintainer": "chrisvoncsefalvay",
-      "signal": { "stars": 192, "last_commit": "2025-10-18", "reputability": "individual" },
+      "signal": {
+        "stars": 192,
+        "last_commit": "2025-10-18",
+        "reputability": "individual"
+      },
       "default_installed": false,
-      "safety": "clean (no license — do not vendor/redistribute until clarified); stale (~Oct 2025)",
-      "tags": ["d3", "data-viz", "dashboards", "data"]
+      "safety": "clean (no license \u2014 do not vendor/redistribute until clarified); stale (~Oct 2025)",
+      "tags": [
+        "d3",
+        "data-viz",
+        "dashboards",
+        "data"
+      ]
     },
     {
       "id": "claude-skills-marketplace",
@@ -279,13 +527,27 @@
       "domain": "dev-workflow",
       "description": "Plugin marketplace: git + test + code-review pack.",
       "source": "https://github.com/mhattingpete/claude-skills-marketplace",
-      "install": { "method": "plugin-marketplace", "command": "/plugin marketplace add mhattingpete/claude-skills-marketplace", "env": [] },
+      "install": {
+        "method": "plugin-marketplace",
+        "command": "/plugin marketplace add mhattingpete/claude-skills-marketplace",
+        "env": []
+      },
       "license": "Apache-2.0",
       "maintainer": "mhattingpete",
-      "signal": { "stars": 607, "last_commit": "2026-03-06", "reputability": "individual" },
+      "signal": {
+        "stars": 607,
+        "last_commit": "2026-03-06",
+        "reputability": "individual"
+      },
       "default_installed": false,
       "safety": "clean; borderline stale (~Mar 2026)",
-      "tags": ["git", "testing", "code-review", "marketplace", "workflow"]
+      "tags": [
+        "git",
+        "testing",
+        "code-review",
+        "marketplace",
+        "workflow"
+      ]
     },
     {
       "id": "playwright-skill",
@@ -294,13 +556,27 @@
       "domain": "testing-qa",
       "description": "De-facto Playwright skill for browser automation and webapp testing.",
       "source": "https://github.com/lackeyjb/playwright-skill",
-      "install": { "method": "submodule", "command": "git submodule add https://github.com/lackeyjb/playwright-skill .claude/skills/ext/playwright", "env": [] },
+      "install": {
+        "method": "submodule",
+        "command": "git submodule add https://github.com/lackeyjb/playwright-skill .claude/skills/ext/playwright",
+        "env": []
+      },
       "license": "MIT",
       "maintainer": "lackeyjb",
-      "signal": { "stars": 2800, "last_commit": "2025-12-19", "reputability": "individual" },
+      "signal": {
+        "stars": 2800,
+        "last_commit": "2025-12-19",
+        "reputability": "individual"
+      },
       "default_installed": false,
       "safety": "clean; stale (~Dec 2025)",
-      "tags": ["playwright", "browser", "testing", "qa", "e2e"]
+      "tags": [
+        "playwright",
+        "browser",
+        "testing",
+        "qa",
+        "e2e"
+      ]
     },
     {
       "id": "vercel-plugin",
@@ -309,28 +585,59 @@
       "domain": "frontend-design",
       "description": "Full Vercel plugin: 28 skills + 3 agents + official read-only Vercel MCP (Next.js/React/AI-SDK frontend bundle).",
       "source": "https://github.com/vercel/vercel-plugin",
-      "install": { "method": "plugin-marketplace", "command": "/plugin marketplace add vercel/vercel-plugin", "env": ["VERCEL_PLUGIN_TELEMETRY=off (opt-out of default telemetry)"] },
+      "install": {
+        "method": "plugin-marketplace",
+        "command": "/plugin marketplace add vercel/vercel-plugin",
+        "env": [
+          "VERCEL_PLUGIN_TELEMETRY=off (opt-out of default telemetry)"
+        ]
+      },
       "license": "Apache-2.0",
       "maintainer": "vercel",
-      "signal": { "stars": 190, "last_commit": "2026-06-15", "reputability": "org" },
+      "signal": {
+        "stars": 190,
+        "last_commit": "2026-06-15",
+        "reputability": "org"
+      },
       "default_installed": false,
       "safety": "caution: telemetry ON by default (anonymized DAU pings, no content); opt-out VERCEL_PLUGIN_TELEMETRY=off",
-      "tags": ["vercel", "nextjs", "react", "ai-sdk", "frontend", "deployment"]
+      "tags": [
+        "vercel",
+        "nextjs",
+        "react",
+        "ai-sdk",
+        "frontend",
+        "deployment"
+      ]
     },
     {
       "id": "meteora-sdk-skill",
       "name": "Meteora SDK Skill",
       "type": "skill",
       "domain": "solana-defi",
-      "description": "Meteora DLMM SDK-depth skill (net-new vs solana-new; sendai already ships a meteora skill — add only for SDK-level depth).",
+      "description": "Meteora DLMM SDK-depth skill (net-new vs solana-new; sendai already ships a meteora skill \u2014 add only for SDK-level depth).",
       "source": "https://github.com/MeteoraAg/meteora-sdk-skill",
-      "install": { "method": "submodule", "command": "git submodule add https://github.com/MeteoraAg/meteora-sdk-skill .claude/skills/ext/meteora-sdk", "env": [] },
+      "install": {
+        "method": "submodule",
+        "command": "git submodule add https://github.com/MeteoraAg/meteora-sdk-skill .claude/skills/ext/meteora-sdk",
+        "env": []
+      },
       "license": "unspecified",
       "maintainer": "MeteoraAg",
-      "signal": { "stars": null, "last_commit": "2026-06", "reputability": "org" },
+      "signal": {
+        "stars": null,
+        "last_commit": "2026-06",
+        "reputability": "org"
+      },
       "default_installed": false,
-      "safety": "clean; overlaps the bundled sendai meteora skill — confirm SDK-depth delta before adding",
-      "tags": ["meteora", "dlmm", "defi", "sdk", "solana"]
+      "safety": "clean; overlaps the bundled sendai meteora skill \u2014 confirm SDK-depth delta before adding",
+      "tags": [
+        "meteora",
+        "dlmm",
+        "defi",
+        "sdk",
+        "solana"
+      ]
     },
     {
       "id": "x402-proxy-mcp",
@@ -339,13 +646,27 @@
       "domain": "solana-infra",
       "description": "Agent-payments proxy MCP (x402). Net-new vs solana-new (its x402-mcp is a different git-clone impl).",
       "source": "https://www.npmjs.com/package/x402-proxy",
-      "install": { "method": "npx", "command": "claude mcp add x402-proxy -- npx -y x402-proxy", "env": [] },
+      "install": {
+        "method": "npx",
+        "command": "claude mcp add x402-proxy -- npx -y x402-proxy",
+        "env": []
+      },
       "license": "unspecified",
       "maintainer": "x402",
-      "signal": { "stars": null, "last_commit": null, "reputability": "emerging — verify before install" },
+      "signal": {
+        "stars": null,
+        "last_commit": null,
+        "reputability": "emerging \u2014 verify before install"
+      },
       "default_installed": false,
-      "safety": "caution: BIP-39 key custody for agent payments — isolate keys, explicit opt-in only, never a default",
-      "tags": ["x402", "payments", "mcp", "key-custody", "solana"]
+      "safety": "caution: BIP-39 key custody for agent payments \u2014 isolate keys, explicit opt-in only, never a default",
+      "tags": [
+        "x402",
+        "payments",
+        "mcp",
+        "key-custody",
+        "solana"
+      ]
     },
     {
       "id": "pyth-pro-mcp",
@@ -354,13 +675,29 @@
       "domain": "solana-infra",
       "description": "Pyth Pro price-feed MCP: 500+ feeds, low latency. Net-new vs solana-new (Pyth appears only as a dependency keyword there).",
       "source": "https://www.npmjs.com/package/@pythnetwork/pyth-mcp",
-      "install": { "method": "npx", "command": "claude mcp add pyth-pro -- npx -y @pythnetwork/pyth-mcp", "env": ["PYTH_API_KEY"] },
+      "install": {
+        "method": "npx",
+        "command": "claude mcp add pyth-pro -- npx -y @pythnetwork/pyth-mcp",
+        "env": [
+          "PYTH_API_KEY"
+        ]
+      },
       "license": "unspecified",
       "maintainer": "pyth-network",
-      "signal": { "stars": null, "last_commit": null, "reputability": "org" },
+      "signal": {
+        "stars": null,
+        "last_commit": null,
+        "reputability": "org"
+      },
       "default_installed": false,
       "safety": "caution: paid API key (billable); no custody risk",
-      "tags": ["pyth", "oracle", "price-feeds", "mcp", "solana"]
+      "tags": [
+        "pyth",
+        "oracle",
+        "price-feeds",
+        "mcp",
+        "solana"
+      ]
     },
     {
       "id": "chainstack-mcp",
@@ -369,13 +706,27 @@
       "domain": "solana-infra",
       "description": "Hosted unified multi-chain RPC MCP. Net-new vs solana-new.",
       "source": "https://mcp.chainstack.com/mcp",
-      "install": { "method": "npx", "command": "claude mcp add --transport http chainstack https://mcp.chainstack.com/mcp", "env": [] },
+      "install": {
+        "method": "npx",
+        "command": "claude mcp add --transport http chainstack https://mcp.chainstack.com/mcp",
+        "env": []
+      },
       "license": "unspecified",
       "maintainer": "chainstack",
-      "signal": { "stars": null, "last_commit": null, "reputability": "org" },
+      "signal": {
+        "stars": null,
+        "last_commit": null,
+        "reputability": "org"
+      },
       "default_installed": false,
-      "safety": "caution: hosted multi-chain RPC — check data-retention policy",
-      "tags": ["rpc", "multi-chain", "mcp", "hosted", "solana"]
+      "safety": "caution: hosted multi-chain RPC \u2014 check data-retention policy",
+      "tags": [
+        "rpc",
+        "multi-chain",
+        "mcp",
+        "hosted",
+        "solana"
+      ]
     },
     {
       "id": "noesis-mcp",
@@ -384,13 +735,26 @@
       "domain": "solana-infra",
       "description": "Hosted token-intelligence MCP. Net-new vs solana-new.",
       "source": "https://noesisapi.dev/mcp",
-      "install": { "method": "npx", "command": "claude mcp add --transport http noesis https://noesisapi.dev/mcp", "env": [] },
+      "install": {
+        "method": "npx",
+        "command": "claude mcp add --transport http noesis https://noesisapi.dev/mcp",
+        "env": []
+      },
       "license": "unspecified",
       "maintainer": "noesis",
-      "signal": { "stars": null, "last_commit": null, "reputability": "emerging — verify before install" },
+      "signal": {
+        "stars": null,
+        "last_commit": null,
+        "reputability": "emerging \u2014 verify before install"
+      },
       "default_installed": false,
-      "safety": "caution: hosted token-intel — verify provenance/traction before trusting",
-      "tags": ["token-intel", "mcp", "hosted", "solana"]
+      "safety": "caution: hosted token-intel \u2014 verify provenance/traction before trusting",
+      "tags": [
+        "token-intel",
+        "mcp",
+        "hosted",
+        "solana"
+      ]
     },
     {
       "id": "dexpaprika-mcp",
@@ -399,88 +763,156 @@
       "domain": "solana-infra",
       "description": "Free, no-key DEX market-data MCP. Net-new vs solana-new (its DEX-data MCP is a different provider).",
       "source": "https://www.npmjs.com/package/dexpaprika-mcp",
-      "install": { "method": "npx", "command": "claude mcp add dexpaprika -- npx -y dexpaprika-mcp", "env": [] },
+      "install": {
+        "method": "npx",
+        "command": "claude mcp add dexpaprika -- npx -y dexpaprika-mcp",
+        "env": []
+      },
       "license": "unspecified",
       "maintainer": "dexpaprika",
-      "signal": { "stars": null, "last_commit": null, "reputability": "org" },
+      "signal": {
+        "stars": null,
+        "last_commit": null,
+        "reputability": "org"
+      },
       "default_installed": false,
       "safety": "clean; free no-key DEX market data, low-risk read-only",
-      "tags": ["dex", "market-data", "mcp", "solana"]
+      "tags": [
+        "dex",
+        "market-data",
+        "mcp",
+        "solana"
+      ]
     },
     {
       "id": "phantom-mcp",
       "name": "Phantom MCP",
       "type": "mcp",
       "domain": "solana-infra",
-      "description": "Phantom wallet MCP — can sign/submit transactions. Also cataloged in solana-new (phantom-mcp-server); kept here because the signing-custody warning is load-bearing.",
+      "description": "Phantom wallet MCP \u2014 can sign/submit transactions. Also cataloged in solana-new (phantom-mcp-server); kept here because the signing-custody warning is load-bearing.",
       "source": "https://www.npmjs.com/package/@phantom/mcp-server",
-      "install": { "method": "npx", "command": "claude mcp add phantom -- npx -y @phantom/mcp-server", "env": [] },
+      "install": {
+        "method": "npx",
+        "command": "claude mcp add phantom -- npx -y @phantom/mcp-server",
+        "env": []
+      },
       "license": "unspecified",
       "maintainer": "phantom",
-      "signal": { "stars": null, "last_commit": null, "reputability": "org" },
+      "signal": {
+        "stars": null,
+        "last_commit": null,
+        "reputability": "org"
+      },
       "default_installed": false,
-      "safety": "caution: wallet signing — can sign/submit transactions; explicit user consent only, never a default (key-custody risk)",
-      "tags": ["phantom", "wallet", "signing", "mcp", "solana"]
+      "safety": "caution: wallet signing \u2014 can sign/submit transactions; explicit user consent only, never a default (key-custody risk)",
+      "tags": [
+        "phantom",
+        "wallet",
+        "signing",
+        "mcp",
+        "solana"
+      ]
     },
     {
       "id": "gmem",
       "name": "gmem",
       "type": "skill",
       "domain": "solana-infra",
-      "description": "Agent memory layer (watchlist — young/unverified).",
+      "description": "Agent memory layer (watchlist \u2014 young/unverified).",
       "source": "https://github.com/yksanjo/gmem",
       "install": null,
       "license": "unverified",
       "maintainer": "yksanjo",
-      "signal": { "stars": null, "last_commit": null, "reputability": "emerging — verify before install" },
+      "signal": {
+        "stars": null,
+        "last_commit": null,
+        "reputability": "emerging \u2014 verify before install"
+      },
       "default_installed": false,
-      "safety": "caution: unverified — confirm maintenance + license before any use",
-      "tags": ["memory", "agent", "watchlist", "solana"]
+      "safety": "caution: unverified \u2014 confirm maintenance + license before any use",
+      "tags": [
+        "memory",
+        "agent",
+        "watchlist",
+        "solana"
+      ]
     },
     {
       "id": "snap-protocol",
       "name": "Snap Protocol",
       "type": "skill",
       "domain": "solana-infra",
-      "description": "Snapshot/state protocol skill (watchlist — young/unverified).",
+      "description": "Snapshot/state protocol skill (watchlist \u2014 young/unverified).",
       "source": "https://github.com/agentzeny/snap-public",
       "install": null,
       "license": "unverified",
       "maintainer": "agentzeny",
-      "signal": { "stars": null, "last_commit": null, "reputability": "emerging — verify before install" },
+      "signal": {
+        "stars": null,
+        "last_commit": null,
+        "reputability": "emerging \u2014 verify before install"
+      },
       "default_installed": false,
-      "safety": "caution: early — verify reachability + traction before any use",
-      "tags": ["snapshot", "state", "protocol", "watchlist", "solana"]
+      "safety": "caution: early \u2014 verify reachability + traction before any use",
+      "tags": [
+        "snapshot",
+        "state",
+        "protocol",
+        "watchlist",
+        "solana"
+      ]
     },
     {
       "id": "seeker-skills",
       "name": "Seeker Skills",
       "type": "skill",
       "domain": "solana-infra",
-      "description": "Solana Seeker (mobile) skills (watchlist — young/unverified). Cross-check vs ext/solana-mobile coverage.",
+      "description": "Solana Seeker (mobile) skills (watchlist \u2014 young/unverified). Cross-check vs ext/solana-mobile coverage.",
       "source": "https://github.com/Sarthib7/seeker-skills",
-      "install": { "method": "submodule", "command": "git submodule add https://github.com/Sarthib7/seeker-skills .claude/skills/ext/seeker-skills", "env": [] },
+      "install": {
+        "method": "submodule",
+        "command": "git submodule add https://github.com/Sarthib7/seeker-skills .claude/skills/ext/seeker-skills",
+        "env": []
+      },
       "license": "unverified",
       "maintainer": "Sarthib7",
-      "signal": { "stars": null, "last_commit": null, "reputability": "emerging — verify before install" },
+      "signal": {
+        "stars": null,
+        "last_commit": null,
+        "reputability": "emerging \u2014 verify before install"
+      },
       "default_installed": false,
-      "safety": "caution: niche mobile, unverified — cross-check vs ext/solana-mobile before adding",
-      "tags": ["seeker", "mobile", "watchlist", "solana"]
+      "safety": "caution: niche mobile, unverified \u2014 cross-check vs ext/solana-mobile before adding",
+      "tags": [
+        "seeker",
+        "mobile",
+        "watchlist",
+        "solana"
+      ]
     },
     {
       "id": "sati",
       "name": "SATI (SAID/SATI/AIP)",
       "type": "skill",
       "domain": "identity",
-      "description": "Agent-identity standards (SAID/SATI/AIP). Not a skill yet — emerging standard (watchlist). Net-new vs solana-new.",
+      "description": "Agent-identity standards (SAID/SATI/AIP). Not a skill yet \u2014 emerging standard (watchlist). Net-new vs solana-new.",
       "source": "https://github.com/cascade-protocol/sati",
       "install": null,
       "license": "unverified",
       "maintainer": "cascade-protocol",
-      "signal": { "stars": null, "last_commit": null, "reputability": "emerging — verify before install" },
+      "signal": {
+        "stars": null,
+        "last_commit": null,
+        "reputability": "emerging \u2014 verify before install"
+      },
       "default_installed": false,
-      "safety": "caution: emerging standard, not a skill yet — monitor for adoption",
-      "tags": ["agent-identity", "standard", "watchlist", "solana"]
+      "safety": "caution: emerging standard, not a skill yet \u2014 monitor for adoption",
+      "tags": [
+        "agent-identity",
+        "standard",
+        "watchlist",
+        "solana"
+      ]
     },
     {
       "id": "composio-awesome-claude-skills",
@@ -492,10 +924,19 @@
       "install": null,
       "license": "unspecified",
       "maintainer": "ComposioHQ",
-      "signal": { "stars": 64700, "last_commit": "2026-05-22", "reputability": "org" },
+      "signal": {
+        "stars": 64700,
+        "last_commit": "2026-05-22",
+        "reputability": "org"
+      },
       "default_installed": false,
-      "safety": "clean — discovery source only, nothing executed",
-      "tags": ["aggregator", "scout", "skills", "discovery"]
+      "safety": "clean \u2014 discovery source only, nothing executed",
+      "tags": [
+        "aggregator",
+        "scout",
+        "skills",
+        "discovery"
+      ]
     },
     {
       "id": "travisvn-awesome-claude-skills",
@@ -507,10 +948,19 @@
       "install": null,
       "license": "unspecified",
       "maintainer": "travisvn",
-      "signal": { "stars": 13500, "last_commit": "2026-04-28", "reputability": "individual" },
+      "signal": {
+        "stars": 13500,
+        "last_commit": "2026-04-28",
+        "reputability": "individual"
+      },
       "default_installed": false,
-      "safety": "clean — discovery source only, nothing executed",
-      "tags": ["aggregator", "scout", "skills", "discovery"]
+      "safety": "clean \u2014 discovery source only, nothing executed",
+      "tags": [
+        "aggregator",
+        "scout",
+        "skills",
+        "discovery"
+      ]
     },
     {
       "id": "buildwithclaude",
@@ -522,10 +972,20 @@
       "install": null,
       "license": "unspecified",
       "maintainer": "davepoon",
-      "signal": { "stars": 3100, "last_commit": "2026-06-15", "reputability": "individual" },
+      "signal": {
+        "stars": 3100,
+        "last_commit": "2026-06-15",
+        "reputability": "individual"
+      },
       "default_installed": false,
-      "safety": "clean — discovery source only, nothing executed",
-      "tags": ["aggregator", "scout", "plugins", "marketplaces", "discovery"]
+      "safety": "clean \u2014 discovery source only, nothing executed",
+      "tags": [
+        "aggregator",
+        "scout",
+        "plugins",
+        "marketplaces",
+        "discovery"
+      ]
     },
     {
       "id": "hesreallyhim-awesome-claude-code",
@@ -537,10 +997,19 @@
       "install": null,
       "license": "unspecified",
       "maintainer": "hesreallyhim",
-      "signal": { "stars": 46500, "last_commit": "2026-04-27", "reputability": "individual" },
+      "signal": {
+        "stars": 46500,
+        "last_commit": "2026-04-27",
+        "reputability": "individual"
+      },
       "default_installed": false,
-      "safety": "clean — discovery source only, nothing executed",
-      "tags": ["aggregator", "scout", "claude-code", "discovery"]
+      "safety": "clean \u2014 discovery source only, nothing executed",
+      "tags": [
+        "aggregator",
+        "scout",
+        "claude-code",
+        "discovery"
+      ]
     },
     {
       "id": "voltagent-awesome-claude-code-subagents",
@@ -552,10 +1021,19 @@
       "install": null,
       "license": "unspecified",
       "maintainer": "VoltAgent",
-      "signal": { "stars": 21800, "last_commit": "2026-06-15", "reputability": "org" },
+      "signal": {
+        "stars": 21800,
+        "last_commit": "2026-06-15",
+        "reputability": "org"
+      },
       "default_installed": false,
-      "safety": "clean — discovery source only, nothing executed",
-      "tags": ["aggregator", "scout", "subagents", "discovery"]
+      "safety": "clean \u2014 discovery source only, nothing executed",
+      "tags": [
+        "aggregator",
+        "scout",
+        "subagents",
+        "discovery"
+      ]
     },
     {
       "id": "anthropics-claude-plugins-community",
@@ -567,10 +1045,20 @@
       "install": null,
       "license": "Apache-2.0",
       "maintainer": "anthropics",
-      "signal": { "stars": 183, "last_commit": "2026-06-15", "reputability": "official" },
+      "signal": {
+        "stars": 183,
+        "last_commit": "2026-06-15",
+        "reputability": "official"
+      },
       "default_installed": false,
-      "safety": "clean — community index, not first-party-vetted; verify each entry before installing",
-      "tags": ["aggregator", "scout", "plugins", "community", "discovery"]
+      "safety": "clean \u2014 community index, not first-party-vetted; verify each entry before installing",
+      "tags": [
+        "aggregator",
+        "scout",
+        "plugins",
+        "community",
+        "discovery"
+      ]
     },
     {
       "id": "nansen-mcp",
@@ -582,14 +1070,192 @@
       "install": {
         "method": "remote-http-mcp",
         "command": "claude mcp add --transport http nansen https://mcp.nansen.ai/ra/mcp --header \"NANSEN-API-KEY: ${NANSEN_API_KEY}\"",
-        "env": ["NANSEN_API_KEY"]
+        "env": [
+          "NANSEN_API_KEY"
+        ]
       },
       "license": "proprietary hosted MCP; nansen-cli MIT",
       "maintainer": "Nansen (first-party)",
-      "signal": { "stars": null, "last_commit": "2026-06-11", "reputability": "high" },
+      "signal": {
+        "stars": null,
+        "last_commit": "2026-06-11",
+        "reputability": "high"
+      },
       "default_installed": false,
-      "safety": "caution: SaaS data-routing — queries and API key sent to mcp.nansen.ai (Nansen servers); key passed in request header; free tier 100 credits, paid ~$0.001/credit or $0.01–$0.05/x402 call; opt-in only",
-      "tags": ["analytics", "wallet-labeling", "smart-money", "on-chain-data", "solana", "multi-chain", "paid"]
+      "safety": "caution: SaaS data-routing \u2014 queries and API key sent to mcp.nansen.ai (Nansen servers); key passed in request header; free tier 100 credits, paid ~$0.001/credit or $0.01\u2013$0.05/x402 call; opt-in only",
+      "tags": [
+        "analytics",
+        "wallet-labeling",
+        "smart-money",
+        "on-chain-data",
+        "solana",
+        "multi-chain",
+        "paid"
+      ]
+    },
+    {
+      "id": "solana-incident-response",
+      "name": "Solana Incident Response Skill",
+      "type": "skill",
+      "domain": "solana-security",
+      "description": "Complete incident response lifecycle for Solana protocols \u2014 active exploit detection, program freeze via Squads v4, liquidity migration, on-chain forensics with Helius SDK, crisis communication templates, legal/regulatory response, and hardened redeployment. 8 skill files, 4 agents (incident-commander, forensic-investigator, comms-director, upgrade-commander), 4 commands. Covers the full lifecycle from first detection through hardened relaunch. Cross-domain: security + DevOps + legal + comms + DeFi ops.",
+      "source": "https://github.com/Stan-lee13/solana-incident-response-skill",
+      "install": {
+        "method": "submodule",
+        "command": "git submodule add https://github.com/Stan-lee13/solana-incident-response-skill.git .claude/skills/ext/solana-incident-response",
+        "env": []
+      },
+      "license": "MIT",
+      "maintainer": "Stan-lee13",
+      "signal": {
+        "stars": 1,
+        "last_commit": "2026-06-24",
+        "reputability": "individual"
+      },
+      "default_installed": false,
+      "safety": "clean",
+      "tags": [
+        "incident-response",
+        "security",
+        "exploit",
+        "forensics",
+        "crisis-comms",
+        "squads",
+        "helius",
+        "solana"
+      ]
+    },
+    {
+      "id": "solana-depin-builder",
+      "name": "Solana DePIN Builder Skill",
+      "type": "skill",
+      "domain": "solana-depin",
+      "description": "Production AI skill for designing and building Decentralized Physical Infrastructure Networks on Solana. Covers 5 architecture patterns (beacon/witness, challenge/response, compute verification, contribution/mapping, bandwidth/proxy), 5-level oracle trust framework (centralized \u2192 Switchboard v3 \u2192 TEE/Marlin Oyster \u2192 ZK), H3 hexagonal geographic indexing, on-chain node registry with staking, reward system design, anti-Sybil economics, data marketplace, and network growth strategy. 7 skill files, 2 agents (depin-architect, reward-engineer), 2 commands.",
+      "source": "https://github.com/Stan-lee13/solana-depin-builder-skill",
+      "install": {
+        "method": "submodule",
+        "command": "git submodule add https://github.com/Stan-lee13/solana-depin-builder-skill.git .claude/skills/ext/solana-depin-builder",
+        "env": []
+      },
+      "license": "MIT",
+      "maintainer": "Stan-lee13",
+      "signal": {
+        "stars": 1,
+        "last_commit": "2026-06-24",
+        "reputability": "individual"
+      },
+      "default_installed": false,
+      "safety": "clean",
+      "tags": [
+        "depin",
+        "iot",
+        "hardware",
+        "oracle",
+        "h3",
+        "switchboard",
+        "node-registry",
+        "solana"
+      ]
+    },
+    {
+      "id": "solana-observability",
+      "name": "Solana Observability Skill",
+      "type": "skill",
+      "domain": "solana-infra",
+      "description": "Production monitoring, alerting, and operational intelligence for Solana dApps. Includes a deployable Docker stack (Prometheus + Grafana + custom Solana metrics exporter). Covers RPC health with slot-lag detection, transaction success rate SLOs, CU budget alerting, application-layer UX funnel tracking, OpenTelemetry distributed tracing, and program upgrade detection. 8 skill files, 5 agents (observability-architect, monitoring-engineer, sre-engineer, data-viz-engineer, incident-commander), 2 commands. 60-second deploy with docker compose up.",
+      "source": "https://github.com/Stan-lee13/Solana-observabilty-skill",
+      "install": {
+        "method": "submodule",
+        "command": "git submodule add https://github.com/Stan-lee13/Solana-observabilty-skill.git .claude/skills/ext/solana-observability",
+        "env": []
+      },
+      "license": "MIT",
+      "maintainer": "Stan-lee13",
+      "signal": {
+        "stars": 1,
+        "last_commit": "2026-06-24",
+        "reputability": "individual"
+      },
+      "default_installed": false,
+      "safety": "clean",
+      "tags": [
+        "observability",
+        "monitoring",
+        "prometheus",
+        "grafana",
+        "helius",
+        "slo",
+        "alerting",
+        "solana",
+        "rpc"
+      ]
+    },
+    {
+      "id": "solana-ux",
+      "name": "Solana UX Skill",
+      "type": "skill",
+      "domain": "solana-frontend",
+      "description": "Production UX engineering for Solana dApps \u2014 gasless onboarding with fee payer proxy and instruction whitelist, Privy embedded wallets for Web2 users, Mobile Wallet Adapter (MWA) with auth_token persistence and 6 failure mode fixes, Blinks/Actions implementation, wallet error classification with recovery paths, real-time UI patterns with Helius websockets, and conversion funnel optimization. 6 skill files, 4 agents (ux-architect, onboarding-engineer, mobile-ux-engineer, blink-engineer), 3 commands including conversion audit.",
+      "source": "https://github.com/Stan-lee13/solana-ux-skill",
+      "install": {
+        "method": "submodule",
+        "command": "git submodule add https://github.com/Stan-lee13/solana-ux-skill.git .claude/skills/ext/solana-ux",
+        "env": []
+      },
+      "license": "MIT",
+      "maintainer": "Stan-lee13",
+      "signal": {
+        "stars": 1,
+        "last_commit": "2026-06-24",
+        "reputability": "individual"
+      },
+      "default_installed": false,
+      "safety": "clean",
+      "tags": [
+        "ux",
+        "frontend",
+        "onboarding",
+        "gasless",
+        "mwa",
+        "blinks",
+        "privy",
+        "mobile",
+        "solana"
+      ]
+    },
+    {
+      "id": "solana-token-launch",
+      "name": "Solana Token Launch Skill",
+      "type": "skill",
+      "domain": "solana-tokens",
+      "description": "End-to-end TGE coordination for Solana \u2014 tokenomics design with 40-point launch readiness scoring, Token-2022 creation, Merkle distributor with anti-sybil scoring, Meteora DLMM liquidity seeding, market making, Jupiter listing strategy, post-launch monitoring with death spiral detector, protocol economics, and legal/compliance (Howey, OFAC, MiCA). 9 skill files, 1 orchestrator agent with week-by-week countdown and 4 launch-day decision trees, 2 commands. Covers the full TGE lifecycle from design through week-14 survival.",
+      "source": "https://github.com/Stan-lee13/solana-token-launch-skill",
+      "install": {
+        "method": "submodule",
+        "command": "git submodule add https://github.com/Stan-lee13/solana-token-launch-skill.git .claude/skills/ext/solana-token-launch",
+        "env": []
+      },
+      "license": "MIT",
+      "maintainer": "Stan-lee13",
+      "signal": {
+        "stars": 1,
+        "last_commit": "2026-06-24",
+        "reputability": "individual"
+      },
+      "default_installed": false,
+      "safety": "clean",
+      "tags": [
+        "token-launch",
+        "tge",
+        "tokenomics",
+        "airdrop",
+        "meteora",
+        "jupiter",
+        "vesting",
+        "streamflow",
+        "legal",
+        "solana"
+      ]
     }
   ]
 }

@@ -132,6 +132,11 @@ The two paths are complementary: individuals wanting Solana agents/commands acro
 | `ext/helius` | [helius-labs/core-ai](https://github.com/helius-labs/core-ai) | Official Helius infra skill + unique SVM internals skill |
 | `ext/quicknode-anchor` | [quiknode-labs/solana-anchor-claude-skill](https://github.com/quiknode-labs/solana-anchor-claude-skill) | Anchor/financial-math/Quasar reference files (quarantined — refs only) |
 | `ext/eth-to-sol` | [solana-foundation/eth-to-sol-skill](https://github.com/solana-foundation/eth-to-sol-skill) | EVM/Solidity → Anchor two-pass porting |
+| `ext/solana-incident-response` | [Stan-lee13/solana-incident-response-skill](https://github.com/Stan-lee13/solana-incident-response-skill) | Full exploit lifecycle: active response, freeze, forensics, comms, legal, redeployment |
+| `ext/solana-depin-builder` | [Stan-lee13/solana-depin-builder-skill](https://github.com/Stan-lee13/solana-depin-builder-skill) | DePIN architecture (5 patterns), oracle trust levels, node registry, reward design, H3 coverage |
+| `ext/solana-observability` | [Stan-lee13/Solana-observabilty-skill](https://github.com/Stan-lee13/Solana-observabilty-skill) | Prometheus + Grafana deploy stack, RPC health, SLO burn rate alerting, CU profiling |
+| `ext/solana-ux` | [Stan-lee13/solana-ux-skill](https://github.com/Stan-lee13/solana-ux-skill) | Gasless onboarding, MWA mobile, Blinks/Actions, wallet error handling, conversion audit |
+| `ext/solana-token-launch` | [Stan-lee13/solana-token-launch-skill](https://github.com/Stan-lee13/solana-token-launch-skill) | Full TGE: tokenomics, airdrop, liquidity, market making, death spiral detection, legal |
 
 ### Agent Teams
 
