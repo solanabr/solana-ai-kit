@@ -88,6 +88,17 @@ Other protocol skills from [SendAI](ext/sendai/skills/):
 | dFlow | [dflow/](ext/sendai/skills/dflow/) | Payment-for-order-flow |
 | VulnHunter | [vulnhunter/](ext/sendai/skills/vulnhunter/) | Vulnerability scanning |
 
+
+## Anchor IDL Runtime (meta)
+
+From [anchor-idl-agent-skill](ext/anchor-idl-agent/) — turn **any** deployed Anchor program into an agent-callable tool surface. Sits one layer above the protocol skills above: when a user names an arbitrary program ID (or a protocol we don't ship an official skill for), this skill ingests the on-chain IDL, generates a JSON-schema tool catalogue with auto-resolved PDAs/ATAs/sysvars, mandates pre-flight simulation, and decodes Anchor errors back to source. Includes worked adapters for Jupiter V6, Drift V2, Kamino, MarginFi v2, Squads v4 (with propose-via-Squads wrapping).
+
+- [ext/anchor-idl-agent/skill/SKILL.md](ext/anchor-idl-agent/skill/SKILL.md) — entry point + operating procedure
+- [skill/safety-rails.md](ext/anchor-idl-agent/skill/safety-rails.md) — mainnet allowlist, CU/fee caps, simulate-or-die
+- [code/](ext/anchor-idl-agent/code/) — `@solanabr/anchor-agent-toolkit` reference TypeScript impl (vitest, Surfpool harness)
+
+Use as fallback to the protocol-specific skills above; primary for the long tail of programs we don't ship dedicated coverage for.
+
 ## Security Auditing
 
 From [Trail of Bits](ext/trailofbits/plugins/building-secure-contracts/skills/):
@@ -225,6 +236,7 @@ From [quiknode-labs/solana-anchor-claude-skill](ext/quicknode-anchor/) — **ref
 | Helius RPC, DAS, webhooks, Sender, priority fees | ext/helius → helius-skills/helius/SKILL.md (official) |
 | SVM/protocol internals (execution, consensus, validators, SIMDs) | ext/helius → helius-skills/svm/SKILL.md |
 | Payment flows, checkout | ext/solana-dev → payments.md |
+| Arbitrary Anchor program, unknown program ID, IDL-driven agent calls | ext/anchor-idl-agent → skill/SKILL.md |
 | Generated clients, IDL | ext/solana-dev → idl-codegen.md |
 | Unity game development | ext/solana-game → unity-sdk.md |
 | PlaySolana, PSG1 console | ext/solana-game → playsolana.md |
