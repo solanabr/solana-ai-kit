@@ -573,6 +573,21 @@
       "tags": ["aggregator", "scout", "plugins", "community", "discovery"]
     },
     {
+      "id": "solana-tx-debugger",
+      "name": "Solana TX Debugger Skill",
+      "type": "skill",
+      "domain": "solana-infra",
+      "description": "Diagnose failed Solana transactions: decode error codes (Anchor, SPL, Token-2022, System), identify root cause from logs and CPI depth, and prescribe concrete fixes with code snippets. Includes 22+ real-world error recipes, compute budget optimization, ALT/versioned tx guidance, and simulation-based pre-send debugging.",
+      "source": "https://github.com/thesithunyein/solana-tx-debugger-skill",
+      "install": { "method": "submodule", "command": "git submodule add https://github.com/thesithunyein/solana-tx-debugger-skill .claude/skills/ext/solana-tx-debugger", "env": [] },
+      "license": "MIT",
+      "maintainer": "thesithunyein",
+      "signal": { "stars": null, "last_commit": "2026-06-22", "reputability": "individual" },
+      "default_installed": false,
+      "safety": "clean — pure markdown skill, no scripts/binaries beyond standard install.sh",
+      "tags": ["debugging", "error-codes", "anchor", "spl", "token-2022", "compute-budget", "cpi", "alt", "simulation", "solana"]
+    },
+    {
       "id": "nansen-mcp",
       "name": "Nansen",
       "type": "mcp",
