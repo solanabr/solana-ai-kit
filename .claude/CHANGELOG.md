@@ -2,6 +2,20 @@
 
 All notable changes to solana-ai-kit.
 
+## [2.1.0] - 2026-06-26
+
+### Added
+- **`/commit-claude-config` command** — opt back into version-controlling the kit. Strips the config block from `.gitignore`, then stages and commits `.claude/` (or `.agents/`), `CLAUDE.md`, `.mcp.json`, and `.gitmodules`. Keeps `ext/` submodules ignored (re-fetched via `git submodule update`), so it doesn't vendor 18 upstream repos. Detects `--agents` installs.
+- **Config gitignored by default** — `install.sh` now adds `.gitmodules`, the config dir (`.claude/`/`.agents/`), `CLAUDE.md`, and `.mcp.json` to `.gitignore` so the kit reads as ignorable infrastructure and stays out of `git status`. Written as a marked block (`# >>> solana-ai-kit config … <<<`) so `/commit-claude-config` can remove it surgically. Safe by git semantics: already-tracked files are unaffected. The install output + README/QUICK-START document the default and the opt-in.
+
+### Security
+- **`.env` gitignored** — `install.sh` now adds `.env`/`.env.local` to `.gitignore` (the installer creates `.env` from `.env.example`, which holds API keys once filled). `.env.example` stays tracked.
+
+### Changed
+- **Parallel + shallow submodule fetch** — `install.sh` clones with `--shallow-submodules --jobs N` (floor 8) and runs `git submodule update --init --recursive --jobs N`, fetching the 18 `ext/` skill submodules concurrently at their pinned commits instead of serially. Tag resolution (`git ls-remote`) is skipped on local-source installs.
+- **Banner byline centered + darkened** — the `by @SuperteamBR 🇧🇷` line (install banner + SessionStart hooks) is centered under the logo and uses a dim dark-gray so it reads as a subtle subtitle.
+- Command count 29 → 30.
+
 ## [2.0.2] - 2026-06-16
 
 ### Security

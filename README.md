@@ -24,7 +24,7 @@ If you installed manually, remember to rename ./CLAUDE-solana.md back to ./CLAUD
 A complete `.claude/` configuration that turns Claude into a Solana development expert with:
 
 - **15 specialized agents** for different tasks (architecture, Anchor, Pinocchio, DeFi, tokens, frontend, mobile, backend, DevOps, QA, docs, games, Unity, learning, research)
-- **29 workflow commands** for building, testing, deploying, profiling, migrating, and committing
+- **30 workflow commands** for building, testing, deploying, profiling, migrating, and committing
 - **7 MCP server integrations** for on-chain data (Helius), Solana docs (solana-dev), library docs (Context7), browser automation (Playwright), context optimization (context-mode), persistent memory (memsearch), and local-validator / mainnet-fork control (Surfpool)
 - **Agent teams** for multi-step workflows (architect → engineer → QA)
 - **Progressive skill loading** that only loads context when needed (saves tokens)
@@ -78,6 +78,12 @@ To update an `--agents` install:
 bash .agents/bin/update.sh
 ```
 
+### Config is gitignored by default
+
+To keep your project clean, the installer adds `.claude/`, `CLAUDE.md`, `.mcp.json`, and `.gitmodules` to `.gitignore` — the kit reads as ignorable infrastructure, not your app code (the `ext/` skill submodules are ignored too, re-fetched via `git submodule update`).
+
+Want the config tracked in git (team setup, reproducible config)? Run `/commit-claude-config` — it un-ignores those files and commits them (or edit `.gitignore` by hand). If your project already commits `.claude/` or its own `.gitmodules`, the new ignore lines are a no-op — git keeps tracking files it already tracks.
+
 ### MCP Setup (Optional)
 
 After installation, configure MCP servers for enhanced capabilities:
@@ -98,7 +104,7 @@ solana-ai-kit is also its own Claude Code marketplace serving one **core plugin*
 /plugin install solana-ai-kit@stbr
 ```
 
-The plugin ships the **core kit**: the 15 agents, 29 commands, the local go-to-market + registry skills (idea-sprint, pitch-deck, hackathon), the 7 MCP servers, and the dev hooks (banner, formatter, pre-deploy/commit gates). Commands and skills are namespaced — `/deploy` becomes `/solana-ai-kit:deploy`.
+The plugin ships the **core kit**: the 15 agents, 30 commands, the local go-to-market + registry skills (idea-sprint, pitch-deck, hackathon), the 7 MCP servers, and the dev hooks (banner, formatter, pre-deploy/commit gates). Commands and skills are namespaced — `/deploy` becomes `/solana-ai-kit:deploy`.
 
 What the plugin **cannot** carry (Claude Code plugins are plain git clones — they can't init submodules or ship a permissions/sandbox policy), so these stay exclusive to the **full install** (`install.sh`):
 
@@ -241,7 +247,7 @@ See [`skill-registry.json`](.claude/skills/skill-registry.json) for the complete
     ├── bin/
     │   ├── update.sh                # In-place update from upstream
     │   └── resync.sh                # Submodule resync script
-    ├── commands/                # 29 workflow commands
+    ├── commands/                # 30 workflow commands
     ├── skills/                  # Progressive-loading knowledge
     │   ├── SKILL.md                 # Unified hub routing to all skills
     │   ├── ext/                     # External skill submodules
@@ -330,6 +336,7 @@ See [`skill-registry.json`](.claude/skills/skill-registry.json) for the complete
 | Command | Purpose |
 |---------|---------|
 | `/quick-commit` | Create branch, format, lint, conventional commit |
+| `/commit-claude-config` | Version the kit config in git (un-ignores `.claude/`, `CLAUDE.md`, `.mcp.json`, `.gitmodules`) |
 | `/setup-ci-cd` | Configure GitHub Actions pipeline |
 | `/setup-mcp` | Configure MCP server API keys and connections |
 | `/resync` | Resync external skill submodules to latest |

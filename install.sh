@@ -11,11 +11,6 @@ set -euo pipefail
 REPO_URL="https://github.com/solanabr/solana-ai-kit.git"
 SCRIPT_VERSION="dev"
 
-# Resolve latest tagged release; fall back to main
-LATEST_TAG=$(git ls-remote --tags --sort=-v:refname "$REPO_URL" 'refs/tags/v*' 2>/dev/null \
-  | head -1 | sed 's|.*refs/tags/||; s|\^{}||')
-BRANCH="${LATEST_TAG:-main}"
-
 # Parse flags
 AGENTS_ONLY=false
 TARGET_ARG=""
@@ -45,10 +40,15 @@ if [ -t 1 ] && [ -z "${NO_COLOR:-}" ] && printf %s "${COLORTERM:-}" | grep -qiE 
   C3=$'\033[38;2;109;126;220m'; C4=$'\033[38;2;86;155;202m'
   C5=$'\033[38;2;64;184;184m'; C6=$'\033[38;2;42;212;167m'
   C7=$'\033[38;2;20;241;149m'
-  CDIM=$'\033[2m'; CRST=$'\033[0m'
+  CDIM=$'\033[2m'; CRST=$'\033[0m'; CSUB=$'\033[2;38;2;100;100;100m'
 else
-  C1=""; C2=""; C3=""; C4=""; C5=""; C6=""; C7=""; CDIM=""; CRST=""
+  C1=""; C2=""; C3=""; C4=""; C5=""; C6=""; C7=""; CDIM=""; CRST=""; CSUB=""
 fi
+
+# Parallel jobs for submodule fetches (network-bound; floor at 8)
+JOBS="$(getconf _NPROCESSORS_ONLN 2>/dev/null || echo 8)"
+case "$JOBS" in ''|*[!0-9]*) JOBS=8 ;; esac
+[ "$JOBS" -ge 8 ] || JOBS=8
 
 print_banner() {
   printf '%s%s%s\n' "$C1" '   _____ ____  __    ___    _   _____' "$CRST"
@@ -58,7 +58,7 @@ print_banner() {
   printf '%s%s%s\n' "$C5" '/____/\____/_____/_/  |_/_/ |_/_/  |_|' "$CRST"
   printf '%s%s%s\n' "$C6" '           ▄▀█ █   █▄▀ █ ▀█▀' "$CRST"
   printf '%s%s%s\n' "$C7" '           █▀█ █   █ █ █  █' "$CRST"
-  printf '%s\n\n' "${CDIM}by @SuperteamBR 🇧🇷${CRST}"
+  printf '%s\n\n' "${CSUB}         by @SuperteamBR 🇧🇷${CRST}"
 }
 
 # Log helpers — glyph prefixes only; message text stays grep-stable.
@@ -86,9 +86,13 @@ if [ -n "$LOCAL_SRC" ] && [ -d "$LOCAL_SRC/.claude" ]; then
   [ -f "$LOCAL_SRC/.claude/VERSION" ] && cp "$LOCAL_SRC/.claude/VERSION" "$TEMP_DIR/repo/.claude/VERSION"
   # CHANGELOG.md stays in the repo — not shipped to user projects
 else
-  # Clone repo with submodules
+  # Resolve latest tagged release; fall back to main (only needed for a network clone)
   step "Cloning repository..."
-  git clone --recurse-submodules --depth 1 --branch "$BRANCH" "$REPO_URL" "$TEMP_DIR/repo" 2>&1 | tail -1 || true
+  LATEST_TAG=$(git ls-remote --tags --sort=-v:refname "$REPO_URL" 'refs/tags/v*' 2>/dev/null \
+    | head -1 | sed 's|.*refs/tags/||; s|\^{}||')
+  BRANCH="${LATEST_TAG:-main}"
+  # Parallel + shallow submodule fetch (pins preserved; far faster than serial)
+  git clone --recurse-submodules --shallow-submodules --jobs "$JOBS" --depth 1 --branch "$BRANCH" "$REPO_URL" "$TEMP_DIR/repo" 2>&1 | tail -1 || true
 fi
 
 # Read version from source
@@ -157,34 +161,45 @@ fi
 
 # Initialize submodules in target
 step "Initializing submodules..."
-(cd "$TARGET_DIR" && git submodule update --init --recursive 2>/dev/null) || warn "Note: Submodule init skipped (not a git repo or submodules already set up)"
+(cd "$TARGET_DIR" && git submodule update --init --recursive --jobs "$JOBS" 2>/dev/null) || warn "Note: Submodule init skipped (not a git repo or submodules already set up)"
 
-# Add $CONFIG_DIR/skills/ext/ to .gitignore if not present
+# ── .gitignore: keep the kit out of the user's repo by default ──────────────
+# Three sections so /commit-claude-config can surgically un-ignore the config.
 GITIGNORE="$TARGET_DIR/.gitignore"
-EXT_PATTERN="$CONFIG_DIR/skills/ext/"
-if [ -f "$GITIGNORE" ]; then
-  if ! grep -qF "$EXT_PATTERN" "$GITIGNORE"; then
-    echo "" >> "$GITIGNORE"
-    echo "# External Claude skill submodules" >> "$GITIGNORE"
-    echo "$EXT_PATTERN" >> "$GITIGNORE"
-    ok "Added $EXT_PATTERN to .gitignore"
-  fi
-else
-  echo "# External Claude skill submodules" > "$GITIGNORE"
-  echo "$EXT_PATTERN" >> "$GITIGNORE"
-  ok "Created .gitignore with $EXT_PATTERN"
+[ -f "$GITIGNORE" ] || : > "$GITIGNORE"
+
+append_ignore() {  # append a pattern once (exact-line match)
+  grep -qxF "$1" "$GITIGNORE" || printf '%s\n' "$1" >> "$GITIGNORE"
+}
+
+# 1) External skill submodules — always ignored (re-fetched via submodule update)
+if ! grep -qF "$CONFIG_DIR/skills/ext/" "$GITIGNORE"; then
+  printf '\n# External Claude skill submodules (re-fetched via: git submodule update --init)\n' >> "$GITIGNORE"
+  append_ignore "$CONFIG_DIR/skills/ext/"
+  ok "Added $CONFIG_DIR/skills/ext/ to .gitignore"
 fi
 
-# Add CLAUDE.local.md to .gitignore (Claude creates it organically when needed)
-if ! grep -qF "CLAUDE.local.md" "$GITIGNORE"; then
-  echo "CLAUDE.local.md" >> "$GITIGNORE"
+# 2) Kit config — gitignored by default; /commit-claude-config versions it
+if ! grep -qF ">>> solana-ai-kit config" "$GITIGNORE"; then
+  {
+    printf '\n# >>> solana-ai-kit config — gitignored by default; run /commit-claude-config to version it >>>\n'
+    printf '.gitmodules\n'
+    printf '%s/\n' "$CONFIG_DIR"
+    printf 'CLAUDE.md\n'
+    printf '.mcp.json\n'
+    printf '# <<< solana-ai-kit config <<<\n'
+  } >> "$GITIGNORE"
+  ok "Kit config gitignored by default — run /commit-claude-config to version it"
 fi
 
-# Add $CONFIG_DIR/context/ to .gitignore (phase-handoff files: idea.md, build.md)
-CONTEXT_PATTERN="$CONFIG_DIR/context/"
-if ! grep -qF "$CONTEXT_PATTERN" "$GITIGNORE"; then
-  echo "$CONTEXT_PATTERN" >> "$GITIGNORE"
+# 3) Local-only — never committed (.env holds API keys once filled; .env.example stays tracked)
+if ! grep -qF "# solana-ai-kit local-only" "$GITIGNORE"; then
+  printf '\n# solana-ai-kit local-only (never committed)\n' >> "$GITIGNORE"
 fi
+append_ignore "CLAUDE.local.md"
+append_ignore "$CONFIG_DIR/context/"
+append_ignore ".env"
+append_ignore ".env.local"
 
 # Merge .env.example (append-only — preserves user edits on reinstall)
 # shellcheck source=.claude/bin/_env_merge.sh
@@ -213,6 +228,10 @@ BOX_LINES=(
   "This is the full install. If you also enable the solana-ai-kit"
   "plugin, prefer one path — both double-load commands/hooks/MCP"
   "(run /doctor to check)."
+  ""
+  "$CONFIG_DIR/, CLAUDE.md, .mcp.json and .gitmodules are gitignored"
+  "by default to keep your repo clean. To version the kit config,"
+  "run /commit-claude-config (or edit .gitignore)."
 )
 if [ "$AGENTS_ONLY" = true ]; then
   BOX_LINES+=("")

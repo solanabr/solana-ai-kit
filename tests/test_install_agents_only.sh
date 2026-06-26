@@ -50,7 +50,7 @@ assert_eq "15" "$AGENT_COUNT" "Agent count is 15"
 
 # Count commands (should match full install)
 CMD_COUNT=$(find "$TEMP_DIR/.agents/commands" -name "*.md" | wc -l | tr -d ' ')
-assert_eq "29" "$CMD_COUNT" "Command count is 29"
+assert_eq "30" "$CMD_COUNT" "Command count is 30"
 
 # CLAUDE.md should exist at project root
 assert_file_exists "$TEMP_DIR/CLAUDE.md" "CLAUDE.md exists at project root"
@@ -59,5 +59,7 @@ assert_file_exists "$TEMP_DIR/CLAUDE.md" "CLAUDE.md exists at project root"
 assert_file_exists "$TEMP_DIR/.gitignore" ".gitignore exists"
 GITIGNORE_CONTENT="$(cat "$TEMP_DIR/.gitignore")"
 assert_contains "$GITIGNORE_CONTENT" ".agents/skills/ext/" ".gitignore contains .agents/skills/ext/ entry"
+assert_contains "$GITIGNORE_CONTENT" ".gitmodules" ".gitignore contains .gitmodules (config gitignored by default)"
+assert_contains "$GITIGNORE_CONTENT" "solana-ai-kit config" ".gitignore has config markers for /commit-claude-config"
 
 print_summary

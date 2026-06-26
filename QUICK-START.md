@@ -19,6 +19,8 @@ claude
 
 That's it. Claude now has Solana superpowers.
 
+> The installer gitignores the kit (`.claude/`, `CLAUDE.md`, `.mcp.json`, `.gitmodules`) by default to keep your repo clean. To version it instead (team setup), run `/commit-claude-config`.
+
 ---
 
 ## Optional: Configure MCP Servers
@@ -71,7 +73,7 @@ Plugins are plain git clones, so they can't carry the 18 `ext/` submodules, the 
 | **solana-guide** | Learning and tutorials |
 | **solana-researcher** | Ecosystem research |
 
-### 29 Slash Commands
+### 30 Slash Commands
 
 **Building:**
 - `/build-program` - Build Anchor or native programs
@@ -99,6 +101,7 @@ Plugins are plain git clones, so they can't carry the 18 `ext/` submodules, the 
 
 **Workflow & Setup:**
 - `/quick-commit` - Format, lint, and commit
+- `/commit-claude-config` - Version the kit config in git (un-ignore + commit)
 - `/setup-ci-cd` - Setup CI/CD pipeline
 - `/setup-mcp` - Configure MCP servers
 - `/resync` - Resync external skill submodules
@@ -172,7 +175,7 @@ your-project/
 ├── CLAUDE.md              # ← Main config (copied from CLAUDE-solana.md)
 ├── .claude/
 │   ├── agents/            # 15 specialized AI agents
-│   ├── commands/          # 29 slash commands
+│   ├── commands/          # 30 slash commands
 │   ├── skills/            # Progressive knowledge
 │   │   ├── SKILL.md           # Unified hub (start here)
 │   │   ├── ext/               # External skill submodules
