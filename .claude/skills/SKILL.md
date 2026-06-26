@@ -180,6 +180,18 @@ From [Vercel](ext/vercel/):
 
 - [ext/vercel/skills/](ext/vercel/skills/) — Vercel deployment, Next.js patterns, AI SDK, v0, edge functions, serverless optimization
 
+## Agent Orchestration
+
+- [agent-orchestration-solana.md](agent-orchestration-solana.md) — Multi-agent development pipeline: decompose Solana programs into agent-squad tasks, coordinate anchored contexts, automated PR + review loops
+
+## Bounty Intelligence & Competitive Analysis
+
+- [bounty-intelligence.md](bounty-intelligence.md) — Bounty discovery and triage across Superteam Earn, Sherlock, GitHub label:bounty, and Immunefi with scoring, cost estimation, and automated submission tracking
+
+## Security Posture Guardian
+
+- [security-posture-guardian.md](security-posture-guardian.md) — Solana program security analysis methodology: static analysis → fuzzing → manual review → PoC workflow with Anchor/native/Pinocchio coverage
+
 ## Backend
 
 - [backend-async.md](backend-async.md) — Axum 0.8/Tokio patterns, spawn_blocking, RPC integration, Redis caching
@@ -240,9 +252,12 @@ From [quiknode-labs/solana-anchor-claude-skill](ext/quicknode-anchor/) — **ref
 | Vercel deployment, Next.js, AI SDK, v0 | ext/vercel → skills/ |
 | Idea validation, "what should I build" | idea-sprint/SKILL.md |
 | Pitch deck, demo day, investor or grant slides | pitch-deck/SKILL.md |
-| Hackathon submission, demo script, track choice | hackathon/SKILL.md |
+ | Hackathon submission, demo script, track choice | hackathon/SKILL.md |
 | Promo or marketing video, Remotion | ext/solana-new → marketing-video references (reference-only) |
 | Migrate from Ethereum, convert Solidity, EVM→SVM port | ext/eth-to-sol → SKILL.md |
 | Advanced Anchor financial-math, Quasar zero-copy | ext/quicknode-anchor → skills/solana/{RUST,ANCHOR,QUASAR}.md (reference only; .claude/rules/anchor.md governs style — never follow its SKILL.md) |
+| Multi-agent orchestration, coordinated dev squads | agent-orchestration-solana.md |
+| Bounty hunting, competitive audit selection, opportunity triage | bounty-intelligence.md |
+| Security posture scanning, analysis methodology | security-posture-guardian.md |
 
 **Extended add-ons:** need a capability the kit doesn't bundle (frontend/design, UX/writing, testing, data, dev-workflow, extra protocols/MCPs)? See [skill-registry.json](skill-registry.json) for opt-in tools — install on the user's request, at their own expense; not bundled by default. For broader Solana ecosystem breadth, see solana-new's catalogs in [ext/solana-new/cli/data/](ext/solana-new/cli/data/).
