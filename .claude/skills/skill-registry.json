@@ -573,6 +573,25 @@
       "tags": ["aggregator", "scout", "plugins", "community", "discovery"]
     },
     {
+      "id": "solana-agent-transaction-safety",
+      "name": "Solana Agent Transaction Safety",
+      "type": "skill",
+      "domain": "security",
+      "description": "Pre-sign safety gate for AI-agent and backend-signed Solana transactions: reviews transaction plans, decoded instructions, simulations, authority changes, swaps, CPIs, and autonomous policies before signing.",
+      "source": "https://github.com/Alb3e3/solana-agent-transaction-safety",
+      "install": {
+        "method": "submodule",
+        "command": "git submodule add https://github.com/Alb3e3/solana-agent-transaction-safety .claude/skills/ext/solana-agent-transaction-safety",
+        "env": []
+      },
+      "license": "MIT",
+      "maintainer": "Alb3e3",
+      "signal": { "stars": 0, "last_commit": "2026-06-20", "reputability": "community bounty submission" },
+      "default_installed": false,
+      "safety": "clean: markdown skill, command, agent, rule, smoke tests, copy-only installer; no network installer, hooks, telemetry, or runtime API key",
+      "tags": ["solana", "agent-safety", "transaction-review", "pre-sign", "simulation", "authority-risk", "defi", "wallets", "backend-signer"]
+    },
+    {
       "id": "nansen-mcp",
       "name": "Nansen",
       "type": "mcp",
