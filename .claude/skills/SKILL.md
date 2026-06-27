@@ -1,6 +1,6 @@
 ---
 name: solana-dev
-description: Unified skill hub for Solana development. Routes to external submodule skills (solana-foundation, sendai, solana-game, trailofbits, cloudflare, qedgen, colosseum, solana-new, ghostsecurity, defending-code) and local skills. Progressive disclosure — read only what you need.
+description: Unified skill hub for Solana development. Routes to external submodule skills (solana-foundation, sendai, solana-game, trailofbits, solana-roast, cloudflare, qedgen, colosseum, solana-new, ghostsecurity, defending-code) and local skills. Progressive disclosure — read only what you need.
 user-invocable: true
 ---
 
@@ -89,6 +89,10 @@ Other protocol skills from [SendAI](ext/sendai/skills/):
 | VulnHunter | [vulnhunter/](ext/sendai/skills/vulnhunter/) | Vulnerability scanning |
 
 ## Security Auditing
+
+**Pre-audit design gate** — run *before* the scanners/auditors below:
+
+- [ext/solana-roast/skill/SKILL.md](ext/solana-roast/skill/SKILL.md) — Adversarial program design & security interrogation: 9 branches (accounts/PDAs, authority, CPI, state, economic invariants, governance, compute/DoS, tokens, client-integration), one question at a time with a recommended answer for each, grounded in the user's Anchor/native code. Emits design-spec + threat-model + pre-audit checklist (+ optional teaching "lecture" grounded in real exploits). Feeds the scanners/auditors below; hands generic web2/infra to `cso`.
 
 From [Trail of Bits](ext/trailofbits/plugins/building-secure-contracts/skills/):
 
@@ -237,6 +241,7 @@ From [quiknode-labs/solana-anchor-claude-skill](ext/quicknode-anchor/) — **ref
 | Formal verification, proofs | ext/qedgen → SKILL.md |
 | Idea validation, competitive research, hackathon projects | ext/colosseum → colosseum-copilot/SKILL.md |
 | Security-first scaffolding, safe code generation | ext/safe-solana-builder → SKILL.md |
+| Pre-audit design review, "roast my program", threat model before audit | ext/solana-roast → skill/SKILL.md |
 | Vercel deployment, Next.js, AI SDK, v0 | ext/vercel → skills/ |
 | Idea validation, "what should I build" | idea-sprint/SKILL.md |
 | Pitch deck, demo day, investor or grant slides | pitch-deck/SKILL.md |
