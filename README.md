@@ -56,7 +56,7 @@ cd /path/to/your-project && git submodule update --init --recursive
 /plugin install solana-ai-kit@stbr
 # Commands then namespace as /solana-ai-kit:<name>. The plugin is the CORE kit
 # (agents/commands/local skills/MCP/hooks); the curl one-liner (Option 1) is the
-# FULL install, adding rules + permissions/sandbox + the 18 ext/ submodules.
+# FULL install, adding rules + permissions/sandbox + the 19 ext/ submodules.
 # Details: see "Install as a Claude Code plugin" below.
 
 # Start Claude Code
@@ -110,7 +110,7 @@ What the plugin **cannot** carry (Claude Code plugins are plain git clones — t
 
 - the lazy-loaded `.claude/rules/*` code-style law (Rust, Anchor, Pinocchio, TypeScript, .NET)
 - the curated permissions allowlist + sandbox policy
-- the 18 `ext/` skill submodules (protocol, security, infra, ecosystem depth)
+- the 19 `ext/` skill submodules (protocol, security, infra, ecosystem depth)
 
 For protocol-skill depth in plugin form, add the upstream marketplaces instead (routing, not copying) — e.g. `/plugin marketplace add sendaifun/skills`, `ghostsecurity/skills`, `trailofbits/skills`, `cloudflare/skills`. The plugin's skill hub and `skill-registry.json` list the current targets.
 
@@ -125,6 +125,7 @@ The two paths are complementary: individuals wanting Solana agents/commands acro
 | `ext/solana-game` | [solanabr/solana-game-skill](https://github.com/solanabr/solana-game-skill) | Game development (Unity, PlaySolana, PSG1) |
 | `ext/cloudflare` | [cloudflare/skills](https://github.com/cloudflare/skills) | Infrastructure (Workers, Agents SDK, MCP servers) |
 | `ext/trailofbits` | [trailofbits/skills](https://github.com/trailofbits/skills) | Security auditing and vulnerability scanning |
+| `ext/solana-audit` | [Berektassuly/solana-audit-skill](https://github.com/Berektassuly/solana-audit-skill) | Audit lifecycle: taxonomy-mapped findings, release gates, transaction/payment review, remediation verification, formal-verification handoff, and final reports |
 | `ext/qedgen` | [QEDGen/solana-skills](https://github.com/QEDGen/solana-skills) | Formal verification with Lean 4 theorem proving |
 | `ext/solana-mobile` | [solana-mobile/solana-mobile-dev-skill](https://github.com/solana-mobile/solana-mobile-dev-skill) | Mobile Wallet Adapter, Genesis Token, SKR address resolution |
 | `ext/colosseum` | [ColosseumOrg/colosseum-copilot](https://github.com/ColosseumOrg/colosseum-copilot) | Startup research, idea validation, hackathon projects |
@@ -256,6 +257,7 @@ See [`skill-registry.json`](.claude/skills/skill-registry.json) for the complete
     │   │   ├── solana-game/             # Solana game skill (Unity, PSG1)
     │   │   ├── cloudflare/              # Cloudflare Workers, Agents SDK
     │   │   ├── trailofbits/             # Trail of Bits security skills
+    │   │   ├── solana-audit/            # Audit lifecycle and reports
     │   │   ├── qedgen/                # QEDGen formal verification (Lean 4)
     │   │   ├── solana-mobile/           # Mobile Wallet Adapter, Genesis Token
     │   │   ├── colosseum/              # Colosseum Copilot (startup research)
