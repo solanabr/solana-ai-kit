@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "updated": "2026-06-15",
+  "updated": "2026-06-18",
   "entries": [
     {
       "id": "anthropic-skills",
@@ -590,6 +590,25 @@
       "default_installed": false,
       "safety": "caution: SaaS data-routing — queries and API key sent to mcp.nansen.ai (Nansen servers); key passed in request header; free tier 100 credits, paid ~$0.001/credit or $0.01–$0.05/x402 call; opt-in only",
       "tags": ["analytics", "wallet-labeling", "smart-money", "on-chain-data", "solana", "multi-chain", "paid"]
+    },
+    {
+      "id": "solsentry-counterparty-gate",
+      "name": "SolSentry Counterparty Gate",
+      "type": "skill",
+      "domain": "security",
+      "description": "Operator-level counterparty risk for Solana: before you CPI into / compose with / integrate a program, oracle, keeper, or multisig you didn't write, check whether its deployer is a known serial rug operator \u2014 the question the kit's bytecode-side security skills (trailofbits, qedgen, safe-solana-builder, ghostsecurity) can't answer. Backed by SolSentry's live mainnet scanner: free keyless REST API + @solsentry/mcp. File-pattern triggers on invoke/CpiContext/declare_id!/third-party SDK. Clean code \u2260 clean partner.",
+      "source": "https://github.com/solsentry/solana-counterparty-gate",
+      "install": {
+        "method": "submodule",
+        "command": "git submodule add https://github.com/solsentry/solana-counterparty-gate .claude/skills/ext/solana-counterparty-gate",
+        "env": []
+      },
+      "license": "MIT",
+      "maintainer": "solsentry",
+      "signal": { "stars": null, "last_commit": "2026-06-18", "reputability": "org" },
+      "default_installed": false,
+      "safety": "clean (read-only REST lookups, no API key required for reads; no auto-running hooks; open-core: open SDK + MCP + free API, private engine; drain-trace is opt-in x402-paid)",
+      "tags": ["security", "risk", "counterparty", "operator", "rug", "cpi", "solana", "pre-sign"]
     }
   ]
 }
