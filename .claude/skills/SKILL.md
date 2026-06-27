@@ -236,6 +236,7 @@ From [quiknode-labs/solana-anchor-claude-skill](ext/quicknode-anchor/) — **ref
 | Vulnerability scanning | ext/trailofbits → solana-vulnerability-scanner/ |
 | Formal verification, proofs | ext/qedgen → SKILL.md |
 | Idea validation, competitive research, hackathon projects | ext/colosseum → colosseum-copilot/SKILL.md |
+| Superteam Earn, GitHub bounties, agent earn loop | superteam-earn/SKILL.md |
 | Security-first scaffolding, safe code generation | ext/safe-solana-builder → SKILL.md |
 | Vercel deployment, Next.js, AI SDK, v0 | ext/vercel → skills/ |
 | Idea validation, "what should I build" | idea-sprint/SKILL.md |
