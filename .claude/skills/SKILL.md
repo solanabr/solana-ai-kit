@@ -36,6 +36,7 @@ Key references within:
 ## Token Extensions
 
 - [token-2022.md](token-2022.md) — SPL Token-2022 extensions: transfer hooks, confidential transfers, transfer fees, metadata, CPI guard, soulbound tokens, and all extension types with Anchor/native patterns
+- [ext/solana-token-extensions/skill/SKILL.md](ext/solana-token-extensions/skill/SKILL.md) - Token-2022 mastery (tested): compatibility matrix, transfer-hook security audit, accurate confidential-transfer status (issue #657), SPL-to-Token-2022 migration, wallet/DEX/CEX integration, and a read-only mint inspector (CLI + 3 MCP tools: inspect_mint, inspect_many, check_extension_compatibility). Deeper, tested companion to token-2022.md.
 
 ## DeFi & Ecosystem Protocols
 
