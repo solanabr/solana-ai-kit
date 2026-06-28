@@ -1,6 +1,6 @@
 ---
 name: solana-dev
-description: Unified skill hub for Solana development. Routes to external submodule skills (solana-foundation, sendai, solana-game, trailofbits, cloudflare, qedgen, colosseum, solana-new, ghostsecurity, defending-code) and local skills. Progressive disclosure — read only what you need.
+description: Unified skill hub for Solana development. Routes to external submodule skills (solana-foundation, sendai, solana-game, trailofbits, cloudflare, qedgen, colosseum, solana-new, ghostsecurity, defending-code, solana-payments) and local skills. Progressive disclosure — read only what you need.
 user-invocable: true
 ---
 
@@ -30,7 +30,7 @@ Key references within:
 - [testing.md](ext/solana-dev/skill/references/testing.md) — LiteSVM, Mollusk, Surfpool, CI
 - [security.md](ext/solana-dev/skill/references/security.md) — Vulnerability categories, checklists
 - [idl-codegen.md](ext/solana-dev/skill/references/idl-codegen.md) — Codama/Shank client generation
-- [payments.md](ext/solana-dev/skill/references/payments.md) — Commerce Kit, Kora, Solana Pay
+- [payments.md](ext/solana-dev/skill/references/payments.md) — Commerce Kit, Kora, Solana Pay (shallow ref — for the full payment lifecycle, see **[Payments](#payments)** below)
 - [resources.md](ext/solana-dev/skill/references/resources.md) — Official documentation links
 
 ## Token Extensions
@@ -143,6 +143,19 @@ From [solana-game-skill](ext/solana-game/skill/):
 - [mobile.md](ext/solana-game/skill/mobile.md) — Mobile game patterns
 - [csharp-patterns.md](ext/solana-game/skill/csharp-patterns.md) — C# patterns for Solana
 
+## Payments
+From [solana-payments-skill](ext/solana-payments/skill/):
+- [ext/solana-payments/skill/SKILL.md](ext/solana-payments/skill/SKILL.md) — Payments skill entry point (accept → verify → settle → off-ramp)
+- [verification.md](ext/solana-payments/skill/verification.md) — findReference/validateTransfer, idempotency, replay, finality
+- [transfer-requests.md](ext/solana-payments/skill/transfer-requests.md) — Solana Pay URLs, QR codes
+- [transaction-requests.md](ext/solana-payments/skill/transaction-requests.md) — Server-composed dynamic transactions
+- [stablecoins.md](ext/solana-payments/skill/stablecoins.md) — USDC/USDG/PYUSD, Token-2022 gotchas
+- [fiat-rails.md](ext/solana-payments/skill/fiat-rails.md) — On/off-ramp, Pix (Brazil), SDP
+- [gasless.md](ext/solana-payments/skill/gasless.md) — Sponsored transactions for users without SOL
+- [merchant-server.md](ext/solana-payments/skill/merchant-server.md) — Order state machine, webhooks, reconciliation, idempotency
+- [frontend.md](ext/solana-payments/skill/frontend.md) — Checkout UX, QR rendering, polling, mobile deep links
+- [kit-interop.md](ext/solana-payments/skill/kit-interop.md) — @solana/pay is kit-native; bridging legacy web3.js code into it
+
 ## Mobile Development
 
 From [solana-mobile](ext/solana-mobile/):
@@ -224,7 +237,7 @@ From [quiknode-labs/solana-anchor-claude-skill](ext/quicknode-anchor/) — **ref
 | NFT standards, metadata, cNFT, candy machine | ext/metaplex → skills/metaplex/SKILL.md (official) |
 | Helius RPC, DAS, webhooks, Sender, priority fees | ext/helius → helius-skills/helius/SKILL.md (official) |
 | SVM/protocol internals (execution, consensus, validators, SIMDs) | ext/helius → helius-skills/svm/SKILL.md |
-| Payment flows, checkout | ext/solana-dev → payments.md |
+| Payment flows, checkout, verify, settle, off-ramp/Pix | ext/solana-payments/skill/SKILL.md |
 | Generated clients, IDL | ext/solana-dev → idl-codegen.md |
 | Unity game development | ext/solana-game → unity-sdk.md |
 | PlaySolana, PSG1 console | ext/solana-game → playsolana.md |

@@ -138,6 +138,7 @@ The two paths are complementary: individuals wanting Solana agents/commands acro
 | `ext/helius` | [helius-labs/core-ai](https://github.com/helius-labs/core-ai) | Official Helius infra skill + unique SVM internals skill |
 | `ext/quicknode-anchor` | [quiknode-labs/solana-anchor-claude-skill](https://github.com/quiknode-labs/solana-anchor-claude-skill) | Anchor/financial-math/Quasar reference files (quarantined — refs only) |
 | `ext/eth-to-sol` | [solana-foundation/eth-to-sol-skill](https://github.com/solana-foundation/eth-to-sol-skill) | EVM/Solidity → Anchor two-pass porting |
+| `ext/solana-payments` | [xinaids/solana-payments-skill](https://github.com/xinaids/solana-payments-skill) | Consumer/merchant payment lifecycle: Solana Pay, server-side verification, stablecoins (USDC/USDG/PYUSD), gasless transactions, fiat off-ramp (Pix) |
 
 ### Agent Teams
 
