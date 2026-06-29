@@ -33,6 +33,10 @@ Key references within:
 - [payments.md](ext/solana-dev/skill/references/payments.md) — Commerce Kit, Kora, Solana Pay
 - [resources.md](ext/solana-dev/skill/references/resources.md) — Official documentation links
 
+## Vault & Escrow Development
+
+- [pda-vault/skill/](pda-vault/skill/) — Build production-grade PDA vaults on Solana: single-signer, time-lock, multi-sig, and escrow vault patterns with Anchor 1.0+ and Pinocchio. Covers PDA derivation, CPI signing, balance tracking, seed strategies, and security checklist
+
 ## Token Extensions
 
 - [token-2022.md](token-2022.md) — SPL Token-2022 extensions: transfer hooks, confidential transfers, transfer fees, metadata, CPI guard, soulbound tokens, and all extension types with Anchor/native patterns
@@ -224,6 +228,7 @@ From [quiknode-labs/solana-anchor-claude-skill](ext/quicknode-anchor/) — **ref
 | NFT standards, metadata, cNFT, candy machine | ext/metaplex → skills/metaplex/SKILL.md (official) |
 | Helius RPC, DAS, webhooks, Sender, priority fees | ext/helius → helius-skills/helius/SKILL.md (official) |
 | SVM/protocol internals (execution, consensus, validators, SIMDs) | ext/helius → helius-skills/svm/SKILL.md |
+| PDA vaults, escrows, time-locks, multi-sig vaults | pda-vault/skill/ |
 | Payment flows, checkout | ext/solana-dev → payments.md |
 | Generated clients, IDL | ext/solana-dev → idl-codegen.md |
 | Unity game development | ext/solana-game → unity-sdk.md |
