@@ -52,3 +52,6 @@
 [submodule ".claude/skills/ext/eth-to-sol"]
 	path = .claude/skills/ext/eth-to-sol
 	url = https://github.com/solana-foundation/eth-to-sol-skill
+[submodule ".claude/skills/ext/token2022-integration-guard"]
+	path = .claude/skills/ext/token2022-integration-guard
+	url = https://github.com/mohit-1710/token2022-integration-guard.git
