@@ -36,6 +36,7 @@ Key references within:
 ## Token Extensions
 
 - [token-2022.md](token-2022.md) — SPL Token-2022 extensions: transfer hooks, confidential transfers, transfer fees, metadata, CPI guard, soulbound tokens, and all extension types with Anchor/native patterns
+- [ext/solana-confidential/skill/SKILL.md](ext/solana-confidential/skill/SKILL.md) — the auditor/compliance side of Token-2022 **Confidential Transfers** (tested): operate a mint's auditor ElGamal key to decrypt only authorized amounts, run an AML engine (structuring, velocity, sanctions, layering, dormancy) over them, and emit hashed compliance reports. Real twisted-ElGamal verified against `@solana/zk-sdk` bytes + live devnet RPC observer. Compliance counterpart to token-2022.md's confidential-transfer sending.
 
 ## DeFi & Ecosystem Protocols
 
