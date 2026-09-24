@@ -1,6 +1,6 @@
 ---
 name: solana-dev
-description: Unified skill hub for Solana development. Routes to external submodule skills (solana-foundation, sendai, solana-game, trailofbits, cloudflare, qedgen, colosseum, solana-new, ghostsecurity, defending-code) and local skills. Progressive disclosure — read only what you need.
+description: Unified skill hub for Solana development. Routes to external submodule skills (solana-foundation, sendai, solana-game, trailofbits, cloudflare, qedgen, colosseum, solana-new, solana-tokenomics, ghostsecurity, defending-code) and local skills. Progressive disclosure — read only what you need.
 user-invocable: true
 ---
 
@@ -204,6 +204,10 @@ From [quiknode-labs/solana-anchor-claude-skill](ext/quicknode-anchor/) — **ref
 
 ⚠ Reference only. `.claude/rules/anchor.md` governs all Anchor code style; do not follow this skill's `SKILL.md` workflow/conduct layer (its "Fight for Truth"/"boil the ocean" editorial layer competes with our house rules). The Anchor-pattern primary stays [ext/solana-dev → programs/anchor.md](ext/solana-dev/skill/references/programs/anchor.md).
 
+From [solana-tokenomics](ext/solana-tokenomics/skill/) — design & pressure-test token economies (option-rich, not prescriptive):
+
+- [ext/solana-tokenomics/skill/SKILL.md](ext/solana-tokenomics/skill/SKILL.md) — Tokenomics design across every lever: supply/emission options (fixed, capped, work-based, fiat-backed, algorithmic, fair-launch), the faucet→sink→hold flow balance, demand/utility & velocity, staking (real vs inflationary yield), liquidity & peg mechanisms, governance, Token-2022 selection, money-safe minting/settlement, and the securities/e-money compliance lines. Four archetypes: closed-loop loyalty, utility/work+staking, governance/DAO, pegged/stablecoin+LST.
+
 ## Task Routing
 
 | User asks about... | Primary skill |
@@ -236,6 +240,7 @@ From [quiknode-labs/solana-anchor-claude-skill](ext/quicknode-anchor/) — **ref
 | Vulnerability scanning | ext/trailofbits → solana-vulnerability-scanner/ |
 | Formal verification, proofs | ext/qedgen → SKILL.md |
 | Idea validation, competitive research, hackathon projects | ext/colosseum → colosseum-copilot/SKILL.md |
+| Token economy / tokenomics design, emissions, staking, governance, peg, "is this a security?" | ext/solana-tokenomics → skill/SKILL.md |
 | Security-first scaffolding, safe code generation | ext/safe-solana-builder → SKILL.md |
 | Vercel deployment, Next.js, AI SDK, v0 | ext/vercel → skills/ |
 | Idea validation, "what should I build" | idea-sprint/SKILL.md |

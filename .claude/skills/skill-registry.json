@@ -590,6 +590,21 @@
       "default_installed": false,
       "safety": "caution: SaaS data-routing — queries and API key sent to mcp.nansen.ai (Nansen servers); key passed in request header; free tier 100 credits, paid ~$0.001/credit or $0.01–$0.05/x402 call; opt-in only",
       "tags": ["analytics", "wallet-labeling", "smart-money", "on-chain-data", "solana", "multi-chain", "paid"]
+    },
+    {
+      "id": "solana-tokenomics",
+      "name": "Solana Tokenomics",
+      "type": "skill",
+      "domain": "tokenomics",
+      "description": "Design, model & pressure-test token economies on Solana from first principles to a shippable spec: supply/emission options (fixed, capped, work-based, fiat-backed, algorithmic, fair-launch), the faucet→sink→hold flow balance, demand/utility & velocity, staking (real vs inflationary yield), liquidity & peg mechanisms, governance, Token-2022 selection, money-safe minting/settlement, and the securities/e-money compliance lines. Four archetypes: closed-loop loyalty, utility/work+staking, governance/DAO, pegged/stablecoin+LST. Option-rich, not prescriptive.",
+      "source": "https://github.com/zupy-fmartinelli/solana-tokenomics-skill",
+      "install": { "method": "submodule", "command": "git submodule add https://github.com/zupy-fmartinelli/solana-tokenomics-skill .claude/skills/ext/solana-tokenomics", "env": [] },
+      "license": "MIT",
+      "maintainer": "zupy-fmartinelli",
+      "signal": { "stars": null, "last_commit": "2026-06-22", "reputability": "individual" },
+      "default_installed": false,
+      "safety": "clean — pure Markdown skill: no executables, no network calls, no runtime dependencies; install.sh only copies files into ~/.claude/skills",
+      "tags": ["tokenomics", "token-design", "token-economy", "emissions", "vesting", "staking", "governance", "stablecoin", "compliance", "token-2022", "defi"]
     }
   ]
 }
