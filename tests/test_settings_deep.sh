@@ -134,9 +134,10 @@ for legacy in command_matches CLAUDE_FILE_PATH CLAUDE_TOOL_EXIT_CODE CLAUDE_SUBA
   assert_file_not_contains "$SETTINGS" "$legacy" "hooks do not rely on unsupported '$legacy'"
 done
 
-# --- Model Defaults ---
-echo "[modelDefaults]"
-assert_eq "opus" "$(json_get '["modelDefaults"]["agent"]')" "modelDefaults.agent == opus"
-assert_eq "sonnet" "$(json_get '["modelDefaults"]["command"]')" "modelDefaults.command == sonnet"
+# --- Model routing ---
+# modelDefaults is not a Claude Code setting (silently ignored); routing lives in the
+# agent/command `model:` frontmatter, checked by test_model_routing.sh
+echo "[model routing]"
+assert_eq "__MISSING__" "$(json_get '["modelDefaults"]')" "no modelDefaults key (not a Claude Code setting)"
 
 print_summary

@@ -1,7 +1,7 @@
 ---
 name: rust-backend-engineer
 description: "Rust backend specialist for building async services that interact with Solana blockchain. Builds APIs, indexing services, and off-chain processing using Axum, Tokio, and modern async patterns.\n\nUse when: Building REST/WebSocket APIs for Solana dApps, implementing transaction indexers, creating webhook services, or any Rust backend that interacts with Solana."
-model: opus
+model: sonnet
 color: indigo
 ---
 

@@ -1,5 +1,6 @@
 ---
 description: "Scaffold a new Solana project with programs, frontend, tests, and CI"
+model: sonnet
 ---
 
 You are scaffolding a new Solana project. Detect the project type and generate appropriate structure with this config pre-installed.

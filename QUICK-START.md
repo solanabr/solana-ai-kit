@@ -73,6 +73,8 @@ Plugins are plain git clones, so they can't carry the 18 `ext/` submodules, the 
 | **solana-guide** | Learning and tutorials |
 | **solana-researcher** | Ecosystem research |
 
+Each agent runs on Opus, Sonnet, or your own session model (never a pinned Fable). See [README → Agents](README.md#agents) for the routing.
+
 ### 30 Slash Commands
 
 **Building:**

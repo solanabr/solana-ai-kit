@@ -26,19 +26,21 @@ echo ""
 echo "[Agents]"
 for f in .claude/agents/*.md; do
   name="$(basename "$f")"
-  has_name=1; has_desc=1; has_model=1
+  has_name=1; has_desc=1; model_ok=1
 
   # Check for frontmatter block
   if head -1 "$f" | grep -q "^---"; then
     frontmatter="$(awk '/^---$/{c++;next} c==1{print; if(NR>22)exit}' "$f")"
     echo "$frontmatter" | grep -q "^name:" && has_name=0
     echo "$frontmatter" | grep -q "^description:" && has_desc=0
-    echo "$frontmatter" | grep -q "^model:" && has_model=0
+    # model: is optional (omitted = inherit the session model); never hardcode fable
+    echo "$frontmatter" | grep -q "^model:" || model_ok=0
+    echo "$frontmatter" | grep -qE "^model:[[:space:]]*(opus|sonnet|haiku|inherit)[[:space:]]*$" && model_ok=0
   fi
 
   check "$name has name:" $has_name
   check "$name has description:" $has_desc
-  check "$name has model:" $has_model
+  check "$name model: omitted or opus|sonnet|haiku|inherit" $model_ok
 done
 echo ""
 

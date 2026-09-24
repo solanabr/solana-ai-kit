@@ -1,5 +1,6 @@
 ---
 description: Resync external skill submodules to latest upstream versions
+model: sonnet
 ---
 
 Run the resync script to update all external skill submodules and verify integrity.

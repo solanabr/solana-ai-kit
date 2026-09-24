@@ -1,7 +1,7 @@
 ---
 name: solana-frontend-engineer
 description: "Frontend specialist for Solana dApps. Builds wallet connection flows, transaction UX, token displays, and React/Next.js components with modern design (liquid glass, calm UI), WCAG 2.2 AA accessibility, and performance optimization."
-model: opus
+model: sonnet
 color: orange
 ---
 

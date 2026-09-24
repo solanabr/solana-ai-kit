@@ -1,5 +1,6 @@
 ---
 description: Update solana-ai-kit to latest version from upstream
+model: sonnet
 ---
 
 Run the update script to pull latest agents, skills, commands, and rules from upstream.

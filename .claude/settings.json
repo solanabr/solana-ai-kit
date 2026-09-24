@@ -439,10 +439,5 @@
         ]
       }
     ]
-  },
-
-  "modelDefaults": {
-    "agent": "opus",
-    "command": "sonnet"
   }
 }

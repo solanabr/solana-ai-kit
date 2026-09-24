@@ -1,5 +1,6 @@
 ---
 description: "Version the Solana AI Kit config in git (un-ignores .claude/, CLAUDE.md, .mcp.json, .gitmodules and commits them)"
+model: sonnet
 ---
 
 You are opting this project **into** version-controlling its Solana AI Kit config. By default `install.sh` gitignores the kit (`.claude/`, `CLAUDE.md`, `.mcp.json`, `.gitmodules`) so it stays out of the user's repo. This command reverses that: it removes the config block from `.gitignore`, stages those files, and commits them — so the config travels with the repo (team setup, reproducible config).

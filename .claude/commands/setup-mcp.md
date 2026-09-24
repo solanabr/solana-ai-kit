@@ -1,5 +1,6 @@
 ---
 description: "Configure MCP server API keys in .env"
+model: sonnet
 ---
 
 You are guiding the user through MCP API key setup. All secrets go in `.env` (never in `mcp.json`).

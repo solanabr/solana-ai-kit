@@ -62,6 +62,7 @@ When X changes, also update Y:
 |---------|-------------|
 | Add/remove **agent** | README.md agent table + tree count, QUICK-START.md tree count, install.sh output, tests/test_agents.sh + test_install.sh assertions |
 | Add/remove **command** | README.md commands tables + tree count, QUICK-START.md tree count, tests/test_commands.sh + test_install.sh assertions |
+| Change an agent/command **`model:`** | README.md Agents table Model column + routing note (`tests/test_model_routing.sh` enforces allowed values, no Fable, README drift) |
 | Add/remove **MCP server** | README.md MCP table, CLAUDE-solana.md MCP list, QUICK-START.md MCP list, .env.example, .claude/commands/setup-mcp.md |
 | Add/remove **.env.example key** | `.claude/commands/setup-mcp.md` |
 | Add/remove **submodule** | .gitmodules, README.md submodules table + tree, QUICK-START.md tree, .claude/skills/SKILL.md routing |
@@ -129,6 +130,7 @@ All changes on feature branches: `git checkout -b <type>/<scope>-<description>-<
 
 - `.claude/VERSION` follows semver; bump on every release. `.claude/CHANGELOG.md` tracks what changed.
 - `/dream` triggers memory consolidation (merges, prunes, deduplicates MEMORY.md). Run after major refactors.
+- Model routing: `model: opus` = deep reasoning, `model: sonnet` = implementation/mechanical/docs, no `model:` line = inherit the session model (strongest-model work). Commands get `model: sonnet` only when mechanical and run at session start (a mid-session switch drops the prompt cache). Never hardcode `fable`/`claude-fable-*`; `modelDefaults` is not a Claude Code setting.
 
 ---
 
