@@ -36,6 +36,7 @@ Key references within:
 ## Token Extensions
 
 - [token-2022.md](token-2022.md) — SPL Token-2022 extensions: transfer hooks, confidential transfers, transfer fees, metadata, CPI guard, soulbound tokens, and all extension types with Anchor/native patterns
+- [ext/token2022-integration-guard/skill/SKILL.md](ext/token2022-integration-guard/skill/SKILL.md) — Token-2022 CONSUMER-side safety: how a program safely accepts an arbitrary, possibly-hostile third-party mint. On-chain extension allowlist that rejects dangerous mints, delta-measured fee-safe deposits (fixes the transfer-fee share-insolvency footgun), reentrancy-aware withdraws, plus a t22-scan CLI. Compiling Anchor 1.0 + 6 LiteSVM attack tests. The integrator counterpart to token-2022.md (issuer-side).
 
 ## DeFi & Ecosystem Protocols
 
