@@ -51,4 +51,9 @@ else
   assert_eq "0" "1" ".env.example and setup-mcp.md both exist for drift check"
 fi
 
+echo ""
+echo "[test_commands] Checking --agents install-mode support..."
+assert_file_contains "$CMDS_DIR/resync.md" ".agents/bin" "resync.md supports --agents installs (.agents/bin)"
+assert_file_contains "$CMDS_DIR/update.md" ".agents/bin" "update.md supports --agents installs (.agents/bin)"
+
 print_summary

@@ -84,8 +84,8 @@ git ls-remote --tags --sort=-v:refname https://github.com/solanabr/solana-ai-kit
 ```
 
 - ✓ Local version matches latest upstream tag
-- ! Behind upstream → fix-it: `bash .claude/bin/update.sh` (preview first: `bash .claude/bin/update.sh --dry-run`)
-- ✗ No `.claude/VERSION` → config is corrupted or pre-1.0 → fix-it: `bash .claude/bin/update.sh`
+- ! Behind upstream → fix-it: `bash .claude/bin/update.sh` (or `.agents/bin/update.sh` for `--agents` installs); preview first with `--dry-run`
+- ✗ No `.claude/VERSION` → config is corrupted or pre-1.0 → fix-it: `bash .claude/bin/update.sh` (or `.agents/bin/update.sh` for `--agents` installs)
 
 ## Check 7: MCP Configuration
 
