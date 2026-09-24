@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "updated": "2026-06-15",
+  "updated": "2026-06-19",
   "entries": [
     {
       "id": "anthropic-skills",
@@ -590,6 +590,21 @@
       "default_installed": false,
       "safety": "caution: SaaS data-routing — queries and API key sent to mcp.nansen.ai (Nansen servers); key passed in request header; free tier 100 credits, paid ~$0.001/credit or $0.01–$0.05/x402 call; opt-in only",
       "tags": ["analytics", "wallet-labeling", "smart-money", "on-chain-data", "solana", "multi-chain", "paid"]
+    },
+    {
+      "id": "token-2022-extensions",
+      "name": "Token-2022 Extensions",
+      "type": "skill",
+      "domain": "solana-defi",
+      "description": "Decision-first, tested successor to the kit's flat token-2022.md: choose the right extension set, wire transfer hooks/fees/metadata/groups correctly, and ship tokens that don't break on DEXs/wallets/CEXs. Includes a built+tested allowlist transfer-hook program and a mint inspector. Closes issue #12.",
+      "source": "https://github.com/vijaygopalbalasa/token-2022-extensions-skill",
+      "install": { "method": "submodule", "command": "git submodule add https://github.com/vijaygopalbalasa/token-2022-extensions-skill .claude/skills/ext/token-2022", "env": [] },
+      "license": "MIT",
+      "maintainer": "vijaygopalbalasa",
+      "signal": { "stars": 0, "last_commit": "2026-06-19", "reputability": "emerging — verify before install" },
+      "default_installed": false,
+      "safety": "clean — native-Rust reference program (no hidden CPI), MIT, no telemetry; e2e tests load the mainnet Token-2022 program only for local testing",
+      "tags": ["token-2022", "token-extensions", "transfer-hook", "transfer-fee", "metadata", "security"]
     }
   ]
 }
