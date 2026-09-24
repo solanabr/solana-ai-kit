@@ -590,6 +590,21 @@
       "default_installed": false,
       "safety": "caution: SaaS data-routing — queries and API key sent to mcp.nansen.ai (Nansen servers); key passed in request header; free tier 100 credits, paid ~$0.001/credit or $0.01–$0.05/x402 call; opt-in only",
       "tags": ["analytics", "wallet-labeling", "smart-money", "on-chain-data", "solana", "multi-chain", "paid"]
+    },
+    {
+      "id": "crypto-legal-skill",
+      "name": "Crypto Legal Skill",
+      "type": "skill",
+      "domain": "legal-compliance",
+      "description": "Entity structuring and regulatory-perimeter triage for crypto/Solana founders: Cayman Foundation+BVI, Swiss, Marshall Islands/Wyoming DAO LLC patterns; US Howey/SEC, EU MiCA, UK FCA, Singapore PSA/DTSP/SFA jurisdiction notes; token-design red-flag patterns. Frameworks and lawyer-handoff prep only - never gives compliance conclusions.",
+      "source": "https://github.com/IronicRayquaza/crypto-legal-skill",
+      "install": { "method": "submodule", "command": "git submodule add https://github.com/IronicRayquaza/crypto-legal-skill .claude/skills/ext/crypto-legal", "env": [] },
+      "license": "MIT",
+      "maintainer": "IronicRayquaza",
+      "signal": { "stars": null, "last_commit": "2026-06-19", "reputability": "individual" },
+      "default_installed": false,
+      "safety": "clean; hard-codes a no-legal-conclusions boundary at the rules/agent/content level so it cannot be used to assert a project is compliant",
+      "tags": ["legal", "compliance", "entity-structuring", "mica", "securities", "incorporation", "dao", "token-launch"]
     }
   ]
 }
