@@ -333,6 +333,21 @@
       "tags": ["meteora", "dlmm", "defi", "sdk", "solana"]
     },
     {
+      "id": "solana-error-doctor",
+      "name": "Solana Error Doctor",
+      "type": "skill",
+      "domain": "solana-dev",
+      "description": "Diagnostic skill: paste a Solana error (build/Anchor/transaction/RPC/wallet) and get the root cause + verified fix. Symptom-routed chapters + an error-string/error-code index; covers PDA/seeds, toolchain (lockfile v4/edition2024/sBPF), blockhash & landing, Token-2022, getProgramAccounts, Buffer/bigint, testing (LiteSVM/Surfpool), and a Pyth/Switchboard oracles module. Aligned to Anchor 1.0. Diagnoses rather than duplicating the build skills (cites helius core-ai for tx sending).",
+      "source": "https://github.com/cnpierrepapi/solana-error-doctor",
+      "install": { "method": "submodule", "command": "git submodule add https://github.com/cnpierrepapi/solana-error-doctor .claude/skills/ext/solana-error-doctor", "env": [] },
+      "license": "MIT",
+      "maintainer": "cnpierrepapi",
+      "signal": { "stars": null, "last_commit": "2026-06-19", "reputability": "individual" },
+      "default_installed": false,
+      "safety": "clean",
+      "tags": ["debugging", "errors", "diagnostics", "anchor", "toolchain", "transactions", "token-2022", "oracles", "solana"]
+    },
+    {
       "id": "x402-proxy-mcp",
       "name": "x402 Proxy MCP",
       "type": "mcp",
