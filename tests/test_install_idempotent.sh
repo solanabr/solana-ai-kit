@@ -27,8 +27,8 @@ assert_file_not_exists "$TEMP_DIR/CLAUDE.md.bak" "No CLAUDE.md.bak after 1st ins
 echo '{"user_custom": true}' > "$TEMP_DIR/.claude/settings.json"
 echo '{"mcpServers": {"my-server": {}}}' > "$TEMP_DIR/.mcp.json"
 
-# Add custom content to CLAUDE.md to verify backup
-ORIGINAL_CLAUDE_MD="$(cat "$TEMP_DIR/CLAUDE.md")"
+# Customize CLAUDE.md to verify it gets backed up
+echo "# my custom rule" >> "$TEMP_DIR/CLAUDE.md"
 
 # --- Second install ---
 echo "[second install]"
@@ -37,7 +37,7 @@ SOLANA_AI_KIT_LOCAL_SRC="$REPO_ROOT" bash "$REPO_ROOT/install.sh" "$TEMP_DIR" >/
 # Verify NO nesting (.claude/.claude should not exist)
 assert_dir_not_exists "$TEMP_DIR/.claude/.claude" "No .claude/.claude nesting on 2nd install"
 
-assert_file_exists "$TEMP_DIR/CLAUDE.md.bak" "CLAUDE.md.bak created on 2nd install"
+assert_file_contains "$TEMP_DIR/CLAUDE.md.bak" "my custom rule" "Customized CLAUDE.md backed up to CLAUDE.md.bak on 2nd install"
 assert_dir_exists "$TEMP_DIR/.claude" ".claude/ still valid after 2nd install"
 assert_dir_exists "$TEMP_DIR/.claude/agents" "agents/ preserved after 2nd install"
 assert_dir_exists "$TEMP_DIR/.claude/commands" "commands/ preserved after 2nd install"
@@ -58,5 +58,10 @@ assert_eq "1" "$EXT_DUPES" "No duplicate ext/ entries in .gitignore"
 
 LOCAL_DUPES=$(grep -c "CLAUDE.local.md" "$TEMP_DIR/.gitignore" | tr -d ' ')
 assert_eq "1" "$LOCAL_DUPES" "No duplicate CLAUDE.local.md entries in .gitignore"
+
+# --- Third install: CLAUDE.md now matches the kit's, so the backup of the user's copy must survive ---
+echo "[third install]"
+SOLANA_AI_KIT_LOCAL_SRC="$REPO_ROOT" bash "$REPO_ROOT/install.sh" "$TEMP_DIR" >/dev/null 2>&1
+assert_file_contains "$TEMP_DIR/CLAUDE.md.bak" "my custom rule" "CLAUDE.md.bak still holds the user's copy after a 3rd install"
 
 print_summary

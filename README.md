@@ -65,7 +65,7 @@ claude
 
 ### `--agents` Flag
 
-Pass `--agents` to install everything into `.agents/` instead of `.claude/`. Same content, different directory name. Useful when `.claude/` is already taken or for non-Claude AI tools (Cursor, Windsurf, Copilot, etc.).
+Pass `--agents` to install everything into `.agents/` instead of `.claude/`, with the instructions in `AGENTS.md` instead of `CLAUDE.md`. Codex and opencode read `AGENTS.md` and the skills in `.agents/skills/`, and the installed files point at `.agents/` paths. Useful when `.claude/` is already taken or for non-Claude AI tools. `.agents/agents/`, `.agents/commands/` and `.mcp.json` keep Claude Code's format, so other tools can use them as prompts or context.
 
 ```bash
 bash install.sh --agents /path/to/your-project

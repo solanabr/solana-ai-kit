@@ -55,3 +55,147 @@ jobs:
           test -d "$TEMP_DIR/.agents/agents"
           test ! -d "$TEMP_DIR/.claude"
           echo "✓ Agents mode smoke test passed"
+
+  # install.sh --agents: .agents/ + AGENTS.md for Codex, opencode and other
+  # AGENTS.md readers. Mirrors tests/test_install_agents_only.sh.
+  agents-mode:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    env:
+      SOLANA_AI_KIT_LOCAL_SRC: ${{ github.workspace }}
+      NO_COLOR: "1"
+      # Project-relative .claude/ paths dangle in an .agents/ install. Skipped on purpose:
+      # ~/.claude/ and $HOME/.claude/, the vendored ext/ repos, bin/, and lines that also name .agents/.
+      CLAUDE_REF: '(^|[^[:alnum:]_./~-])\.claude/|CLAUDE_PROJECT_DIR:-[.][}]/\.claude/'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Fresh install into a git repo
+        run: |
+          T="$RUNNER_TEMP/fresh"; mkdir -p "$T"; git -C "$T" init -q
+          bash install.sh --agents "$T"
+          test -f "$T/AGENTS.md" && test ! -e "$T/CLAUDE.md" && test ! -e "$T/.claude"
+          test -f "$T/.agents/skills/SKILL.md" && test -x "$T/.agents/bin/update.sh"
+          # AGENTS.md = CLAUDE-solana.md with only .claude/ -> .agents/ path changes, none left dangling
+          sed 's#\.agents/#.claude/#g' "$T/AGENTS.md" > "$RUNNER_TEMP/agents-md.norm"
+          sed 's#\.agents/#.claude/#g' CLAUDE-solana.md > "$RUNNER_TEMP/claude-solana-md.norm"
+          diff "$RUNNER_TEMP/agents-md.norm" "$RUNNER_TEMP/claude-solana-md.norm"
+          if grep -nE "$CLAUDE_REF" "$T/AGENTS.md" | grep -v '\.agents/'; then
+            echo "::error::dangling .claude/ path in AGENTS.md"; exit 1
+          fi
+          grep -qx '\.agents/skills/ext/' "$T/.gitignore"
+          sed -n '/>>> solana-ai-kit config/,/<<< solana-ai-kit config/p' "$T/.gitignore" | grep -qx 'AGENTS.md'
+
+      - name: Submodule paths live under .agents/skills/ext
+        run: |
+          T="$RUNNER_TEMP/fresh"
+          paths=$(git config -f "$T/.gitmodules" --get-regexp '\.path$' | awk '{print $2}')
+          test "$(printf '%s\n' "$paths" | grep -c .)" -eq "$(git config -f .gitmodules --get-regexp '\.path$' | wc -l)"
+          for p in $paths; do
+            case "$p" in .agents/skills/ext/*) ;; *) echo "::error::submodule path outside .agents/skills/ext: $p"; exit 1 ;; esac
+            [ -n "$(ls -A "$T/$p")" ] || { echo "::error::$p is empty"; exit 1; }
+          done
+          gitfiles=$(find "$T/.agents/skills/ext" -name .git -type f)
+          [ -z "$gitfiles" ] || { echo "::error::dangling submodule gitfiles:"; echo "$gitfiles"; exit 1; }
+
+      - name: No dangling .claude/ references
+        run: |
+          T="$RUNNER_TEMP/fresh"
+          refs=$( { grep -rnE --exclude-dir=ext --exclude-dir=bin "$CLAUDE_REF" "$T/.agents" "$T/AGENTS.md" "$T/.gitmodules" || true
+                    sed -n '/>>> solana-ai-kit config/,/<<< solana-ai-kit config/p' "$T/.gitignore" | grep '\.claude' || true
+                  } | grep -v '\.agents/' || true)
+          [ -z "$refs" ] || { echo "::error::dangling .claude/ references in the agents-mode install"; echo "$refs"; exit 1; }
+
+      - name: Idempotent re-install
+        run: |
+          T="$RUNNER_TEMP/fresh"
+          snap() { (cd "$T" && find . -path ./.git -prune -o -type f -exec cksum {} + | LC_ALL=C sort -k3); }
+          snap > "$RUNNER_TEMP/before.txt"
+          bash install.sh --agents "$T"
+          snap > "$RUNNER_TEMP/after.txt"
+          diff "$RUNNER_TEMP/before.txt" "$RUNNER_TEMP/after.txt"
+          test ! -e "$T/AGENTS.md.bak"
+
+      - name: Install next to an existing .claude/
+        run: |
+          T="$RUNNER_TEMP/with-claude"; mkdir -p "$T/.claude/agents"; git -C "$T" init -q
+          echo '{"user_custom": true}' > "$T/.claude/settings.json"
+          echo '# my agent' > "$T/.claude/agents/mine.md"
+          echo '# my Claude Code instructions' > "$T/CLAUDE.md"
+          snap() { (cd "$T" && find .claude CLAUDE.md -type f -exec cksum {} + | LC_ALL=C sort -k3); }
+          before=$(snap)
+          bash install.sh --agents "$T"
+          [ "$before" = "$(snap)" ] || { echo "::error::--agents install changed .claude/ or CLAUDE.md"; exit 1; }
+          test -f "$T/AGENTS.md" && test ! -e "$T/CLAUDE.md.bak"
+
+      - name: update.sh and resync.sh from .agents/bin
+        run: |
+          T="$RUNNER_TEMP/fresh"
+          (cd "$T" && bash .agents/bin/update.sh --dry-run) > "$RUNNER_TEMP/dry-run.txt"
+          grep -q 'DRY RUN' "$RUNNER_TEMP/dry-run.txt"
+          (cd "$T" && bash .agents/bin/update.sh)
+          (cd "$RUNNER_TEMP" && bash "$T/.agents/bin/resync.sh") | tee "$RUNNER_TEMP/resync.txt"
+          grep -q 'All skill paths resolve correctly.' "$RUNNER_TEMP/resync.txt"
+          test ! -e "$T/.claude" && test ! -e "$T/CLAUDE.md" && test ! -e "$T/AGENTS.md.upstream"
+          test "$(git config -f "$T/.gitmodules" --get-regexp '\.path$' | grep -vc ' \.agents/skills/ext/' || true)" = 0
+
+      - name: Non-git directory
+        run: |
+          T="$RUNNER_TEMP/nogit"; mkdir -p "$T"
+          bash install.sh --agents "$T"
+          (cd "$T" && bash .agents/bin/update.sh)
+          (cd "$T" && bash .agents/bin/resync.sh) | tee "$RUNNER_TEMP/resync-nogit.txt"
+          grep -q 'Not a git repository' "$RUNNER_TEMP/resync-nogit.txt"
+          test ! -e "$T/.claude"
+
+  # The real clients discover the --agents install (no API key, no model calls).
+  agents-mode-clients:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    env:
+      SOLANA_AI_KIT_LOCAL_SRC: ${{ github.workspace }}
+      NO_COLOR: "1"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install pinned opencode and Codex CLIs
+        run: npm install -g opencode-ai@1.18.32 @openai/codex@0.156.1 --no-audit --no-fund
+
+      - name: Agents-mode install
+        run: |
+          T="$RUNNER_TEMP/proj"; mkdir -p "$T"; git -C "$T" init -q
+          bash install.sh --agents "$T" > /dev/null
+
+      - name: opencode discovers the kit skills in .agents/skills
+        run: |
+          cd "$RUNNER_TEMP/proj"
+          timeout 300 opencode debug skill > "$RUNNER_TEMP/opencode-skills.json"
+          for s in idea-sprint pitch-deck hackathon; do
+            grep -q "/\.agents/skills/$s/SKILL\.md" "$RUNNER_TEMP/opencode-skills.json" \
+              || { echo "::error::opencode did not discover $s"; head -c 3000 "$RUNNER_TEMP/opencode-skills.json"; exit 1; }
+          done
+
+      - name: Codex loads AGENTS.md and the kit skills
+        run: |
+          cd "$RUNNER_TEMP/proj"
+          timeout 300 codex debug prompt-input "hello" > "$RUNNER_TEMP/codex-prompt.json"
+          grep -q 'solana-builder' "$RUNNER_TEMP/codex-prompt.json" \
+            || { echo "::error::Codex did not load AGENTS.md"; head -c 3000 "$RUNNER_TEMP/codex-prompt.json"; exit 1; }
+          grep -q 'idea-sprint' "$RUNNER_TEMP/codex-prompt.json" \
+            || { echo "::error::Codex did not list the kit skills"; head -c 3000 "$RUNNER_TEMP/codex-prompt.json"; exit 1; }
