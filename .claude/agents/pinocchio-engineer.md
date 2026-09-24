@@ -1,7 +1,6 @@
 ---
 name: pinocchio-engineer
 description: "CU optimization specialist using Pinocchio framework. Use for performance-critical programs requiring 80-95% CU reduction vs Anchor. Specializes in zero-copy access, manual validation, and minimal binary size.\\n\\nUse when: CU limits are being hit, transaction costs are significant at scale, binary size must be minimized, or maximum throughput is required."
-model: opus
 color: red
 ---
 

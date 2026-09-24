@@ -1,5 +1,6 @@
 ---
 description: Initialize forked template — setup CLAUDE.md and remove config repo scaffolding
+model: sonnet
 ---
 
 Initialize a forked solana-ai-kit template for use as a project. Sets up CLAUDE.md and removes config repo scaffolding files.

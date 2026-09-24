@@ -36,19 +36,11 @@ for f in "$AGENTS_DIR"/*.md; do
       echo "  FAIL: $name missing description:"
       FAIL=$((FAIL + 1))
     fi
-
-    TOTAL=$((TOTAL + 1))
-    if echo "$frontmatter" | grep -q "^model:"; then
-      echo "  PASS: $name has model:"
-      PASS=$((PASS + 1))
-    else
-      echo "  FAIL: $name missing model:"
-      FAIL=$((FAIL + 1))
-    fi
+    # model: is optional (omitted = inherit the session model); test_model_routing.sh checks values
   else
     echo "  FAIL: $name has no frontmatter"
-    TOTAL=$((TOTAL + 3))
-    FAIL=$((FAIL + 3))
+    TOTAL=$((TOTAL + 2))
+    FAIL=$((FAIL + 2))
   fi
 done
 

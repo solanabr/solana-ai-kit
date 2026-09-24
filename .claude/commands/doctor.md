@@ -1,5 +1,6 @@
 ---
 description: "Health check for the dev environment and solana-ai-kit config — read-only, with one exact fix-it command per failure"
+model: sonnet
 ---
 
 You are running a health check on this project's toolchain and solana-ai-kit configuration. **Read-only contract: this command never writes, edits, or deletes files.** It only inspects and reports.

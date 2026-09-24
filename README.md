@@ -286,21 +286,23 @@ See [`skill-registry.json`](.claude/skills/skill-registry.json) for the complete
 
 | Agent | Purpose | Model |
 |-------|---------|-------|
-| **solana-architect** | System design, PDA schemes, token economics, multi-program architecture | Opus |
+| **solana-architect** | System design, PDA schemes, token economics, multi-program architecture | Inherit |
 | **anchor-engineer** | Anchor development, IDL generation, account constraints | Opus |
-| **pinocchio-engineer** | CU optimization (80-95% savings), zero-copy, minimal binary | Opus |
+| **pinocchio-engineer** | CU optimization (80-95% savings), zero-copy, minimal binary | Inherit |
 | **defi-engineer** | DeFi integrations: Jupiter, Kamino, Raydium, Orca, Meteora | Opus |
 | **token-engineer** | Token-2022 extensions, token economics, launch mechanics | Opus |
-| **solana-frontend-engineer** | React/Next.js, wallet UX, transaction flows, accessibility | Opus |
+| **solana-frontend-engineer** | React/Next.js, wallet UX, transaction flows, accessibility | Sonnet |
 | **mobile-engineer** | React Native/Expo, mobile wallet adapter, deep linking | Sonnet |
-| **rust-backend-engineer** | Axum APIs, indexers, WebSocket services | Opus |
+| **rust-backend-engineer** | Axum APIs, indexers, WebSocket services | Sonnet |
 | **devops-engineer** | CI/CD, monitoring, RPC infrastructure, Cloudflare Workers | Sonnet |
 | **solana-qa-engineer** | Testing (Mollusk/LiteSVM/Trident), CU profiling, code quality | Opus |
 | **tech-docs-writer** | READMEs, API docs, integration guides | Sonnet |
-| **game-architect** | Solana game design, Unity architecture, on-chain game state, PlaySolana | Opus |
+| **game-architect** | Solana game design, Unity architecture, on-chain game state, PlaySolana | Inherit |
 | **unity-engineer** | Unity/C# implementation, Solana.Unity-SDK, wallet integration, NFT display | Sonnet |
 | **solana-guide** | Learning, tutorials, concept explanations, progressive learning paths | Sonnet |
 | **solana-researcher** | Ecosystem research, protocol investigation, SDK analysis | Sonnet |
+
+**Model routing:** `Opus` for deep reasoning where Opus is the right fit; `Sonnet` for implementation-heavy, mechanical, docs or high-volume work; `Inherit` means no `model:` line, so the agent runs on your session model (architecture and unsafe low-level code get the strongest model you run, Fable included). The kit never pins `fable`. Commands inherit your session model too, except `/doctor`, `/setup-mcp`, `/resync`, `/update`, `/cleanup`, `/commit-claude-config` and `/scaffold`, which run on Sonnet for that turn. `CLAUDE_CODE_SUBAGENT_MODEL` in your settings `env` sets the model for `Inherit` agents; add `CLAUDE_CODE_SUBAGENT_MODEL_FORCE=1` to apply it to every agent.
 
 ## Commands
 
