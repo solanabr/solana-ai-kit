@@ -41,7 +41,7 @@ After setup, run `/setup-mcp` in Claude Code to configure:
 Prefer Claude Code's plugin system? solana-ai-kit is its own marketplace. From inside Claude Code:
 
 ```text
-/plugin marketplace add solanabr/solana-ai-kit
+/plugin marketplace add https://github.com/solanabr/solana-ai-kit.git
 /plugin install solana-ai-kit@stbr
 ```
 
