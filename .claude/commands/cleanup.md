@@ -1,63 +1,18 @@
 ---
-description: Initialize forked template — setup CLAUDE.md and remove config repo scaffolding
+description: "Turn a solana-ai-kit fork into a project: set up CLAUDE.md, remove kit files"
 model: sonnet
+disable-model-invocation: true
 ---
 
-Initialize a forked solana-ai-kit template for use as a project. Sets up CLAUDE.md and removes config repo scaffolding files.
+Turn a fork or clone of the solana-ai-kit repo into a working project: install the project `CLAUDE.md` and delete the files that only serve maintaining or publishing the kit.
 
-## Step 1: Setup CLAUDE.md
+## Steps
 
-If `CLAUDE.md` doesn't exist (or contains "Meta Configuration" indicating it's the repo maintainer version):
-1. Copy `CLAUDE-solana.md` → `CLAUDE.md`
-2. Create starter `CLAUDE.local.md` (gitignored, private notes) if it doesn't exist
-3. Add `CLAUDE.local.md` to `.gitignore` if not present
-
-If `CLAUDE.md` already exists and looks like a project config (not meta), skip this step.
-
-## Step 2: Create .env if missing
-
-If `.env` doesn't exist but `.env.example` does, copy `.env.example` → `.env` before removing .env.example.
-
-## Step 3: Remove scaffolding
-
-Files/dirs that exist only for maintaining or distributing the config repo itself. These ship in a full clone/fork of solana-ai-kit but have no purpose in a downstream project. Remove each **only if present** — never error on a missing path.
-
-**Remove (if they exist):**
-
-Maintenance scaffolding:
-- `install.sh` — installer (not needed after fork)
-- `update.sh` — deprecation wrapper
-- `validate.sh` — config repo validation
-- `tests/` — config repo test suite
-- `CLAUDE-solana.md` — source template (now copied as CLAUDE.md)
-- `QUICK-START.md` — config repo docs
-- `README.md` — config repo readme (user should write their own)
-- `.claude/CHANGELOG.md` — the kit's changelog (not the user's project changelog)
-- `.github/workflows/ci.yml` — config repo CI (keep `.github/templates/claude-code.yml` if present)
-- `.env.example` — should already be copied to .env
-
-Distribution infra (Claude Code plugin marketplace + Vercel install endpoint — only relevant when *publishing* the kit):
-- `.claude-plugin/` — in-repo plugin marketplace manifest
-- `plugin/` — symlinked core-plugin subtree
-- `vercel.json` — install-endpoint redirect config
-
-**Preserve (never touch):**
-- `.claude/` — entire directory (agents, commands, skills, rules, settings, mcp, `bin/` self-update tooling) — except `.claude/CHANGELOG.md` noted above
-- `CLAUDE.md` — just created/preserved above
-- `CLAUDE.local.md` — private notes
-- `.mcp.json` — MCP server config (user wants this)
-- `.env`, `.env.example` (after .env exists) — config
-- `.gitmodules` — submodule definitions
-- `.gitignore` — ignore rules
-- `LICENSE` — keep unless user wants to change
-- Any user-created files
-
-If you encounter a file that looks repo-specific but isn't listed above, flag it to the user rather than removing it.
-
-## Step 4: Confirm and execute
-
-1. Show the user exactly what will happen (CLAUDE.md setup + files to remove)
-2. Wait for user confirmation before proceeding
-3. Execute the removals
-4. Print summary of what was done
-5. Suggest: `git add -A && git commit -m "chore: initialize project from solana-ai-kit template"`
+1. **CLAUDE.md.** If it is missing, or is the maintainer version (contains "Meta Configuration"), copy `CLAUDE-solana.md` to `CLAUDE.md`, create a starter `CLAUDE.local.md` for private notes if absent, and add `CLAUDE.local.md` to `.gitignore`. Leave an existing project `CLAUDE.md` alone.
+2. **.env.** If `.env` is missing and `.env.example` exists, copy `.env.example` to `.env` before anything is removed.
+3. **Plan the removals**, each only if present (a missing path is not an error):
+   - Maintenance: `install.sh`, `update.sh` (deprecation wrapper), `validate.sh`, `tests/`, `CLAUDE-solana.md`, `QUICK-START.md`, `README.md` (the kit's; the user writes their own), `.claude/CHANGELOG.md` (the kit's changelog), `.github/workflows/ci.yml` (keep `.github/templates/claude-code.yml`)
+   - Distribution infra, only needed to publish the kit: `.claude-plugin/` (plugin marketplace manifest), `plugin/` (symlinked plugin subtree), `vercel.json` (install-endpoint redirect)
+   - Keep: the rest of `.claude/` (agents, commands, skills, settings, `bin/` self-update tooling), `CLAUDE.md`, `CLAUDE.local.md`, `.mcp.json`, `.env`, `.env.example` (the tracked list of keys that `/setup-mcp` and `/doctor` read), `.gitmodules`, `.gitignore`, `LICENSE` (unless the user wants another), and anything the user created. If another file looks kit-specific, flag it instead of deleting it.
+4. **Confirm.** Show the CLAUDE.md action and the exact removal list, and wait for the user's go-ahead.
+5. **Execute**, print a summary of what was done, and suggest `git add -A && git commit -m "chore: initialize project from solana-ai-kit template"`.

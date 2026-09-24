@@ -1,143 +1,85 @@
 ---
-description: "Health check for the dev environment and solana-ai-kit config — read-only, with one exact fix-it command per failure"
+description: "Read-only check of toolchain and kit config, with one fix-it command per failure"
 model: sonnet
 ---
 
-You are running a health check on this project's toolchain and solana-ai-kit configuration. **Read-only contract: this command never writes, edits, or deletes files.** It only inspects and reports.
+Run the eight checks below, then report. Status values: `OK` healthy, `WARN` works but fix soon, `FAIL` blocks workflows, `n/a` not applicable.
 
-## Related Commands
+## Checks
 
-- [setup-mcp.md](setup-mcp.md) — fix missing MCP API keys
-- [update.md](update.md) — update config to latest upstream
-- [resync.md](resync.md) — resync external skill submodules
+**1. Core toolchain.** `node --version`, `npm --version`, `claude --version`. OK when all exist and node is 18+. Missing: `brew install node` / `npm install -g @anthropic-ai/claude-code`.
 
-## Check 1: Core Toolchain
+**2. Solana CLI and cluster.** `solana --version`; `solana config get | grep "RPC URL"`; `solana balance --url devnet`.
+- WARN devnet balance 0: `solana airdrop 2 --url devnet`
+- WARN cluster is mainnet during development: `solana config set --url devnet`
+- FAIL no CLI: `sh -c "$(curl -sSfL https://release.anza.xyz/stable/install)"`
 
+**3. Rust/Anchor toolchain** (`n/a` unless `Anchor.toml` or `programs/` exists). `rustc --version`, `cargo --version`, `anchor --version`, `avm --version`.
+- FAIL no rustc/cargo: `curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh`
+- FAIL no anchor: `cargo install --git https://github.com/solana-foundation/anchor avm --force && avm install latest && avm use latest`
+- WARN `anchor --version` differs from `anchor_version` in `Anchor.toml`: `avm use <version>`
+
+**4. Git submodules.** `git submodule status`; lines starting with a space are OK.
+- FAIL `-` prefix (uninitialized): `git submodule update --init --recursive`
+- WARN `+` prefix (checkout differs from the recorded SHA): `git submodule update --recursive`, or `/resync` if intentional
+
+**5. Environment keys.** Compare key names only; never print values.
 ```bash
-node --version 2>/dev/null || echo "MISSING node"
-npm --version 2>/dev/null || echo "MISSING npm"
-claude --version 2>/dev/null || echo "MISSING claude CLI"
-```
-
-- ✓ `node` ≥ 18, `npm`, `claude` all present
-- ✗ Missing → fix-it: `brew install node` / `npm install -g @anthropic-ai/claude-code`
-
-## Check 2: Solana CLI + Cluster
-
-```bash
-solana --version 2>/dev/null || echo "MISSING solana CLI"
-solana config get 2>/dev/null | grep "RPC URL"        # active cluster
-solana balance --url devnet 2>/dev/null || echo "NO devnet balance / no keypair"
-```
-
-- ✓ CLI installed, cluster configured, devnet balance > 0
-- ! Devnet balance 0 → fix-it: `solana airdrop 2 --url devnet`
-- ! Cluster is mainnet during development → fix-it: `solana config set --url devnet`
-- ✗ No CLI → fix-it: `sh -c "$(curl -sSfL https://release.anza.xyz/stable/install)"`
-
-## Check 3: Rust / Anchor Toolchain
-
-Only flag as ✗ if the project contains Rust programs (`Anchor.toml` or `programs/` present); otherwise report `-` (n/a).
-
-```bash
-rustc --version 2>/dev/null || echo "MISSING rustc"
-cargo --version 2>/dev/null || echo "MISSING cargo"
-anchor --version 2>/dev/null || echo "MISSING anchor"
-avm --version 2>/dev/null || echo "MISSING avm"
-```
-
-- ✗ No rustc/cargo → fix-it: `curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh`
-- ✗ No anchor → fix-it: `cargo install --git https://github.com/coral-xyz/anchor avm --force && avm install latest && avm use latest`
-- ! `anchor --version` ≠ `Anchor.toml` `anchor_version` → fix-it: `avm use <version>`
-
-## Check 4: Git Submodules
-
-```bash
-git submodule status
-```
-
-- ✓ Every line starts with a SHA (space or `+` prefix)
-- ✗ Any line with a `-` prefix = uninitialized submodule → fix-it: `git submodule update --init --recursive`
-- ! `+` prefix = checked-out commit differs from recorded SHA → fix-it: `git submodule update --recursive` (or `/resync` if intentional)
-
-## Check 5: Environment Keys
-
-Compare key **names** between `.env.example` and `.env`. **NEVER print, echo, or display values — names only.**
-
-```bash
-# Key names present in example but absent in .env (presence check only)
 comm -23 \
   <(grep -oE '^[A-Z_]+=' .env.example 2>/dev/null | sort -u) \
-  <(grep -oE '^[A-Z_]+=' .env 2>/dev/null | sort -u)
-# Keys present but left empty in .env
-grep -E '^[A-Z_]+=$' .env 2>/dev/null | cut -d= -f1
+  <(grep -oE '^[A-Z_]+=' .env 2>/dev/null | sort -u)   # in .env.example, missing from .env
+grep -E '^[A-Z_]+=$' .env 2>/dev/null | cut -d= -f1      # present but empty
 ```
+- WARN key missing or empty: `/setup-mcp` (MCP keys) or edit `.env`
+- FAIL no `.env`: `cp .env.example .env`, then `/setup-mcp`
 
-- ✓ All `.env.example` keys exist in `.env` with non-empty values
-- ! Key missing or empty → fix-it: `/setup-mcp` (for MCP keys) or edit `.env` manually
-- ✗ No `.env` at all → fix-it: `cp .env.example .env` then `/setup-mcp`
-
-## Check 6: Config Version vs Upstream
-
+**6. Kit version vs upstream.**
 ```bash
 cat .claude/VERSION
 git ls-remote --tags --sort=-v:refname https://github.com/solanabr/solana-ai-kit | head -3
 ```
+- WARN behind the latest tag: `bash .claude/bin/update.sh` (`.agents/bin/update.sh` for `--agents` installs); preview with `--dry-run`
+- FAIL no `VERSION` file (corrupted or pre-1.0 config): the same update command
 
-- ✓ Local version matches latest upstream tag
-- ! Behind upstream → fix-it: `bash .claude/bin/update.sh` (or `.agents/bin/update.sh` for `--agents` installs); preview first with `--dry-run`
-- ✗ No `.claude/VERSION` → config is corrupted or pre-1.0 → fix-it: `bash .claude/bin/update.sh` (or `.agents/bin/update.sh` for `--agents` installs)
-
-## Check 7: MCP Configuration
-
+**7. MCP config.**
 ```bash
 python3 -c "import json; d=json.load(open('.mcp.json')); print('\n'.join(d.get('mcpServers', {}).keys()))" \
   2>/dev/null || echo "INVALID or missing .mcp.json"
-# surfpool MCP requires the surfpool CLI binary on PATH (keyless, user-installed)
 if grep -q '"surfpool"' .mcp.json 2>/dev/null; then
   surfpool --version 2>/dev/null || echo "MISSING surfpool CLI"
 fi
 ```
+OK when it parses and lists the expected servers (helius, solana-dev, context7, playwright, surfpool, ...).
+- FAIL parse failure: `curl -fsSL https://raw.githubusercontent.com/solanabr/solana-ai-kit/main/.mcp.json -o .mcp.json`
+- WARN a listed server's API key failed check 5: `/setup-mcp`
+- WARN `surfpool` listed but the CLI is missing: `curl -L https://surfpool.run/install | sh` (or `brew install txtx/taps/surfpool`)
 
-- ✓ `.mcp.json` parses; expected servers listed (helius, solana-dev, context7, playwright, surfpool, ...)
-- ✗ Parse failure → fix-it: `curl -fsSL https://raw.githubusercontent.com/solanabr/solana-ai-kit/main/.mcp.json -o .mcp.json`
-- ! Server listed but its API key failed Check 5 → fix-it: `/setup-mcp`
-- ! `.mcp.json` lists `surfpool` but the `surfpool` CLI is missing → fix-it: `curl -L https://surfpool.run/install | sh` (or `brew install txtx/taps/surfpool`)
-
-## Check 8: Dual-Install Guard (plugin + full install)
-
-solana-ai-kit ships two ways: the **plugin** (`/plugin install solana-ai-kit@solana-ai-kit`) and the **full install** (`install.sh` → project `.claude/`). Running both in one project double-loads commands, hooks, and MCP servers (e.g. `/deploy` and `/solana-ai-kit:deploy`, banner prints twice). Detect (names only, read-only):
-
+**8. Dual-install guard.** The plugin (`/plugin install solana-ai-kit@stbr`) and a full install (`install.sh` into `.claude/`) in the same project double-load commands, hooks and MCP servers (`/deploy` beside `/solana-ai-kit:deploy`, the banner printed twice).
 ```bash
-# Plugin enabled at project scope? (user-scope lives in ~/.claude/settings.json)
 PLUGIN_ON=$(grep -lE '"solana-ai-kit@[^"]*"[[:space:]]*:[[:space:]]*true' \
   .claude/settings.json "$HOME/.claude/settings.json" 2>/dev/null | head -1)
-# Full install present?
 [ -f .claude/VERSION ] && echo "FULL_INSTALL present"
 [ -n "$PLUGIN_ON" ] && echo "PLUGIN enabled (in: $PLUGIN_ON)"
 ```
-
-- ✓ Exactly one install path active (plugin **or** full install) → no conflict
-- ✓ Neither detected here → n/a (`-`)
-- ! BOTH the plugin (`enabledPlugins` has `solana-ai-kit`) AND a project `.claude/` full install are active → double commands/hooks/MCP → fix-it: pick one — either `/plugin uninstall solana-ai-kit` (keep the full install for rules/permissions/submodules) **or** remove the project `.claude/` and rely on the plugin (note: rules + permissions/sandbox + ext/ submodules then no longer apply)
+OK with exactly one of the two, `n/a` with neither. WARN with both; the fix is to pick one: `/plugin uninstall solana-ai-kit` (keeps the full install's permissions/sandbox policy and ext/ submodules), or remove the project `.claude/` and rely on the plugin, which carries neither.
 
 ## Output
 
-Render exactly one summary table, then fix-its for non-✓ rows only:
+One table, then fix-its for the non-OK rows only, in the order to run them:
 
 ```
-## Doctor Report — <date>
+## Doctor Report - <date>
 
 | # | Check              | Status | Detail                          |
 |---|--------------------|--------|---------------------------------|
-| 1 | Core toolchain     | ✓      | node 22.x, npm 10.x, claude 2.x |
-| 2 | Solana CLI         | !      | cluster=mainnet, devnet bal 0   |
-| 3 | Rust/Anchor        | ✓      | anchor 1.0.2 = Anchor.toml      |
-| 4 | Submodules         | ✗      | 2 uninitialized (-)             |
-| 5 | .env keys          | !      | HELIUS_API_KEY empty            |
-| 6 | Config version     | ✓      | 1.5.0 = upstream                |
-| 7 | MCP config         | ✓      | 7 servers parsed                |
-| 8 | Dual-install guard | ✓      | full install only (no plugin)   |
+| 1 | Core toolchain     | OK     | node 22.x, npm 10.x, claude 2.x |
+| 2 | Solana CLI         | WARN   | cluster=mainnet, devnet bal 0   |
+| 3 | Rust/Anchor        | OK     | anchor 1.0.2 = Anchor.toml      |
+| 4 | Submodules         | FAIL   | 2 uninitialized (-)             |
+| 5 | .env keys          | WARN   | HELIUS_API_KEY empty            |
+| 6 | Config version     | OK     | 2.1.0 = upstream                |
+| 7 | MCP config         | OK     | 7 servers parsed                |
+| 8 | Dual-install guard | OK     | full install only (no plugin)   |
 
 ### Fix-its (run in order)
 1. `git submodule update --init --recursive`
@@ -145,11 +87,9 @@ Render exactly one summary table, then fix-its for non-✓ rows only:
 3. `solana airdrop 2 --url devnet`
 ```
 
-Legend: ✓ healthy · ! degraded (works, but fix soon) · ✗ broken (blocks workflows) · - n/a.
-
 ## Guardrails
 
-- Never write files — report only. If a fix-it would modify state, print it for the user to run.
-- Never print `.env` values, keypair contents, or anything matching a secret pattern.
-- Network access limited to read-only lookups (`git ls-remote`, `solana balance`). Never airdrop, deploy, or send transactions on the user's behalf.
-- If a check errors unexpectedly, mark it `!` with the error one-liner — don't abort the remaining checks.
+- Read-only: never write, edit or delete files. Print fix-its for the user to run.
+- Never print `.env` values, keypair contents or anything secret-shaped.
+- Network use is limited to read-only lookups (`git ls-remote`, `solana balance`). Never airdrop, deploy or send transactions for the user.
+- If a check errors unexpectedly, mark it `WARN` with the one-line error and run the remaining checks.

@@ -1,159 +1,31 @@
 ---
-description: "Profile compute unit usage per instruction in a Solana program"
+description: "Measure compute units per instruction and flag the expensive ones"
 ---
 
-You are profiling CU (compute unit) consumption for a Solana program. This identifies expensive instructions and optimization opportunities.
+Measure CU per instruction for the program(s) in $ARGUMENTS (default: every program in the workspace) and point at the costly code. To compare with the stored baseline (`.claude/benchmarks/cu-baseline.json`) or save a new one, use `/benchmark`. Harness APIs: [testing.md](../skills/ext/solana-dev/skills/solana-dev/references/testing.md); optimization techniques: [programs/pinocchio.md](../skills/ext/solana-dev/skills/solana-dev/references/programs/pinocchio.md).
 
-## Related Skills
+## Steps
 
-- [ext/solana-dev/skills/solana-dev/references/programs/pinocchio.md](../skills/ext/solana-dev/skills/solana-dev/references/programs/pinocchio.md) - CU optimization patterns
-- [ext/solana-dev/skills/solana-dev/references/testing.md](../skills/ext/solana-dev/skills/solana-dev/references/testing.md) - Test framework CU measurement
+1. Build the way you deploy (`anchor build` / `cargo build-sbf`) with debug-log features off, since `msg!` formatting inflates CU.
+2. Collect CU per instruction from whichever harness the project has:
+   - Mollusk: `compute_units_consumed` on the instruction result; `MolluskComputeUnitBencher` writes a markdown table with deltas to its `out_dir`.
+   - LiteSVM: the metadata returned by `send_transaction` carries `compute_units_consumed`; send one instruction per transaction to isolate it.
+   - Surfpool, for real mainnet accounts and CPIs into deployed protocols: `surfnet_profileTransaction` returns `transactionProfile.computeUnitsConsumed` and per-instruction `instructionProfiles`. Starting Surfpool with `--ci` disables instruction profiling, and a v1 transaction budgets 0 CU unless `computeUnitLimit` is set.
+   - Logs: `Program <id> consumed N of M compute units` appears once per invocation, and an outer program's figure already includes its CPIs, so don't add nested lines together.
 
-## Step 1: Verify Program
+   Measure each instruction's worst path (most accounts, longest vectors, first-time init) as well as the happy path.
+3. Inside a costly instruction, bracket sections with `sol_log_compute_units()` to find where the CU goes.
+4. Classify:
 
-```bash
-echo "Detecting program..."
+   | CU per instruction | Verdict |
+   |---|---|
+   | < 50k | Efficient |
+   | 50k-100k | Fine; review if on a hot path |
+   | 100k-200k | Warning: little headroom for CPIs or composing with other instructions |
+   | > 200k | Critical: above the 200k per-instruction default of legacy/v0 txs, so every client must raise the limit (1.4M max per tx); optimize or split |
 
-if [ ! -f "Anchor.toml" ]; then
-    echo "No Anchor.toml found. This command requires an Anchor project."
-    echo "For native programs, use 'solana program show <PROGRAM_ID>' and manual CU logging."
-    exit 1
-fi
+5. Suggest fixes for the costly ones: store the canonical bump and verify with it (`bump = acct.bump`), since each derivation attempt costs 1,500 CU and `find_program_address` may need several; remove or feature-gate `msg!`, especially with formatting; zero-copy (`AccountLoader`) for large accounts; fewer and smaller account deserializations. Hand CU-bound hot paths to pinocchio-engineer.
 
-# Extract program IDs from Anchor.toml
-echo "Programs in Anchor.toml:"
-grep -A 5 '\[programs' Anchor.toml
+## Output
 
-# Check if deployed (optional)
-CLUSTER=$(grep -m1 'cluster' Anchor.toml | sed 's/.*= *//' | tr -d '"')
-echo "Cluster: ${CLUSTER:-localnet}"
-```
-
-## Step 2: Build Program
-
-```bash
-echo "Building program..."
-anchor build
-
-if [ $? -ne 0 ]; then
-    echo "Build failed. Fix compilation errors before profiling."
-    exit 1
-fi
-
-# Report binary size
-echo ""
-echo "Program binary sizes:"
-ls -lh target/deploy/*.so | awk '{print $5, $9}'
-```
-
-## Step 3: Run Tests with CU Logging
-
-```bash
-echo "Running tests with CU profiling enabled..."
-
-# Set environment for verbose CU logging
-export SBF_OUT_DIR=target/deploy
-export RUST_LOG=solana_runtime::message_processor=trace
-
-# Run Anchor tests and capture output
-anchor test --skip-deploy 2>&1 | tee /tmp/cu-profile-output.txt
-
-TEST_STATUS=$?
-if [ $TEST_STATUS -ne 0 ]; then
-    echo "Tests failed. Fix test failures before profiling CU."
-    exit 1
-fi
-```
-
-## Step 4: Parse CU Usage
-
-Extract CU consumption from test output. Look for patterns like:
-- `consumed X of Y compute units`
-- `Program <ID> consumed <N> of <M> compute units`
-
-```bash
-echo ""
-echo "=== CU Profile Results ==="
-echo ""
-
-# Extract CU lines from test output
-grep -i "consumed.*compute units" /tmp/cu-profile-output.txt | \
-    sed 's/.*Program //' | \
-    sort -t' ' -k3 -n -r | \
-    head -50
-
-echo ""
-echo "--- Per-Instruction Breakdown ---"
-echo ""
-
-# Parse into table format
-grep -i "consumed.*compute units" /tmp/cu-profile-output.txt | \
-    awk '{
-        for(i=1;i<=NF;i++) {
-            if($i=="consumed") { cu=$(i+1) }
-            if($i=="of") { limit=$(i+1) }
-        }
-        if(cu && limit) {
-            pct = (cu/limit)*100
-            printf "%-60s %8s / %-8s (%5.1f%%)\n", $0, cu, limit, pct
-        }
-    }'
-```
-
-## Step 5: Compare with Baseline
-
-```bash
-BASELINE=".claude/benchmarks/cu-baseline.json"
-
-if [ -f "$BASELINE" ]; then
-    echo ""
-    echo "=== Baseline Comparison ==="
-    echo ""
-    echo "Baseline file: $BASELINE"
-    echo ""
-
-    # Read baseline and compare
-    # Format expected: {"instruction_name": cu_value, ...}
-    echo "Instruction             | Baseline | Current  | Delta    | Status"
-    echo "------------------------|----------|----------|----------|--------"
-
-    # Parse current results into comparable format
-    # The agent should read the baseline JSON and compare instruction-by-instruction
-    cat "$BASELINE"
-else
-    echo ""
-    echo "No baseline found at $BASELINE"
-    echo "To create a baseline, save current results:"
-    echo "  mkdir -p .claude/benchmarks"
-    echo "  echo '{\"instruction_name\": cu_value}' > $BASELINE"
-fi
-```
-
-## Step 6: Optimization Analysis
-
-Analyze the CU profile and flag optimization opportunities:
-
-### CU Thresholds
-
-| Range | Status | Action |
-|-------|--------|--------|
-| < 50,000 CU | Efficient | No action needed |
-| 50,000 - 150,000 CU | Normal | Review if hot path |
-| 150,000 - 300,000 CU | Heavy | Optimize data access, reduce allocations |
-| > 300,000 CU | Critical | Refactor: split instruction, use zero-copy, cache PDAs |
-
-### Common CU Optimizations
-
-1. **Store PDA bumps** - `find_program_address` costs ~1,500 CU per call; `create_program_address` with stored bump costs ~200 CU
-2. **Zero-copy deserialization** - Use `AccountLoader` instead of `Account` for large structs
-3. **Reduce logging** - `msg!()` costs ~100 CU per call; use `#[cfg(feature = "debug")]` guards
-4. **Minimize account loads** - Each account deserialization has a CU cost proportional to data size
-5. **Use Pinocchio** - For CU-critical paths, consider Pinocchio over Anchor (~50-70% CU reduction)
-
-## After Profiling
-
-- [ ] CU usage per instruction documented
-- [ ] High-CU instructions identified
-- [ ] Baseline saved to `.claude/benchmarks/cu-baseline.json`
-- [ ] Optimization plan created for instructions > 150,000 CU
-- [ ] Re-profile after optimizations to verify improvement
+Table: instruction | CU happy path | CU worst path | % of 200k | verdict | top cost. Then the 1-3 highest-impact optimizations with `file:line`.

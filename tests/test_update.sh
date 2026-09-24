@@ -66,6 +66,18 @@ echo "MY_SECRET=preserved" > "$TEMP_DIR/.env"
 (cd "$TEMP_DIR" && SOLANA_AI_KIT_LOCAL_SRC="$REPO_ROOT" bash .claude/bin/update.sh) >/dev/null 2>&1
 assert_file_contains "$TEMP_DIR/.env" "MY_SECRET=preserved" ".env not overwritten by update"
 
+# --- Retired rules: the kit's old globs: copies go, rules the user wrote stay ---
+echo "[retired rules]"
+mkdir -p "$TEMP_DIR/.claude/rules"
+printf -- '---\nglobs:\n  - "**/*.rs"\n---\n# Rust Code Standards for Solana\n' > "$TEMP_DIR/.claude/rules/rust.md"
+printf -- '---\npaths:\n  - "src/**/*.ts"\n---\n# Team API rules\n' > "$TEMP_DIR/.claude/rules/team-api.md"
+DRY_RULES="$(cd "$TEMP_DIR" && SOLANA_AI_KIT_LOCAL_SRC="$REPO_ROOT" bash .claude/bin/update.sh --dry-run 2>&1)"
+assert_contains "$DRY_RULES" "[would remove] .claude/rules/rust.md" "--dry-run reports the retired kit rule"
+assert_file_exists "$TEMP_DIR/.claude/rules/rust.md" "--dry-run leaves the retired kit rule in place"
+(cd "$TEMP_DIR" && SOLANA_AI_KIT_LOCAL_SRC="$REPO_ROOT" bash .claude/bin/update.sh) >/dev/null 2>&1
+assert_file_not_exists "$TEMP_DIR/.claude/rules/rust.md" "Retired kit rule removed by update"
+assert_file_exists "$TEMP_DIR/.claude/rules/team-api.md" "User-written rule kept by update"
+
 # --- Agents mode ---
 echo "[agents mode]"
 AGENTS_DIR="$(mktemp -d)"

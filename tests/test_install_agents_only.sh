@@ -37,7 +37,7 @@ fi
 assert_dir_exists "$TEMP_DIR/.agents/agents" ".agents/agents/ directory exists"
 assert_dir_exists "$TEMP_DIR/.agents/commands" ".agents/commands/ directory exists"
 assert_dir_exists "$TEMP_DIR/.agents/skills" ".agents/skills/ directory exists"
-assert_dir_exists "$TEMP_DIR/.agents/rules" ".agents/rules/ directory exists"
+assert_dir_not_exists "$TEMP_DIR/.agents/rules" ".agents/rules/ not installed (kit ships none)"
 assert_dir_exists "$TEMP_DIR/.agents/bin" ".agents/bin/ directory exists"
 assert_file_exists "$TEMP_DIR/.agents/skills/SKILL.md" "SKILL.md exists in .agents/"
 

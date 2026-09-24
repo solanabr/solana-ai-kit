@@ -63,8 +63,10 @@ except (KeyError, IndexError, TypeError):
 # --- Environment variables ---
 echo "[env]"
 assert_eq "1" "$(json_get '["env"]["CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS"]')" "env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS == 1"
-assert_eq "1" "$(json_get '["env"]["CLAUDE_CODE_COORDINATOR_MODE"]')" "env.CLAUDE_CODE_COORDINATOR_MODE == 1"
-assert_eq "max" "$(json_get '["env"]["CLAUDE_CODE_EFFORT_LEVEL"]')" "env.CLAUDE_CODE_EFFORT_LEVEL == max"
+# Deliberately unset: the effort env var overrides /effort for every user, and
+# coordinator mode strips the main agent's own tools (every action becomes a subagent).
+assert_eq "__MISSING__" "$(json_get '["env"]["CLAUDE_CODE_COORDINATOR_MODE"]')" "env.CLAUDE_CODE_COORDINATOR_MODE not set"
+assert_eq "__MISSING__" "$(json_get '["env"]["CLAUDE_CODE_EFFORT_LEVEL"]')" "env.CLAUDE_CODE_EFFORT_LEVEL not pinned"
 
 # --- Sandbox ---
 echo "[sandbox]"

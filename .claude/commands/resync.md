@@ -1,10 +1,11 @@
 ---
-description: Resync external skill submodules to latest upstream versions
+description: "Resync external skill submodules to latest upstream versions"
 model: sonnet
+disable-model-invocation: true
 ---
 
-Run the resync script to update all external skill submodules and verify integrity.
+Update the ext/ skill submodules to upstream and check that the skill hub's paths still resolve.
 
 1. Resolve the config dir and run: `BIN=$( [ -d .claude/bin ] && echo .claude/bin || echo .agents/bin ); bash "$BIN/resync.sh"`
-2. Review submodule changes and verify all skill paths resolve
-3. Run `git add .gitmodules .claude/skills/ext/` and commit to lock updates
+2. Review the submodule diff and fix every `MISSING` path the script reports in `skills/SKILL.md`. An upstream rename can also break links in agents and commands, so grep for the old path.
+3. If the project versions its submodules, run `git add .gitmodules .claude/skills/ext/` and commit to lock the updates.
