@@ -51,6 +51,18 @@ for link in agents commands .mcp.json VERSION \
   fi
 done
 
+# --- Plugin hooks (real file, mirrors .claude/settings.json hooks) ---
+echo "[plugin hooks]"
+PLUGIN_HOOKS="$PLUGIN_DIR/hooks/hooks.json"
+assert_file_exists "$PLUGIN_HOOKS" "plugin hooks.json exists"
+assert_json_valid "$PLUGIN_HOOKS" "plugin hooks.json is valid JSON"
+assert_file_contains "$PLUGIN_HOOKS" "config/solana/id" "plugin hooks.json has the secrets-gate PreToolUse hook"
+assert_file_contains "$PLUGIN_HOOKS" "Blocked: reading private keys" "plugin secrets gate prints the block reason"
+assert_file_contains "$PLUGIN_HOOKS" "exit 2" "plugin secrets gate blocks with exit 2"
+for legacy in '"when"' command_matches CLAUDE_FILE_PATH CLAUDE_TOOL_EXIT_CODE CLAUDE_SUBAGENT_NAME; do
+  assert_file_not_contains "$PLUGIN_HOOKS" "$legacy" "plugin hooks.json has no unsupported '$legacy'"
+done
+
 # --- Plugin-variant hub must not link into ext/ (submodules absent in plugin installs) ---
 echo "[variant hub]"
 assert_file_exists "$PLUGIN_HUB" "plugin-variant skills hub exists"
