@@ -20,18 +20,18 @@ One primary per row: each Task-Routing row points to exactly ONE primary target;
 
 **Primary entry point** — read first for any Solana program, frontend, testing, or client task:
 
-- [ext/solana-dev/skill/SKILL.md](ext/solana-dev/skill/SKILL.md) — Solana Foundation skill (framework-kit-first, Kit types, wallet-standard)
+- [ext/solana-dev/skills/solana-dev/SKILL.md](ext/solana-dev/skills/solana-dev/SKILL.md) — Solana Foundation skill (framework-kit-first, Kit types, wallet-standard)
 
 Key references within:
-- [programs/anchor.md](ext/solana-dev/skill/references/programs/anchor.md) — Anchor patterns, IDL, constraints (canonical)
-- [programs/pinocchio.md](ext/solana-dev/skill/references/programs/pinocchio.md) — Zero-copy, CU optimization (canonical)
-- [frontend-framework-kit.md](ext/solana-dev/skill/references/frontend-framework-kit.md) — React hooks, wallet connection, @solana/kit UI
-- [kit-web3-interop.md](ext/solana-dev/skill/references/kit-web3-interop.md) — Kit ↔ web3.js boundary patterns
-- [testing.md](ext/solana-dev/skill/references/testing.md) — LiteSVM, Mollusk, Surfpool, CI
-- [security.md](ext/solana-dev/skill/references/security.md) — Vulnerability categories, checklists
-- [idl-codegen.md](ext/solana-dev/skill/references/idl-codegen.md) — Codama/Shank client generation
-- [payments.md](ext/solana-dev/skill/references/payments.md) — Commerce Kit, Kora, Solana Pay
-- [resources.md](ext/solana-dev/skill/references/resources.md) — Official documentation links
+- [programs/anchor.md](ext/solana-dev/skills/solana-dev/references/programs/anchor.md) — Anchor patterns, IDL, constraints (canonical)
+- [programs/pinocchio.md](ext/solana-dev/skills/solana-dev/references/programs/pinocchio.md) — Zero-copy, CU optimization (canonical)
+- [frontend.md](ext/solana-dev/skills/solana-dev/references/frontend.md) — React hooks, wallet connection, @solana/kit UI
+- [kit-web3-interop.md](ext/solana-dev/skills/solana-dev/references/kit-web3-interop.md) — Kit ↔ web3.js boundary patterns
+- [testing.md](ext/solana-dev/skills/solana-dev/references/testing.md) — LiteSVM, Mollusk, Surfpool, CI
+- [security.md](ext/solana-dev/skills/solana-dev/references/security.md) — Vulnerability categories, checklists
+- [idl-codegen.md](ext/solana-dev/skills/solana-dev/references/idl-codegen.md) — Codama/Shank client generation
+- [payments.md](ext/solana-dev/skills/solana-dev/references/payments.md) — Commerce Kit, Kora, Solana Pay
+- [resources.md](ext/solana-dev/skills/solana-dev/references/resources.md) — Official documentation links
 
 ## Token Extensions
 
@@ -117,7 +117,7 @@ From [Anthropic defending-code](ext/defending-code/) — vuln-discovery referenc
 
 From [QEDGen](ext/qedgen/):
 
-- [ext/qedgen/SKILL.md](ext/qedgen/SKILL.md) — Formal verification for Solana programs using Lean 4 theorem proving (Leanstral). Verifies access control, CPI correctness, state machines, arithmetic safety. Requires `qedgen` CLI and `MISTRAL_API_KEY`.
+- [ext/qedgen/skills/qedgen/SKILL.md](ext/qedgen/skills/qedgen/SKILL.md) — Formal verification for Solana programs using Lean 4 theorem proving (Leanstral). Verifies access control, CPI correctness, state machines, arithmetic safety. Requires `qedgen` CLI and `MISTRAL_API_KEY`.
 
 ## Infrastructure & Deployment
 
@@ -125,7 +125,7 @@ From [Cloudflare](ext/cloudflare/skills/):
 
 - [workers-best-practices/](ext/cloudflare/skills/workers-best-practices/) — Cloudflare Workers deployment
 - [agents-sdk/](ext/cloudflare/skills/agents-sdk/) — Agents SDK (MCP server + AI agent deployment, codemode, durable execution)
-- [sandbox-sdk/](ext/cloudflare/skills/sandbox-sdk/) — Sandboxed code execution on Workers
+- [sandbox-stable/](ext/cloudflare/skills/sandbox-stable/) — Sandboxed code execution on Workers (stable SDK; sandbox-next/ is the 1.0 preview)
 - [durable-objects/](ext/cloudflare/skills/durable-objects/) — Durable Objects patterns
 - [wrangler/](ext/cloudflare/skills/wrangler/) — Wrangler CLI usage
 
@@ -145,11 +145,11 @@ From [solana-game-skill](ext/solana-game/skill/):
 
 ## Mobile Development
 
-From [solana-mobile](ext/solana-mobile/):
+From [solana-mobile](ext/solana-mobile/skills/):
 
-- [mwa/](ext/solana-mobile/mwa/) — Mobile Wallet Adapter 2.0 integration
-- [genesis-token/](ext/solana-mobile/genesis-token/) — Saga Genesis Token patterns
-- [skr-address-resolution/](ext/solana-mobile/skr-address-resolution/) — SKR address resolution
+- [solana-mobile-wallet/](ext/solana-mobile/skills/solana-mobile-wallet/) — Mobile Wallet Adapter 2.0 integration
+- [seeker-genesis-token/](ext/solana-mobile/skills/seeker-genesis-token/) — Seeker Genesis Token (SGT) patterns
+- [seeker-domains/](ext/solana-mobile/skills/seeker-domains/) — .skr domain resolution
 
 ## Ideation & Research
 
@@ -202,13 +202,13 @@ From [quiknode-labs/solana-anchor-claude-skill](ext/quicknode-anchor/) — **ref
 - [skills/solana/ANCHOR.md](ext/quicknode-anchor/skills/solana/ANCHOR.md) — Anchor 1.0 specifics (`CpiContext::new()` takes `Pubkey`, `transfer_checked`, `DISCRIMINATOR.len() + INIT_SPACE` space calc)
 - [skills/solana/QUASAR.md](ext/quicknode-anchor/skills/solana/QUASAR.md) — Quasar zero-copy/`no_std` framework
 
-⚠ Reference only. `.claude/rules/anchor.md` governs all Anchor code style; do not follow this skill's `SKILL.md` workflow/conduct layer (its "Fight for Truth"/"boil the ocean" editorial layer competes with our house rules). The Anchor-pattern primary stays [ext/solana-dev → programs/anchor.md](ext/solana-dev/skill/references/programs/anchor.md).
+⚠ Reference only. `.claude/rules/anchor.md` governs all Anchor code style; do not follow this skill's `SKILL.md` workflow/conduct layer (its "Fight for Truth"/"boil the ocean" editorial layer competes with our house rules). The Anchor-pattern primary stays [ext/solana-dev → programs/anchor.md](ext/solana-dev/skills/solana-dev/references/programs/anchor.md).
 
 ## Task Routing
 
 | User asks about... | Primary skill |
 |--------------------|---------------|
-| Wallet connection, React hooks | ext/solana-dev → frontend-framework-kit.md |
+| Wallet connection, React hooks | ext/solana-dev → frontend.md |
 | Transaction building, Kit types | ext/solana-dev → kit-web3-interop.md |
 | Anchor program code | ext/solana-dev → programs/anchor.md |
 | CU optimization, Pinocchio | ext/solana-dev → programs/pinocchio.md |
@@ -230,11 +230,11 @@ From [quiknode-labs/solana-anchor-claude-skill](ext/quicknode-anchor/) — **ref
 | PlaySolana, PSG1 console | ext/solana-game → playsolana.md |
 | Game architecture, ECS | ext/solana-game → game-architecture.md |
 | Workers, edge deployment | ext/cloudflare → workers-best-practices/ |
-| Mobile wallet adapter, MWA | ext/solana-mobile → mwa/ |
-| Saga Genesis Token | ext/solana-mobile → genesis-token/ |
+| Mobile wallet adapter, MWA | ext/solana-mobile → solana-mobile-wallet/ |
+| Seeker Genesis Token (SGT) | ext/solana-mobile → seeker-genesis-token/ |
 | Token-2022, transfer hooks, extensions | token-2022.md |
 | Vulnerability scanning | ext/trailofbits → solana-vulnerability-scanner/ |
-| Formal verification, proofs | ext/qedgen → SKILL.md |
+| Formal verification, proofs | ext/qedgen → skills/qedgen/SKILL.md |
 | Idea validation, competitive research, hackathon projects | ext/colosseum → colosseum-copilot/SKILL.md |
 | Security-first scaffolding, safe code generation | ext/safe-solana-builder → SKILL.md |
 | Vercel deployment, Next.js, AI SDK, v0 | ext/vercel → skills/ |

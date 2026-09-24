@@ -6,8 +6,8 @@ You are generating a TypeScript client from a Solana program's IDL. Detect the I
 
 ## Related Skills
 
-- [ext/solana-dev/skill/references/idl-codegen.md](../skills/ext/solana-dev/skill/references/idl-codegen.md) - Codama/Shank client generation patterns
-- [ext/solana-dev/skill/references/programs/anchor.md](../skills/ext/solana-dev/skill/references/programs/anchor.md) - Anchor IDL format
+- [ext/solana-dev/skills/solana-dev/references/idl-codegen.md](../skills/ext/solana-dev/skills/solana-dev/references/idl-codegen.md) - Codama/Shank client generation patterns
+- [ext/solana-dev/skills/solana-dev/references/programs/anchor.md](../skills/ext/solana-dev/skills/solana-dev/references/programs/anchor.md) - Anchor IDL format
 
 ## Step 1: Detect IDL Source
 

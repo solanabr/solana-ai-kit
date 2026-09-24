@@ -6,8 +6,8 @@ You are migrating a codebase from `@solana/web3.js` to `@solana/kit` (the modern
 
 ## Related Skills
 
-- [ext/solana-dev/skill/references/kit-web3-interop.md](../skills/ext/solana-dev/skill/references/kit-web3-interop.md) - Kit/web3.js interop patterns and boundary handling
-- [ext/solana-dev/skill/references/frontend-framework-kit.md](../skills/ext/solana-dev/skill/references/frontend-framework-kit.md) - Kit-first frontend patterns
+- [ext/solana-dev/skills/solana-dev/references/kit-web3-interop.md](../skills/ext/solana-dev/skills/solana-dev/references/kit-web3-interop.md) - Kit/web3.js interop patterns and boundary handling
+- [ext/solana-dev/skills/solana-dev/references/frontend.md](../skills/ext/solana-dev/skills/solana-dev/references/frontend.md) - Kit-first frontend patterns
 
 ## Step 1: Detect web3.js Usage
 

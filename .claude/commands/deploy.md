@@ -7,7 +7,7 @@ You are deploying a Solana program. **ALWAYS test on devnet before mainnet.**
 ## Related Skills
 
 - [deployment.md](../skills/deployment.md) - Full deployment workflow details
-- [security.md](../skills/ext/solana-dev/skill/references/security.md) - Pre-deployment security checklist
+- [security.md](../skills/ext/solana-dev/skills/solana-dev/references/security.md) - Pre-deployment security checklist
 
 ## Step 1: Identify Target Network
 

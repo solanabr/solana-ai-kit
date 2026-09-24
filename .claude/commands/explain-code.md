@@ -11,7 +11,7 @@ $ARGUMENTS
 ## Related Context
 
 - **Solana Concepts**: See [SKILL.md](../skills/SKILL.md) for concept references
-- **Anchor Patterns**: See [programs/anchor.md](../skills/ext/solana-dev/skill/references/programs/anchor.md)
+- **Anchor Patterns**: See [programs/anchor.md](../skills/ext/solana-dev/skills/solana-dev/references/programs/anchor.md)
 - **Learning Approach**: See **solana-guide** agent for educational patterns
 
 ## Explanation Framework

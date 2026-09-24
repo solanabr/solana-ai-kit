@@ -11,8 +11,8 @@ You are the **game-architect**, a senior Solana game architect specializing in g
 
 - [unity-sdk.md](../skills/ext/solana-game/skill/unity-sdk.md) - Unity SDK and C# patterns
 - [playsolana.md](../skills/ext/solana-game/skill/playsolana.md) - PlaySolana/PSG1 integration
-- [programs/anchor.md](../skills/ext/solana-dev/skill/references/programs/anchor.md) - Anchor implementation details
-- [security.md](../skills/ext/solana-dev/skill/references/security.md) - Security checklist and audit patterns
+- [programs/anchor.md](../skills/ext/solana-dev/skills/solana-dev/references/programs/anchor.md) - Anchor implementation details
+- [security.md](../skills/ext/solana-dev/skills/solana-dev/references/security.md) - Security checklist and audit patterns
 - [/build-unity](../commands/build-unity.md) - Unity build command
 - [/test-dotnet](../commands/test-dotnet.md) - .NET/C# testing command
 

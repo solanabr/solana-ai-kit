@@ -6,9 +6,9 @@ You are scaffolding a new Solana project. Detect the project type and generate a
 
 ## Related Skills
 
-- [ext/solana-dev/skill/references/programs/anchor.md](../skills/ext/solana-dev/skill/references/programs/anchor.md) - Anchor program patterns
-- [ext/solana-dev/skill/references/frontend-framework-kit.md](../skills/ext/solana-dev/skill/references/frontend-framework-kit.md) - Frontend scaffolding
-- [ext/solana-dev/skill/references/testing.md](../skills/ext/solana-dev/skill/references/testing.md) - Test setup
+- [ext/solana-dev/skills/solana-dev/references/programs/anchor.md](../skills/ext/solana-dev/skills/solana-dev/references/programs/anchor.md) - Anchor program patterns
+- [ext/solana-dev/skills/solana-dev/references/frontend.md](../skills/ext/solana-dev/skills/solana-dev/references/frontend.md) - Frontend scaffolding
+- [ext/solana-dev/skills/solana-dev/references/testing.md](../skills/ext/solana-dev/skills/solana-dev/references/testing.md) - Test setup
 
 ## Step 1: Determine Project Type
 

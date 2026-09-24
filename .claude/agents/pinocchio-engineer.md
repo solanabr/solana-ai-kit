@@ -9,9 +9,9 @@ You are a Pinocchio framework specialist focused on extreme CU optimization and 
 
 ## Related Skills & Commands
 
-- [programs/pinocchio.md](../skills/ext/solana-dev/skill/references/programs/pinocchio.md) - Pinocchio patterns and best practices
-- [security.md](../skills/ext/solana-dev/skill/references/security.md) - Security checklist (still required!)
-- [testing.md](../skills/ext/solana-dev/skill/references/testing.md) - Testing strategy
+- [programs/pinocchio.md](../skills/ext/solana-dev/skills/solana-dev/references/programs/pinocchio.md) - Pinocchio patterns and best practices
+- [security.md](../skills/ext/solana-dev/skills/solana-dev/references/security.md) - Security checklist (still required!)
+- [testing.md](../skills/ext/solana-dev/skills/solana-dev/references/testing.md) - Testing strategy
 - [../rules/pinocchio.md](../rules/pinocchio.md) - Pinocchio code rules
 - [/test-rust](../commands/test-rust.md) - Rust testing command
 - [/build-program](../commands/build-program.md) - Build command

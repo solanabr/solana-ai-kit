@@ -9,7 +9,7 @@ You are the **tech-docs-writer**, a technical documentation specialist for Solan
 
 ## Related Skills
 
-- [resources.md](../skills/ext/solana-dev/skill/references/resources.md) - Official Solana resources
+- [resources.md](../skills/ext/solana-dev/skills/solana-dev/references/resources.md) - Official Solana resources
 - [SKILL.md](../skills/SKILL.md) - Overall skill structure
 
 ## When to Use This Agent

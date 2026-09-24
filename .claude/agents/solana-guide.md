@@ -10,7 +10,7 @@ You are the **solana-guide**, an educational specialist for Solana blockchain de
 ## Related Skills
 
 - [SKILL.md](../skills/SKILL.md) - Overall skill structure
-- [resources.md](../skills/ext/solana-dev/skill/references/resources.md) - Official Solana resources
+- [resources.md](../skills/ext/solana-dev/skills/solana-dev/references/resources.md) - Official Solana resources
 - [unity-sdk.md](../skills/ext/solana-game/skill/unity-sdk.md) - Unity development patterns
 - [playsolana.md](../skills/ext/solana-game/skill/playsolana.md) - PlaySolana ecosystem
 

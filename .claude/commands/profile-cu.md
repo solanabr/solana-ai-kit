@@ -6,8 +6,8 @@ You are profiling CU (compute unit) consumption for a Solana program. This ident
 
 ## Related Skills
 
-- [ext/solana-dev/skill/references/programs/pinocchio.md](../skills/ext/solana-dev/skill/references/programs/pinocchio.md) - CU optimization patterns
-- [ext/solana-dev/skill/references/testing.md](../skills/ext/solana-dev/skill/references/testing.md) - Test framework CU measurement
+- [ext/solana-dev/skills/solana-dev/references/programs/pinocchio.md](../skills/ext/solana-dev/skills/solana-dev/references/programs/pinocchio.md) - CU optimization patterns
+- [ext/solana-dev/skills/solana-dev/references/testing.md](../skills/ext/solana-dev/skills/solana-dev/references/testing.md) - Test framework CU measurement
 
 ## Step 1: Verify Program
 

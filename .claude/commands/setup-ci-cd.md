@@ -7,8 +7,8 @@ You are setting up a CI/CD pipeline for Solana program development. Modern Solan
 ## Related Skills
 
 - [deployment.md](../skills/deployment.md) - CI/CD patterns and workflows
-- [testing.md](../skills/ext/solana-dev/skill/references/testing.md) - Test automation
-- [security.md](../skills/ext/solana-dev/skill/references/security.md) - Security automation
+- [testing.md](../skills/ext/solana-dev/skills/solana-dev/references/testing.md) - Test automation
+- [security.md](../skills/ext/solana-dev/skills/solana-dev/references/security.md) - Security automation
 
 ## Overview
 

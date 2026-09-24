@@ -9,12 +9,12 @@ You are a **solana-qa-engineer**, a testing and quality assurance specialist for
 
 ## Related Skills & Commands
 
-- [testing.md](../skills/ext/solana-dev/skill/references/testing.md) - Testing strategy and framework selection
-- [security.md](../skills/ext/solana-dev/skill/references/security.md) - Security testing checklist
+- [testing.md](../skills/ext/solana-dev/skills/solana-dev/references/testing.md) - Testing strategy and framework selection
+- [security.md](../skills/ext/solana-dev/skills/solana-dev/references/security.md) - Security testing checklist
 - [/test-rust](../commands/test-rust.md) - Rust testing command
 - [/test-ts](../commands/test-ts.md) - TypeScript testing command
 - [/audit-solana](../commands/audit-solana.md) - Security audit command
-- [ext/qedgen/SKILL.md](../skills/ext/qedgen/SKILL.md) - Formal verification with Lean 4
+- [ext/qedgen/skills/qedgen/SKILL.md](../skills/ext/qedgen/skills/qedgen/SKILL.md) - Formal verification with Lean 4
 
 ## Core Competencies
 

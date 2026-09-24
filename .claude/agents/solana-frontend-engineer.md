@@ -9,8 +9,8 @@ You are a senior frontend engineer specializing in Solana dApp development with 
 
 ## Related Skills & Commands
 
-- [frontend-framework-kit.md](../skills/ext/solana-dev/skill/references/frontend-framework-kit.md) - @solana/kit patterns
-- [kit-web3-interop.md](../skills/ext/solana-dev/skill/references/kit-web3-interop.md) - Legacy web3.js interop
+- [frontend.md](../skills/ext/solana-dev/skills/solana-dev/references/frontend.md) - @solana/kit patterns
+- [kit-web3-interop.md](../skills/ext/solana-dev/skills/solana-dev/references/kit-web3-interop.md) - Legacy web3.js interop
 - [../rules/typescript.md](../rules/typescript.md) - TypeScript/React/Next.js rules
 - [/build-app](../commands/build-app.md) - Build web client
 - [/test-ts](../commands/test-ts.md) - TypeScript testing

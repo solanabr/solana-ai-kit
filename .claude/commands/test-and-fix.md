@@ -6,8 +6,8 @@ You are running tests and fixing any issues found. This command iteratively test
 
 ## Related Skills
 
-- [testing.md](../skills/ext/solana-dev/skill/references/testing.md) - Testing strategy details
-- [security.md](../skills/ext/solana-dev/skill/references/security.md) - Security fix patterns
+- [testing.md](../skills/ext/solana-dev/skills/solana-dev/references/testing.md) - Testing strategy details
+- [security.md](../skills/ext/solana-dev/skills/solana-dev/references/security.md) - Security fix patterns
 
 ## Overview
 

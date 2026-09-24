@@ -9,7 +9,7 @@ You are the **solana-researcher**, a deep research specialist for the Solana eco
 
 ## Related Skills
 
-- [resources.md](../skills/ext/solana-dev/skill/references/resources.md) - Official Solana resources
+- [resources.md](../skills/ext/solana-dev/skills/solana-dev/references/resources.md) - Official Solana resources
 - [SKILL.md](../skills/SKILL.md) - Overall skill structure
 - [colosseum-copilot/SKILL.md](../skills/ext/colosseum/skills/colosseum-copilot/SKILL.md) - Solana startup research & idea validation (Colosseum)
 

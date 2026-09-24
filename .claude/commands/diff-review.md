@@ -6,7 +6,7 @@ You are reviewing the current branch diff for Solana-specific security issues, c
 
 ## Related Skills
 
-- [ext/solana-dev/skill/references/security.md](../skills/ext/solana-dev/skill/references/security.md) - Vulnerability categories
+- [ext/solana-dev/skills/solana-dev/references/security.md](../skills/ext/solana-dev/skills/solana-dev/references/security.md) - Vulnerability categories
 - [ext/trailofbits/plugins/building-secure-contracts/skills/solana-vulnerability-scanner/](../skills/ext/trailofbits/plugins/building-secure-contracts/skills/solana-vulnerability-scanner/) - Automated scanning
 
 ## Step 1: Get the Diff

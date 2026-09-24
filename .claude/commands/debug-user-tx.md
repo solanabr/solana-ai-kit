@@ -6,10 +6,10 @@ You are debugging a transaction that a user reports as failing. You have the pro
 
 ## Related Skills
 
-- [ext/solana-dev/skill/references/testing.md](../skills/ext/solana-dev/skill/references/testing.md) — Surfpool (mainnet fork), LiteSVM, Mollusk
-- [ext/solana-dev/skill/references/programs/anchor.md](../skills/ext/solana-dev/skill/references/programs/anchor.md) — Anchor error codes, constraint failures
-- [ext/solana-dev/skill/references/programs/pinocchio.md](../skills/ext/solana-dev/skill/references/programs/pinocchio.md) — Pinocchio error patterns
-- [ext/solana-dev/skill/references/security.md](../skills/ext/solana-dev/skill/references/security.md) — Common failure categories
+- [ext/solana-dev/skills/solana-dev/references/testing.md](../skills/ext/solana-dev/skills/solana-dev/references/testing.md) — Surfpool (mainnet fork), LiteSVM, Mollusk
+- [ext/solana-dev/skills/solana-dev/references/programs/anchor.md](../skills/ext/solana-dev/skills/solana-dev/references/programs/anchor.md) — Anchor error codes, constraint failures
+- [ext/solana-dev/skills/solana-dev/references/programs/pinocchio.md](../skills/ext/solana-dev/skills/solana-dev/references/programs/pinocchio.md) — Pinocchio error patterns
+- [ext/solana-dev/skills/solana-dev/references/security.md](../skills/ext/solana-dev/skills/solana-dev/references/security.md) — Common failure categories
 
 ## Inputs
 

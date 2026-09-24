@@ -6,10 +6,10 @@ You are running Rust tests. This command covers Solana program testing (Mollusk,
 
 ## Related Skills
 
-- [testing.md](../skills/ext/solana-dev/skill/references/testing.md) - Testing strategy details
-- [security.md](../skills/ext/solana-dev/skill/references/security.md) - Security testing checklist
-- [programs/anchor.md](../skills/ext/solana-dev/skill/references/programs/anchor.md) - Anchor test patterns
-- [programs/pinocchio.md](../skills/ext/solana-dev/skill/references/programs/pinocchio.md) - Pinocchio test patterns
+- [testing.md](../skills/ext/solana-dev/skills/solana-dev/references/testing.md) - Testing strategy details
+- [security.md](../skills/ext/solana-dev/skills/solana-dev/references/security.md) - Security testing checklist
+- [programs/anchor.md](../skills/ext/solana-dev/skills/solana-dev/references/programs/anchor.md) - Anchor test patterns
+- [programs/pinocchio.md](../skills/ext/solana-dev/skills/solana-dev/references/programs/pinocchio.md) - Pinocchio test patterns
 
 ## Step 1: Identify Project Type
 

@@ -10,7 +10,7 @@ $ARGUMENTS
 
 ## Related Context
 
-- **Solana Programs**: See [programs/anchor.md](../skills/ext/solana-dev/skill/references/programs/anchor.md) for IDL patterns
+- **Solana Programs**: See [programs/anchor.md](../skills/ext/solana-dev/skills/solana-dev/references/programs/anchor.md) for IDL patterns
 - **Unity/C#**: See [solana-game SKILL.md](../skills/ext/solana-game/skill/SKILL.md) for Unity/C# patterns
 - **Detailed Templates**: See **tech-docs-writer** agent for full templates
 

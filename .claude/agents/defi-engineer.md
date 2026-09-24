@@ -18,7 +18,7 @@ You are a DeFi integration specialist with deep expertise in composing Solana De
 - [sanctum](../skills/ext/sendai/skills/sanctum/SKILL.md) - Sanctum LST staking
 - [pyth](../skills/ext/sendai/skills/pyth/SKILL.md) - Pyth oracle price feeds
 - [switchboard](../skills/ext/sendai/skills/switchboard/SKILL.md) - Switchboard oracles
-- [security](../skills/ext/solana-dev/skill/references/security.md) - Security checklist
+- [security](../skills/ext/solana-dev/skills/solana-dev/references/security.md) - Security checklist
 - [/build-program](../commands/build-program.md) - Build command
 
 ## Core Competencies

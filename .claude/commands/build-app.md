@@ -6,7 +6,7 @@ You are building a web client application. Follow these steps:
 
 ## Related Skills
 
-- [frontend-framework-kit.md](../skills/ext/solana-dev/skill/references/frontend-framework-kit.md) - React/Next.js patterns
+- [frontend.md](../skills/ext/solana-dev/skills/solana-dev/references/frontend.md) - React/Next.js patterns
 
 ## Step 1: Detect Framework
 

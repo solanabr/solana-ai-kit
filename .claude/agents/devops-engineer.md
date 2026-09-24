@@ -13,7 +13,7 @@ You are a DevOps and infrastructure engineer specializing in Solana project depl
 - [cloudflare workers](../skills/ext/cloudflare/skills/cloudflare/SKILL.md) - Cloudflare Workers platform
 - [agents-sdk](../skills/ext/cloudflare/skills/agents-sdk/SKILL.md) - Cloudflare Agents SDK
 - [workers rules](../skills/ext/cloudflare/rules/workers.mdc) - Workers best practices
-- [security.md](../skills/ext/solana-dev/skill/references/security.md) - Security checklist
+- [security.md](../skills/ext/solana-dev/skills/solana-dev/references/security.md) - Security checklist
 - [/deploy](../commands/deploy.md) - Deploy command
 - [/setup-ci-cd](../commands/setup-ci-cd.md) - CI/CD setup command
 - [/build-program](../commands/build-program.md) - Build command

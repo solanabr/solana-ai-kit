@@ -6,8 +6,8 @@ You are building a Solana program. Follow these steps:
 
 ## Related Skills
 
-- [programs/anchor.md](../skills/ext/solana-dev/skill/references/programs/anchor.md) - Anchor build patterns
-- [programs/pinocchio.md](../skills/ext/solana-dev/skill/references/programs/pinocchio.md) - Pinocchio build optimization
+- [programs/anchor.md](../skills/ext/solana-dev/skills/solana-dev/references/programs/anchor.md) - Anchor build patterns
+- [programs/pinocchio.md](../skills/ext/solana-dev/skills/solana-dev/references/programs/pinocchio.md) - Pinocchio build optimization
 
 ## Step 1: Identify Program Type
 
