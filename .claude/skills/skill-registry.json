@@ -243,6 +243,21 @@
       "tags": ["ux-research", "design-critique", "journey-mapping", "accessibility", "ux"]
     },
     {
+      "id": "solana-program-upgrade-guard",
+      "name": "Solana Program Upgrade Guard",
+      "type": "skill",
+      "domain": "security",
+      "description": "Production-oriented skill for reviewing Solana program-upgrade safety: upgrade authorities, buffer/program-data custody, IDL/bytecode drift, migration replay safety, and rollback readiness.",
+      "source": "https://github.com/TommoHCIO/solana-program-upgrade-guard-skill",
+      "install": { "method": "git-clone", "command": "git clone https://github.com/TommoHCIO/solana-program-upgrade-guard-skill && ./solana-program-upgrade-guard-skill/install.sh .claude/skills/ext", "env": [] },
+      "license": "MIT",
+      "maintainer": "TommoHCIO",
+      "signal": { "stars": 0, "last_commit": "2026-06-22", "reputability": "individual" },
+      "default_installed": false,
+      "safety": "clean; markdown skill plus local validator/install helper, no networked installer or runtime secret use",
+      "tags": ["solana", "security", "upgrade-authority", "programdata", "idl", "migration", "audit"]
+    },
+    {
       "id": "scientific-agent-skills",
       "name": "Scientific Agent Skills",
       "type": "skill",
