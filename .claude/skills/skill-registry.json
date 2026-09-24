@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "updated": "2026-06-15",
+  "updated": "2026-06-22",
   "entries": [
     {
       "id": "anthropic-skills",
@@ -331,6 +331,21 @@
       "default_installed": false,
       "safety": "clean; overlaps the bundled sendai meteora skill — confirm SDK-depth delta before adding",
       "tags": ["meteora", "dlmm", "defi", "sdk", "solana"]
+    },
+    {
+      "id": "solana-audit",
+      "name": "Solana Audit",
+      "type": "skill",
+      "domain": "solana-security",
+      "description": "Evidence-backed Solana audit lifecycle skill for taxonomy-mapped findings, transaction/payment review, release gates, remediation verification, formal-verification handoff, and final audit reports.",
+      "source": "https://github.com/Berektassuly/solana-audit-skill",
+      "install": { "method": "submodule", "command": "git submodule add https://github.com/Berektassuly/solana-audit-skill .claude/skills/ext/solana-audit", "env": [] },
+      "license": "MIT",
+      "maintainer": "Berektassuly",
+      "signal": { "stars": null, "last_commit": "2026-06-22", "reputability": "individual" },
+      "default_installed": false,
+      "safety": "clean; no external credentials required for default validation; never request or store private keys, seed phrases, wallet exports, or keypair file contents",
+      "tags": ["solana-security", "audit", "anchor", "token-2022", "release-gate", "formal-verification"]
     },
     {
       "id": "x402-proxy-mcp",
