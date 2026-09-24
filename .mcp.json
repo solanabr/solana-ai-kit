@@ -11,6 +11,10 @@
       "command": "npx",
       "args": ["-y", "mcp-remote@latest", "https://mcp.solana.com/mcp"]
     },
+    "orquestra": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote@latest", "https://api.orquestra.dev/mcp"]
+    },
     "context7": {
       "command": "npx",
       "args": ["-y", "@upstash/context7-mcp@latest"]
