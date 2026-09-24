@@ -63,6 +63,20 @@ for legacy in '"when"' command_matches CLAUDE_FILE_PATH CLAUDE_TOOL_EXIT_CODE CL
   assert_file_not_contains "$PLUGIN_HOOKS" "$legacy" "plugin hooks.json has no unsupported '$legacy'"
 done
 
+# --- plugin.json must not redeclare the auto-discovered default hooks path (issue #50: duplicate load error) ---
+# Claude Code auto-loads hooks/hooks.json from the plugin root; a manifest "hooks" entry
+# pointing at that same default path registers it twice and plugin installs fail with
+# "1 error during load". The manifest field is only for additional/custom-path hook files.
+MANIFEST_HOOKS_FIELD="$(python3 -c "import json; print(json.load(open('$PLUGIN_MANIFEST')).get('hooks', ''))" 2>/dev/null)"
+TOTAL=$((TOTAL + 1))
+if [ "$MANIFEST_HOOKS_FIELD" != "./hooks/hooks.json" ]; then
+  echo "  PASS: plugin.json does not redeclare the default ./hooks/hooks.json path"
+  PASS=$((PASS + 1))
+else
+  echo "  FAIL: plugin.json 'hooks' field redeclares the auto-discovered ./hooks/hooks.json path (duplicate load error)"
+  FAIL=$((FAIL + 1))
+fi
+
 # --- Plugin-variant hub must not link into ext/ (submodules absent in plugin installs) ---
 echo "[variant hub]"
 assert_file_exists "$PLUGIN_HUB" "plugin-variant skills hub exists"
