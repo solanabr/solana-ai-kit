@@ -60,7 +60,7 @@ Plugins are plain git clones, so they can't carry the 18 `ext/` submodules, the 
 | **solana-architect** | System design, account structures, PDAs |
 | **anchor-engineer** | Anchor program development |
 | **pinocchio-engineer** | CU-optimized native programs |
-| **defi-engineer** | DeFi integrations (Jupiter, Drift, Kamino, etc.) |
+| **defi-engineer** | DeFi integrations (Jupiter, Kamino, etc.) |
 | **token-engineer** | Token-2022 extensions, token launches |
 | **solana-frontend-engineer** | React/Next.js dApp frontends |
 | **mobile-engineer** | React Native/Expo mobile dApps |

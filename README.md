@@ -204,7 +204,7 @@ Pre-configured MCP servers in `.mcp.json` (API keys go in `.env`):
 | Backend | Axum 0.8+, Tokio 1.40+, sqlx |
 | Unity Games | Solana.Unity-SDK, .NET 9, C# 13 |
 | PlaySolana | PSG1 console, PlayDex, SvalGuard |
-| DeFi | Jupiter, Drift, Kamino, Raydium, Orca, Meteora |
+| DeFi | Jupiter, Kamino, Raydium, Orca, Meteora |
 | Infrastructure | Cloudflare Workers, GitHub Actions, Docker |
 
 ## Extended Skills & Add-on Registry
@@ -289,7 +289,7 @@ See [`skill-registry.json`](.claude/skills/skill-registry.json) for the complete
 | **solana-architect** | System design, PDA schemes, token economics, multi-program architecture | Opus |
 | **anchor-engineer** | Anchor development, IDL generation, account constraints | Opus |
 | **pinocchio-engineer** | CU optimization (80-95% savings), zero-copy, minimal binary | Opus |
-| **defi-engineer** | DeFi integrations: Jupiter, Drift, Kamino, Raydium, Orca, Meteora | Opus |
+| **defi-engineer** | DeFi integrations: Jupiter, Kamino, Raydium, Orca, Meteora | Opus |
 | **token-engineer** | Token-2022 extensions, token economics, launch mechanics | Opus |
 | **solana-frontend-engineer** | React/Next.js, wallet UX, transaction flows, accessibility | Opus |
 | **mobile-engineer** | React Native/Expo, mobile wallet adapter, deep linking | Sonnet |

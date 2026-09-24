@@ -58,7 +58,6 @@ Other protocol skills from [SendAI](ext/sendai/skills/):
 | Protocol | Skill | Use for |
 |----------|-------|---------|
 | Phoenix | [phoenix/](ext/sendai/skills/phoenix/) | Perpetual futures (Rise SDK) |
-| Ranger Finance | [ranger-finance/](ext/sendai/skills/ranger-finance/) | Perps aggregation, leverage routing |
 | Lavarage | [lavarage/](ext/sendai/skills/lavarage/) | Leveraged trading for any SPL token |
 | Raydium | [raydium/](ext/sendai/skills/raydium/) | AMM, CLMM pools |
 | Meteora | [meteora/](ext/sendai/skills/meteora/) | DLMM, dynamic pools |
@@ -218,7 +217,7 @@ From [quiknode-labs/solana-anchor-claude-skill](ext/quicknode-anchor/) — **ref
 | Deploy to devnet/mainnet | deployment.md |
 | Jupiter swaps, lend, perps, trigger, DCA | ext/jupiter → integrating-jupiter/SKILL.md (official) |
 | Other DeFi integration (AMM, lending) | ext/sendai → protocol-specific skill |
-| Perpetuals, leverage, margin trading | ext/sendai → ranger-finance/ (also phoenix/; Jupiter perps → ext/jupiter) |
+| Perpetuals, leverage, margin trading | ext/sendai → phoenix/ (also lavarage/ for leveraged spot; Jupiter perps → ext/jupiter) |
 | Cross-chain swaps, bridging | ext/sendai → lifi/ (also debridge/) |
 | Encrypted compute, dark pools, sealed auctions | ext/sendai → arcium/ |
 | NFT standards, metadata, cNFT, candy machine | ext/metaplex → skills/metaplex/SKILL.md (official) |
