@@ -1,0 +1,4 @@
+interface:
+  display_name: "Solana RPC Reliability"
+  short_description: "Fix Solana RPC and tx reliability."
+  default_prompt: "Use $solana-rpc-reliability to debug a flaky Solana transaction send and confirmation flow."

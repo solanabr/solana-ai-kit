@@ -1,0 +1,64 @@
+{
+  "schema": "solana-rpc-health/v1",
+  "results": [
+    {
+      "url": "https://api.devnet.solana.com",
+      "checkedAt": "2026-06-21T06:55:00.256Z",
+      "healthOk": true,
+      "version": {
+        "feature-set": 3345198602,
+        "solana-core": "4.1.0-rc.1"
+      },
+      "slot": 470902247,
+      "latestBlockhash": "BazS4aCSp1TcHkArGXL7NFB8hBjsKyeeKzjMy4aNiQ1F",
+      "lastValidBlockHeight": 458747534,
+      "blockHeight": 458747385,
+      "performanceSamples": 5,
+      "averageTps": 77,
+      "maxLatencyMs": 500,
+      "calls": [
+        {
+          "label": "health",
+          "method": "getHealth",
+          "latencyMs": 500,
+          "ok": true
+        },
+        {
+          "label": "version",
+          "method": "getVersion",
+          "latencyMs": 140,
+          "ok": true
+        },
+        {
+          "label": "slot",
+          "method": "getSlot",
+          "latencyMs": 142,
+          "ok": true
+        },
+        {
+          "label": "latestBlockhash",
+          "method": "getLatestBlockhash",
+          "latencyMs": 142,
+          "ok": true
+        },
+        {
+          "label": "blockHeight",
+          "method": "getBlockHeight",
+          "latencyMs": 147,
+          "ok": true
+        },
+        {
+          "label": "performanceSamples",
+          "method": "getRecentPerformanceSamples",
+          "latencyMs": 154,
+          "ok": true
+        }
+      ],
+      "errors": [],
+      "verdict": "healthy",
+      "recommendations": [
+        "Endpoint is suitable for basic reads; still add expiry-aware confirmation for sends."
+      ]
+    }
+  ]
+}
