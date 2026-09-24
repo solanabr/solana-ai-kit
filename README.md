@@ -56,7 +56,7 @@ cd /path/to/your-project && git submodule update --init --recursive
 /plugin install solana-ai-kit@stbr
 # Commands then namespace as /solana-ai-kit:<name>. The plugin is the CORE kit
 # (agents/commands/local skills/MCP/hooks); the curl one-liner (Option 1) is the
-# FULL install, adding rules + permissions/sandbox + the 18 ext/ submodules.
+# FULL install, adding rules + permissions/sandbox + the 19 ext/ submodules.
 # Details: see "Install as a Claude Code plugin" below.
 
 # Start Claude Code
@@ -110,7 +110,7 @@ What the plugin **cannot** carry (Claude Code plugins are plain git clones — t
 
 - the lazy-loaded `.claude/rules/*` code-style law (Rust, Anchor, Pinocchio, TypeScript, .NET)
 - the curated permissions allowlist + sandbox policy
-- the 18 `ext/` skill submodules (protocol, security, infra, ecosystem depth)
+- the 19 `ext/` skill submodules (protocol, security, infra, ecosystem depth)
 
 For protocol-skill depth in plugin form, add the upstream marketplaces instead (routing, not copying) — e.g. `/plugin marketplace add sendaifun/skills`, `ghostsecurity/skills`, `trailofbits/skills`, `cloudflare/skills`. The plugin's skill hub and `skill-registry.json` list the current targets.
 
@@ -121,6 +121,7 @@ The two paths are complementary: individuals wanting Solana agents/commands acro
 | Submodule | Source | Purpose |
 |-----------|--------|---------|
 | `ext/solana-dev` | [solana-foundation/solana-dev-skill](https://github.com/solana-foundation/solana-dev-skill) | Core Solana development (programs, frontend, testing, security) |
+| `ext/solana-token-extensions` | [Andy00L/solana-token-extensions-skill](https://github.com/Andy00L/solana-token-extensions-skill) | Token-2022 (Token Extensions) mastery: compatibility matrix, transfer-hook security audit, migration, and a read-only mint inspector (CLI + 3 MCP tools). Delegates core dev to `solana-dev`. |
 | `ext/sendai` | [sendaifun/skills](https://github.com/sendaifun/skills) | DeFi protocol integrations (Jupiter, Raydium, Kamino, perps, cross-chain, oracles, etc.) |
 | `ext/solana-game` | [solanabr/solana-game-skill](https://github.com/solanabr/solana-game-skill) | Game development (Unity, PlaySolana, PSG1) |
 | `ext/cloudflare` | [cloudflare/skills](https://github.com/cloudflare/skills) | Infrastructure (Workers, Agents SDK, MCP servers) |
