@@ -590,6 +590,21 @@
       "default_installed": false,
       "safety": "caution: SaaS data-routing — queries and API key sent to mcp.nansen.ai (Nansen servers); key passed in request header; free tier 100 credits, paid ~$0.001/credit or $0.01–$0.05/x402 call; opt-in only",
       "tags": ["analytics", "wallet-labeling", "smart-money", "on-chain-data", "solana", "multi-chain", "paid"]
+    },
+    {
+      "id": "solana-trade-discipline",
+      "name": "Solana Trade Discipline",
+      "type": "skill",
+      "domain": "solana-defi",
+      "description": "Risk-management and exit-discipline layer for Solana trading agents: position sizing, stop-loss / take-profit / trailing exits and scale-outs, 2x net R:R floor, daily + strategic circuit breakers, and slippage / priority-fee / MEV-aware execution. Fills the judgment gap the data and swap skills don't cover.",
+      "source": "https://github.com/fnmaniacOG/solana-trade-discipline",
+      "install": { "method": "submodule", "command": "git submodule add https://github.com/fnmaniacOG/solana-trade-discipline .claude/skills/ext/solana-trade-discipline", "env": [] },
+      "license": "MIT",
+      "maintainer": "fnmaniacOG",
+      "signal": { "stars": null, "last_commit": "2026-06-22", "reputability": "individual" },
+      "default_installed": false,
+      "safety": "clean — pure markdown rules + offline-testable reference code; no scripts execute at runtime, no keys or funds touched",
+      "tags": ["trading", "risk-management", "position-sizing", "stop-loss", "exits", "execution", "defi", "solana"]
     }
   ]
 }
