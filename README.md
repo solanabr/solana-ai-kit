@@ -138,6 +138,7 @@ The two paths are complementary: individuals wanting Solana agents/commands acro
 | `ext/helius` | [helius-labs/core-ai](https://github.com/helius-labs/core-ai) | Official Helius infra skill + unique SVM internals skill |
 | `ext/quicknode-anchor` | [quiknode-labs/solana-anchor-claude-skill](https://github.com/quiknode-labs/solana-anchor-claude-skill) | Anchor/financial-math/Quasar reference files (quarantined — refs only) |
 | `ext/eth-to-sol` | [solana-foundation/eth-to-sol-skill](https://github.com/solana-foundation/eth-to-sol-skill) | EVM/Solidity → Anchor two-pass porting |
+| `ext/solana-tx-debugger` | [thesithunyein/solana-tx-debugger-skill](https://github.com/thesithunyein/solana-tx-debugger-skill) | Diagnose failed Solana transactions: decode error codes, identify root cause, prescribe fixes (Anchor, SPL, Token-2022, compute budget, CPI, ALTs) |
 
 ### Agent Teams
 
