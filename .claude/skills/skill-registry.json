@@ -591,5 +591,25 @@
       "safety": "caution: SaaS data-routing — queries and API key sent to mcp.nansen.ai (Nansen servers); key passed in request header; free tier 100 credits, paid ~$0.001/credit or $0.01–$0.05/x402 call; opt-in only",
       "tags": ["analytics", "wallet-labeling", "smart-money", "on-chain-data", "solana", "multi-chain", "paid"]
     }
+    },
+    {
+      "id": "solana-fiat-rails",
+      "name": "Solana Fiat Rails Skill",
+      "type": "skill",
+      "domain": "payments/offramp",
+      "description": "Bridge USDC/USDG stablecoins to NGN (Nigeria) and BRL (Brazil) via Monnify, Paystack, Flutterwave, OPay, and PIX. Covers disbursements, webhook reconciliation, idempotency, KYC compliance tiers, float management, and on-chain/off-chain settlement matching. Production-grade patterns for emerging market off-ramps.",
+      "source": "https://github.com/Tolu-max/solana-fiat-rails-skill",
+      "install": {
+        "method": "submodule",
+        "command": "git submodule add https://github.com/Tolu-max/solana-fiat-rails-skill .claude/skills/ext/solana-fiat-rails-skill",
+        "env": []
+      },
+      "license": "MIT",
+      "maintainer": "solanabr",
+      "signal": { "stars": null, "last_commit": "2026-06-26", "reputability": "org" },
+      "default_installed": false,
+      "safety": "clean — no token custody; works with provider APIs only (Monnify, Paystack, Flutterwave, OPay, Gerencianet PIX)",
+      "tags": ["payments", "nigeria", "brazil", "pix", "monnify", "reconciliation", "offramp", "onramp", "stablecoins", "usdc", "emerging-markets"]
+    }
   ]
 }
