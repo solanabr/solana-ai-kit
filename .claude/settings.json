@@ -370,7 +370,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "echo \"🤖 Agent completed: ${CLAUDE_SUBAGENT_NAME:-unknown}\""
+            "command": "INPUT=$(cat)\nNAME=$(printf '%s' \"$INPUT\" | jq -r '.agent_type // .agent_id // \"unknown\"' 2>/dev/null)\necho \"🤖 Agent completed: ${NAME:-unknown}\""
           }
         ]
       }
@@ -382,33 +382,27 @@
         "hooks": [
           {
             "type": "command",
-            "command": "if [ -z \"$CLAUDE_FILE_PATH\" ]; then exit 0; fi\n\ncase \"$CLAUDE_FILE_PATH\" in\n  *.rs)\n    command -v rustfmt >/dev/null 2>&1 && rustfmt \"$CLAUDE_FILE_PATH\" || true\n    ;;\n  *.ts|*.tsx|*.js|*.jsx|*.json|*.md)\n    command -v npx >/dev/null 2>&1 && npx prettier --write \"$CLAUDE_FILE_PATH\" || true\n    ;;\nesac"
+            "command": "INPUT=$(cat)\nFILE=$(printf '%s' \"$INPUT\" | jq -r '.tool_input.file_path // empty' 2>/dev/null)\n[ -n \"$FILE\" ] || exit 0\n\ncase \"$FILE\" in\n  *.rs)\n    command -v rustfmt >/dev/null 2>&1 && rustfmt \"$FILE\" || true\n    ;;\n  *.ts|*.tsx|*.js|*.jsx|*.json|*.md)\n    command -v npx >/dev/null 2>&1 && npx prettier --write \"$FILE\" || true\n    ;;\nesac"
           }
         ]
       },
 
       {
         "matcher": "Bash",
-        "when": {
-          "command_matches": "cargo test|anchor test"
-        },
         "hooks": [
           {
             "type": "command",
-            "command": "echo \"\"\necho \"📊 Test Summary:\";\nif [ \"$CLAUDE_TOOL_EXIT_CODE\" -eq 0 ]; then\n  echo \"✅ All tests passed!\"\nelse\n  echo \"❌ Some tests failed. Review output above.\"\nfi"
+            "command": "INPUT=$(cat)\nCMD=$(printf '%s' \"$INPUT\" | jq -r '.tool_input.command // empty' 2>/dev/null || printf '%s' \"$INPUT\")\nprintf '%s' \"$CMD\" | grep -qE 'cargo test|anchor test' || exit 0\nOUT=$(printf '%s' \"$INPUT\" | jq -r '.tool_response | if type==\"string\" then . else (.stdout // \"\") + \"\\n\" + (.stderr // \"\") end' 2>/dev/null)\n[ -n \"$OUT\" ] || OUT=$INPUT\n\necho \"\"\necho \"📊 Test Summary:\"\nif printf '%s' \"$OUT\" | grep -qE 'test result: FAILED|error\\[|panicked|failing'; then\n  echo \"❌ Some tests failed. Review output above.\"\nelse\n  echo \"✅ All tests passed!\"\nfi"
           }
         ]
       },
 
       {
         "matcher": "Bash",
-        "when": {
-          "command_matches": "dotnet test|unity-editor.*-runTests"
-        },
         "hooks": [
           {
             "type": "command",
-            "command": "echo \"\"\necho \"📊 .NET Test Summary:\";\nif [ \"$CLAUDE_TOOL_EXIT_CODE\" -eq 0 ]; then\n  echo \"✅ All tests passed!\"\nelse\n  echo \"❌ Some tests failed. Review output above.\"\nfi"
+            "command": "INPUT=$(cat)\nCMD=$(printf '%s' \"$INPUT\" | jq -r '.tool_input.command // empty' 2>/dev/null || printf '%s' \"$INPUT\")\nprintf '%s' \"$CMD\" | grep -qE 'dotnet test|unity-editor.*-runTests' || exit 0\nOUT=$(printf '%s' \"$INPUT\" | jq -r '.tool_response | if type==\"string\" then . else (.stdout // \"\") + \"\\n\" + (.stderr // \"\") end' 2>/dev/null)\n[ -n \"$OUT\" ] || OUT=$INPUT\n\necho \"\"\necho \"📊 .NET Test Summary:\"\nif printf '%s' \"$OUT\" | grep -qE 'Failed!|Failed: *[1-9]|error'; then\n  echo \"❌ Some tests failed. Review output above.\"\nelse\n  echo \"✅ All tests passed!\"\nfi"
           }
         ]
       }
@@ -417,39 +411,30 @@
     "PreToolUse": [
       {
         "matcher": "Bash",
-        "when": {
-          "command_matches": "\\.ssh/|\\.gnupg|\\.aws/|\\.config/solana/id\\.json|\\.npmrc|\\.git-credentials|\\.netrc|\\.cargo/credentials|\\.docker/config\\.json|\\.config/gh/hosts|\\.kube/config|\\.pypirc|\\.gem/credentials|Application[\\\\ ]+Support/Google/Chrome|Application[\\\\ ]+Support/BraveSoftware|Application[\\\\ ]+Support/Microsoft[\\\\ ]+Edge|Application[\\\\ ]+Support/Firefox|Application[\\\\ ]+Support/Chromium|Application[\\\\ ]+Support/Vivaldi|Application[\\\\ ]+Support/Arc|Application[\\\\ ]+Support/com\\.operasoftware|\\.config/google-chrome|\\.config/BraveSoftware|\\.config/microsoft-edge|\\.mozilla/firefox|\\.config/chromium|\\.config/vivaldi|\\.config/opera|AppData/Local/Google/Chrome|AppData/Local/BraveSoftware|AppData/Local/Microsoft/Edge|AppData/Roaming/Mozilla/Firefox|AppData/Local/Chromium|AppData/Local/Vivaldi|AppData/Roaming/Opera[\\\\ ]+Software|Local[\\\\ ]+Extension[\\\\ ]+Settings|moz-extension"
-        },
         "hooks": [
           {
             "type": "command",
-            "command": "echo '🛑 Blocked: reading private keys, wallet vaults, or credentials is not allowed. Use `solana address` for your pubkey.' >&2; exit 1"
+            "command": "INPUT=$(cat)\nCMD=$(printf '%s' \"$INPUT\" | jq -r '.tool_input.command // empty' 2>/dev/null || printf '%s' \"$INPUT\")\nif printf '%s' \"$CMD\" | grep -qE '\\.ssh/|\\.gnupg|\\.aws/|\\.config/solana/id\\.json|\\.npmrc|\\.git-credentials|\\.netrc|\\.cargo/credentials|\\.docker/config\\.json|\\.config/gh/hosts|\\.kube/config|\\.pypirc|\\.gem/credentials|Application[\\\\ ]+Support/Google/Chrome|Application[\\\\ ]+Support/BraveSoftware|Application[\\\\ ]+Support/Microsoft[\\\\ ]+Edge|Application[\\\\ ]+Support/Firefox|Application[\\\\ ]+Support/Chromium|Application[\\\\ ]+Support/Vivaldi|Application[\\\\ ]+Support/Arc|Application[\\\\ ]+Support/com\\.operasoftware|\\.config/google-chrome|\\.config/BraveSoftware|\\.config/microsoft-edge|\\.mozilla/firefox|\\.config/chromium|\\.config/vivaldi|\\.config/opera|AppData/Local/Google/Chrome|AppData/Local/BraveSoftware|AppData/Local/Microsoft/Edge|AppData/Roaming/Mozilla/Firefox|AppData/Local/Chromium|AppData/Local/Vivaldi|AppData/Roaming/Opera[\\\\ ]+Software|Local[\\\\ ]+Extension[\\\\ ]+Settings|moz-extension'; then\n  echo '🛑 Blocked: reading private keys, wallet vaults, or credentials is not allowed. Use `solana address` for your pubkey.' >&2\n  exit 2\nfi\nexit 0"
           }
         ]
       },
 
       {
         "matcher": "Bash",
-        "when": {
-          "command_matches": "git commit"
-        },
         "hooks": [
           {
             "type": "command",
-            "command": "set -e\n\necho \"🔍 Running pre-commit checks...\"\n\nif [ -f \"Anchor.toml\" ] || grep -q \"solana-program\" Cargo.toml 2>/dev/null; then\n  cargo fmt --check || { cargo fmt; exit 1; }\n  cargo clippy --all-targets -- -D warnings || exit 1\n  cargo test --lib || exit 1\nfi\n\nif [ -f \"package.json\" ]; then\n  npx prettier --check \"**/*.{ts,tsx,js,jsx,json}\" || { npx prettier --write \"**/*.{ts,tsx,js,jsx,json}\"; exit 1; }\n  [ -f \"tsconfig.json\" ] && npx tsc --noEmit || exit 1\nfi\n\necho \"✅ Pre-commit checks passed\""
+            "command": "INPUT=$(cat)\nCMD=$(printf '%s' \"$INPUT\" | jq -r '.tool_input.command // empty' 2>/dev/null || printf '%s' \"$INPUT\")\nprintf '%s' \"$CMD\" | grep -qE 'git commit' || exit 0\n\necho \"🔍 Running pre-commit checks...\"\n\nif [ -f \"Anchor.toml\" ] || grep -q \"solana-program\" Cargo.toml 2>/dev/null; then\n  cargo fmt --check || { cargo fmt; echo \"❌ rustfmt reformatted files — review and re-run the commit\" >&2; exit 2; }\n  cargo clippy --all-targets -- -D warnings || { echo \"❌ cargo clippy failed\" >&2; exit 2; }\n  cargo test --lib || { echo \"❌ cargo test --lib failed\" >&2; exit 2; }\nfi\n\nif [ -f \"package.json\" ]; then\n  npx prettier --check \"**/*.{ts,tsx,js,jsx,json}\" || { npx prettier --write \"**/*.{ts,tsx,js,jsx,json}\"; echo \"❌ prettier reformatted files — review and re-run the commit\" >&2; exit 2; }\n  if [ -f \"tsconfig.json\" ]; then\n    npx tsc --noEmit || { echo \"❌ tsc --noEmit failed\" >&2; exit 2; }\n  fi\nfi\n\necho \"✅ Pre-commit checks passed\""
           }
         ]
       },
 
       {
         "matcher": "Bash",
-        "when": {
-          "command_matches": "solana program deploy|anchor deploy"
-        },
         "hooks": [
           {
             "type": "command",
-            "command": "set -e\n\necho \"🚨 PRE-DEPLOY CHECKS\"\nNETWORK=$(solana config get | grep \"RPC URL\" | awk '{print $3}')\necho \"Network: $NETWORK\"\n\nif echo \"$NETWORK\" | grep -q mainnet; then\n  echo \"⚠️ MAINNET DEPLOY\"\n  echo \"Type 'DEPLOY TO MAINNET' to continue:\";\n  read -r CONFIRM;\n  [ \"$CONFIRM\" = \"DEPLOY TO MAINNET\" ] || exit 1\nfi\n\nif [ -f \"Anchor.toml\" ]; then\n  ls target/deploy/*.so >/dev/null 2>&1 || { echo \"❌ No build found\"; exit 1; }\nfi\n\necho \"✅ Pre-deploy checks passed\""
+            "command": "INPUT=$(cat)\nCMD=$(printf '%s' \"$INPUT\" | jq -r '.tool_input.command // empty' 2>/dev/null || printf '%s' \"$INPUT\")\nprintf '%s' \"$CMD\" | grep -qE 'solana program deploy|anchor deploy' || exit 0\n\necho \"🚨 PRE-DEPLOY CHECKS\"\nNETWORK=$(solana config get 2>/dev/null | grep \"RPC URL\" | awk '{print $3}')\necho \"Network: $NETWORK\"\n\nif printf '%s\\n%s' \"$NETWORK\" \"$CMD\" | grep -q mainnet; then\n  if ! printf '%s' \"$CMD\" | grep -q 'CONFIRM_MAINNET=1'; then\n    echo \"⚠️ MAINNET DEPLOY blocked. Re-run with CONFIRM_MAINNET=1 prefixed to the command to confirm.\" >&2\n    exit 2\n  fi\n  echo \"⚠️ MAINNET DEPLOY confirmed via CONFIRM_MAINNET=1\"\nfi\n\nif [ -f \"Anchor.toml\" ]; then\n  ls target/deploy/*.so >/dev/null 2>&1 || { echo \"❌ No build found (target/deploy/*.so) — run anchor build first\" >&2; exit 2; }\nfi\n\necho \"✅ Pre-deploy checks passed\""
           }
         ]
       }

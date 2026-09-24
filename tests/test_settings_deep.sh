@@ -113,6 +113,27 @@ assert_contains "$HOOKS" "PreToolUse" "hooks has PreToolUse"
 assert_contains "$HOOKS" "PostToolUse" "hooks has PostToolUse"
 assert_contains "$HOOKS" "SubagentStop" "hooks has SubagentStop"
 
+# Hook contract: matchers only match tool names (no undocumented "when" key),
+# the payload is read from stdin JSON, and only exit 2 blocks a tool call.
+NO_WHEN="$(python3 -c "
+import json
+d = json.load(open('$SETTINGS'))
+print('true' if all('when' not in e for evs in d['hooks'].values() for e in evs) else 'false')
+" 2>/dev/null)"
+assert_eq "true" "$NO_WHEN" "no hook entry has a 'when' key (matchers only match tool names)"
+GATE_CMD="$(python3 -c "
+import json
+d = json.load(open('$SETTINGS'))
+cmds = [h['command'] for e in d['hooks']['PreToolUse'] for h in e['hooks']]
+print(next((c for c in cmds if 'Blocked' in c), '__MISSING__'))
+" 2>/dev/null)"
+assert_contains "$GATE_CMD" "exit 2" "secrets-gate PreToolUse hook blocks with exit 2"
+assert_contains "$GATE_CMD" "tool_input.command" "secrets-gate hook reads the command from stdin JSON"
+assert_contains "$HOOKS" "CONFIRM_MAINNET=1" "pre-deploy hook gates mainnet deploys on CONFIRM_MAINNET=1"
+for legacy in command_matches CLAUDE_FILE_PATH CLAUDE_TOOL_EXIT_CODE CLAUDE_SUBAGENT_NAME "read -r"; do
+  assert_file_not_contains "$SETTINGS" "$legacy" "hooks do not rely on unsupported '$legacy'"
+done
+
 # --- Model Defaults ---
 echo "[modelDefaults]"
 assert_eq "opus" "$(json_get '["modelDefaults"]["agent"]')" "modelDefaults.agent == opus"
