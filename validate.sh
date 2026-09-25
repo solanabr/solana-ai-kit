@@ -189,12 +189,14 @@ echo "[Settings]"
 retired_keys="$(python3 -c 'import json
 d = json.load(open(".claude/settings.json"))
 env = d.get("env") or {}
-keys = [k for k in ("enableAllProjectMcpServers", "defaultMode", "enabledPlugins", "modelDefaults") if k in d]
+plugins = d.get("enabledPlugins") or {}
+keys = [k for k in ("enableAllProjectMcpServers", "defaultMode", "modelDefaults") if k in d]
 keys += ["env." + k for k in ("CLAUDE_CODE_EFFORT_LEVEL", "CLAUDE_CODE_COORDINATOR_MODE",
          "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS", "BASH_MAX_OUTPUT_LENGTH", "MAX_MCP_OUTPUT_TOKENS") if k in env]
+keys += ["enabledPlugins." + p for p in plugins if p.split("@")[0] in ("rust-analyzer-lsp", "typescript-lsp", "csharp-lsp")]
 print(" ".join(keys))' 2>/dev/null || true)"
 if [ -z "$retired_keys" ]; then
-  check "settings.json pins no session behavior (effort, env toggles, plugins, MCP auto-approval)" 0
+  check "settings.json pins no session behavior (effort, env toggles, LSP plugins, MCP auto-approval)" 0
 else
   echo "  FAIL: settings.json sets $retired_keys; leave these to the user (.claude/settings.local.json)"
   FAIL=$((FAIL + 1))

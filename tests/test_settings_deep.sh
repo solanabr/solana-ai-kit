@@ -86,7 +86,12 @@ assert_contains "$DENY_WRITE" "~/.config/solana/id.json" "sandbox.filesystem.den
 echo "[user choices]"
 # LSP plugins need their own language server binary; Claude Code offers the matching
 # plugin once the binary is on PATH. Project MCP servers get Claude Code's approval prompt.
-assert_eq "__MISSING__" "$(json_get '["enabledPlugins"]')" "no enabledPlugins (LSP plugins are per-user opt-in)"
+LSP_ON="$(python3 -c "
+import json
+d = json.load(open('$SETTINGS')).get('enabledPlugins') or {}
+print(' '.join(p for p in d if p.split('@')[0] in ('rust-analyzer-lsp', 'typescript-lsp', 'csharp-lsp')))
+" 2>/dev/null)"
+assert_eq "" "$LSP_ON" "no LSP plugins force-enabled (per-user opt-in)"
 assert_eq "__MISSING__" "$(json_get '["enableAllProjectMcpServers"]')" "no enableAllProjectMcpServers (keep the MCP approval prompt)"
 assert_eq "__MISSING__" "$(json_get '["defaultMode"]')" "no top-level defaultMode (not a setting; permissions.defaultMode is)"
 assert_eq '{"commit": "", "pr": ""}' "$(json_get '["attribution"]')" "attribution hides the commit trailer and PR text"
