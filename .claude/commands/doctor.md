@@ -48,11 +48,13 @@ python3 -c "import json; d=json.load(open('.mcp.json')); print('\n'.join(d.get('
 if grep -q '"surfpool"' .mcp.json 2>/dev/null; then
   surfpool --version 2>/dev/null || echo "MISSING surfpool CLI"
 fi
+grep -q 'memsearch-mcp' .mcp.json 2>/dev/null && echo "RETIRED memsearch-mcp entry"
 ```
-OK when it parses and lists the expected servers (helius, solana-dev, context7, playwright, surfpool, ...).
+OK when it parses and lists the default servers (helius, solana-dev, context7) plus any the user added.
 - FAIL parse failure: `curl -fsSL https://raw.githubusercontent.com/solanabr/solana-ai-kit/main/.mcp.json -o .mcp.json`
 - WARN a listed server's API key failed check 5: `/setup-mcp`
 - WARN `surfpool` listed but the CLI is missing: `curl -L https://surfpool.run/install | sh` (or `brew install txtx/taps/surfpool`)
+- WARN `memsearch-mcp` listed: that npm package is not published, so the server never starts; delete the `memsearch` entry from `.mcp.json`
 
 **8. Dual-install guard.** The plugin (`/plugin install solana-ai-kit@stbr`) and a full install (`install.sh` into `.claude/`) in the same project double-load commands, hooks and MCP servers (`/deploy` beside `/solana-ai-kit:deploy`, the banner printed twice).
 ```bash
@@ -78,7 +80,7 @@ One table, then fix-its for the non-OK rows only, in the order to run them:
 | 4 | Submodules         | FAIL   | 2 uninitialized (-)             |
 | 5 | .env keys          | WARN   | HELIUS_API_KEY empty            |
 | 6 | Config version     | OK     | 2.1.0 = upstream                |
-| 7 | MCP config         | OK     | 7 servers parsed                |
+| 7 | MCP config         | OK     | 3 servers parsed                |
 | 8 | Dual-install guard | OK     | full install only (no plugin)   |
 
 ### Fix-its (run in order)

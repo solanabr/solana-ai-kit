@@ -181,6 +181,26 @@ if [ -f .mcp.json ]; then
 fi
 echo ""
 
+# --- Session behavior stays with the user ---
+# settings.json ships the security policy and attribution. These keys pinned behavior
+# for every user (effort, experimental modes, LSP plugins, MCP auto-approval) or were
+# dead; update.sh strips them from older installs.
+echo "[Settings]"
+retired_keys="$(python3 -c 'import json
+d = json.load(open(".claude/settings.json"))
+env = d.get("env") or {}
+keys = [k for k in ("enableAllProjectMcpServers", "defaultMode", "enabledPlugins", "modelDefaults") if k in d]
+keys += ["env." + k for k in ("CLAUDE_CODE_EFFORT_LEVEL", "CLAUDE_CODE_COORDINATOR_MODE",
+         "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS", "BASH_MAX_OUTPUT_LENGTH", "MAX_MCP_OUTPUT_TOKENS") if k in env]
+print(" ".join(keys))' 2>/dev/null || true)"
+if [ -z "$retired_keys" ]; then
+  check "settings.json pins no session behavior (effort, env toggles, plugins, MCP auto-approval)" 0
+else
+  echo "  FAIL: settings.json sets $retired_keys; leave these to the user (.claude/settings.local.json)"
+  FAIL=$((FAIL + 1))
+fi
+echo ""
+
 # --- Rules frontmatter ---
 # Claude Code reads only `paths:` from a rule. A rule without it (including one
 # that uses `globs:`) loads into every session and every subagent.

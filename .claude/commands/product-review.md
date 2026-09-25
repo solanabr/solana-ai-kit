@@ -16,7 +16,7 @@ This is not a code review: send code quality to `/diff-review` and security to `
 ## Steps
 
 1. Ask before reviewing: the product (URL, repo, or running build), the specific target user, the one core action a user must complete, and the stage (prototype, MVP, beta, launched). With no product yet, suggest `/plan-feature` or `/scaffold` instead.
-2. Walk through it as that user. With a URL or local build, offer to drive it live through the Playwright MCP (`browser_navigate`, `browser_snapshot`, then click through the core flow); otherwise walk the screens and code. Record each friction point with where it happens and what the user sees. Checkpoints:
+2. Walk through it as that user. With a URL or local build, offer to drive it live through the Playwright MCP (`browser_navigate`, `browser_snapshot`, then click through the core flow; `/setup-mcp` adds it if it is missing); otherwise walk the screens and code. Record each friction point with where it happens and what the user sees. Checkpoints:
    - The landing page says what this is within 5 seconds, without crypto jargon.
    - Value is visible before wallet connect; no wallet gate with nothing behind it.
    - The first meaningful action is reachable within 60 seconds by an obvious path.

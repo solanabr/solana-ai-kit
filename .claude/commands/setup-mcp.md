@@ -1,5 +1,5 @@
 ---
-description: "Configure MCP server API keys in .env"
+description: "Configure MCP server API keys in .env and add the optional MCP servers"
 model: sonnet
 ---
 
@@ -22,8 +22,11 @@ Walk the user through filling in `.env`. Secrets go in `.env`, never in `.mcp.js
    - `QUICKNODE_RPC_URL`, `QUICKNODE_WSS_URL`, `QUICKNODE_API_KEY`: QuickNode RPC, WebSocket/Streams and DAS for the `quicknode` skill (https://www.quicknode.com)
    - `X_BEARER_TOKEN`: X API bearer token for the `ct-alpha` CT research skill (https://developer.x.com)
    - `DFLOW_API_KEY`: DFlow order-flow integration skill (credentials from hello@dflow.net)
-3. The Surfpool MCP server needs no key, but it runs `surfpool mcp`, so the `surfpool` CLI must be on PATH. Check with `command -v surfpool`; if it is missing, give the user the install command (`curl -L https://surfpool.run/install | sh` or `brew install txtx/taps/surfpool`) rather than running it.
+3. Ask which optional MCP servers to add; the default is none, since each one starts with every session. Run the command for each one the user picks. It adds the server for this user and project only; append `--scope project` only if the user wants to share it through `.mcp.json`.
+   - Playwright, browser automation (needs a browser Playwright can launch): `claude mcp add playwright -- npx -y @playwright/mcp@latest --headless`
+   - Surfpool, local validator and mainnet-fork control: `claude mcp add surfpool -- surfpool mcp`. It needs the `surfpool` CLI on PATH; check with `command -v surfpool`, and if it is missing give the user the install command (`curl -L https://surfpool.run/install | sh` or `brew install txtx/taps/surfpool`) rather than running it.
+   - context-mode, keeps large tool output out of context: `claude mcp add context-mode -- npx -y context-mode@latest`
 
 ## Output
 
-Configured or skipped for each key (names only), grouped as MCP and skill/CLI, then remind the user to restart Claude Code so the changes are picked up.
+Configured or skipped for each key (names only), grouped as MCP and skill/CLI, then the optional servers added, then remind the user to restart Claude Code so the changes are picked up.
