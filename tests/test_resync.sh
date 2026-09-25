@@ -72,8 +72,10 @@ mkdir -p "$FAKE_ROOT/.claude/bin" "$FAKE_ROOT/.claude/skills/ext/dummy"
 touch "$FAKE_ROOT/.claude/skills/ext/dummy/.gitkeep"
 cp "$RESYNC" "$FAKE_ROOT/.claude/bin/resync.sh"
 chmod +x "$FAKE_ROOT/.claude/bin/resync.sh"
-printf '# Skills\n- [Foo](foo.md)\n' > "$FAKE_ROOT/.claude/skills/SKILL.md"
+# One file link and one directory link (directory links used to be misparsed as "(bar/")
+printf '# Skills\n- [Foo](foo.md)\n- [Bar](bar/)\n' > "$FAKE_ROOT/.claude/skills/SKILL.md"
 echo "# Foo" > "$FAKE_ROOT/.claude/skills/foo.md"
+mkdir -p "$FAKE_ROOT/.claude/skills/bar"
 
 if OUTPUT="$(cd "$OTHER_DIR" && bash "$FAKE_ROOT/.claude/bin/resync.sh" 2>&1)"; then
   RC=0

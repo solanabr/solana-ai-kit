@@ -25,11 +25,14 @@ TARGET_DIR="${TARGET_ARG:-.}"
 mkdir -p "$TARGET_DIR"
 TARGET_DIR="$(cd "$TARGET_DIR" && pwd)"
 
-# Set config directory name based on flag
+# Set config directory and instruction file based on flag
+# (--agents targets AGENTS.md readers such as Codex and opencode)
 if [ "$AGENTS_ONLY" = true ]; then
   CONFIG_DIR=".agents"
+  INSTR_FILE="AGENTS.md"
 else
   CONFIG_DIR=".claude"
+  INSTR_FILE="CLAUDE.md"
 fi
 
 # ── Branding ──────────────────────────────────────────────────────────────
@@ -98,6 +101,34 @@ fi
 # Read version from source
 [ -f "$TEMP_DIR/repo/.claude/VERSION" ] && SCRIPT_VERSION="$(awk '{print $NF}' "$TEMP_DIR/repo/.claude/VERSION")"
 
+# ext/ skills are vendored copies: drop the fetched checkout's submodule
+# gitfiles, whose gitdir points into that checkout and would dangle here.
+if [ -d "$TEMP_DIR/repo/.claude/skills/ext" ]; then
+  find "$TEMP_DIR/repo/.claude/skills/ext" -name .git -type f -exec rm -f {} +
+fi
+
+# --agents: the kit ships .claude/ paths in its docs, skills, settings and
+# .gitmodules. Point them at .agents/ so nothing references a directory this
+# mode never creates. Left alone: ~/.claude/ (user-global), paths inside the
+# vendored ext/ repos, bin/ (scripts resolve their own dir), and lines that
+# already name .agents/ (those are written to handle both modes).
+agents_paths() {
+  local f
+  for f in "$@"; do
+    [ -f "$f" ] && grep -q '\.claude/' "$f" || continue
+    sed -E '/\.agents\//!{s#(^|[^[:alnum:]_./~-])\.claude/#\1.agents/#g;s#([$][{]CLAUDE_PROJECT_DIR:-[.][}])/\.claude/#\1/.agents/#g;}' \
+      "$f" > "$f.tmp" && cat "$f.tmp" > "$f" && rm -f "$f.tmp"
+  done
+}
+if [ "$AGENTS_ONLY" = true ]; then
+  R="$TEMP_DIR/repo"
+  agents_paths "$R/CLAUDE-solana.md" "$R/.gitmodules" "$R/.claude/settings.json"
+  while IFS= read -r f; do agents_paths "$f"; done < <(
+    find "$R/.claude/agents" "$R/.claude/commands" "$R/.claude/rules" "$R/.claude/skills" \
+      -path "$R/.claude/skills/ext" -prune -o -type f -print 2>/dev/null
+  )
+fi
+
 step "Installing Solana AI Kit v$SCRIPT_VERSION to: $TARGET_DIR ($CONFIG_DIR/)"
 
 # Copy .claude/ as $CONFIG_DIR (selective — protects user files)
@@ -115,6 +146,14 @@ for dir in agents skills rules commands bin; do
   fi
 done
 
+# Older installs also copied the ext/ submodule gitfiles: drop any whose gitdir doesn't exist here
+if [ -d "$TARGET_DIR/$CONFIG_DIR/skills/ext" ]; then
+  while IFS= read -r gitfile; do
+    gitdir="$(sed -n 's/^gitdir: //p' "$gitfile")"
+    (cd "$(dirname "$gitfile")" && [ -n "$gitdir" ] && [ -d "$gitdir" ]) || rm -f "$gitfile"
+  done < <(find "$TARGET_DIR/$CONFIG_DIR/skills/ext" -name .git -type f)
+fi
+
 # VERSION: always overwrite (CHANGELOG stays in source repo only)
 [ -f "$TEMP_DIR/repo/.claude/VERSION" ] && cp "$TEMP_DIR/repo/.claude/VERSION" "$TARGET_DIR/$CONFIG_DIR/VERSION"
 
@@ -128,32 +167,41 @@ if [ -f "$TEMP_DIR/repo/.mcp.json" ] && [ ! -f "$TARGET_DIR/.mcp.json" ]; then
   cp "$TEMP_DIR/repo/.mcp.json" "$TARGET_DIR/.mcp.json"
 fi
 
-# Copy CLAUDE-solana.md as CLAUDE.md
-step "Copying CLAUDE.md..."
-if [ -f "$TARGET_DIR/CLAUDE.md" ]; then
-  warn "Warning: CLAUDE.md already exists, backing up to CLAUDE.md.bak"
-  cp "$TARGET_DIR/CLAUDE.md" "$TARGET_DIR/CLAUDE.md.bak"
+# Copy CLAUDE-solana.md as the instruction file (CLAUDE.md, or AGENTS.md with --agents).
+# Back up only real edits: re-running the installer must not overwrite an earlier
+# backup of the user's own file with the kit's copy.
+step "Copying $INSTR_FILE..."
+if [ -f "$TARGET_DIR/$INSTR_FILE" ] && ! cmp -s "$TEMP_DIR/repo/CLAUDE-solana.md" "$TARGET_DIR/$INSTR_FILE"; then
+  warn "Warning: $INSTR_FILE already exists, backing up to $INSTR_FILE.bak"
+  cp "$TARGET_DIR/$INSTR_FILE" "$TARGET_DIR/$INSTR_FILE.bak"
 fi
-cp "$TEMP_DIR/repo/CLAUDE-solana.md" "$TARGET_DIR/CLAUDE.md"
+cp "$TEMP_DIR/repo/CLAUDE-solana.md" "$TARGET_DIR/$INSTR_FILE"
+
+# Older --agents installs registered the ext/ skills under .claude/ paths; drop
+# those stale entries unless a regular .claude/ install still uses them.
+if [ "$AGENTS_ONLY" = true ] && [ -f "$TARGET_DIR/.gitmodules" ] && [ ! -d "$TARGET_DIR/.claude/skills/ext" ]; then
+  git config -f "$TARGET_DIR/.gitmodules" --get-regexp '^submodule\..*\.path$' 2>/dev/null \
+    | awk '$2 ~ /^\.claude\/skills\/ext\// { sub(/\.path$/, "", $1); print $1 }' \
+    | while IFS= read -r section; do git config -f "$TARGET_DIR/.gitmodules" --remove-section "$section"; done || true
+fi
 
 # Merge .gitmodules (don't overwrite — user may have their own submodules)
 if [ -f "$TEMP_DIR/repo/.gitmodules" ]; then
   if [ ! -f "$TARGET_DIR/.gitmodules" ]; then
     cp "$TEMP_DIR/repo/.gitmodules" "$TARGET_DIR/.gitmodules"
   else
-    # Append submodule entries that don't already exist in target
+    # Append submodule entries that don't already exist in target. One pass with a
+    # flag: a nested read loop would swallow the next [submodule] header.
+    COPYING=false
     while IFS= read -r line; do
       if [[ "$line" =~ ^\[submodule\ \"(.+)\"\] ]]; then
-        submod="${BASH_REMATCH[1]}"
-        if ! grep -qF "[submodule \"$submod\"]" "$TARGET_DIR/.gitmodules"; then
-          echo "" >> "$TARGET_DIR/.gitmodules"
-          echo "$line" >> "$TARGET_DIR/.gitmodules"
-          # Read and append path + url lines
-          while IFS= read -r detail; do
-            [[ "$detail" =~ ^\[submodule ]] && break
-            [ -n "$detail" ] && echo "$detail" >> "$TARGET_DIR/.gitmodules"
-          done
+        COPYING=false
+        if ! grep -qF "[submodule \"${BASH_REMATCH[1]}\"]" "$TARGET_DIR/.gitmodules"; then
+          COPYING=true
+          printf '\n%s\n' "$line" >> "$TARGET_DIR/.gitmodules"
         fi
+      elif [ "$COPYING" = true ] && [ -n "$line" ]; then
+        printf '%s\n' "$line" >> "$TARGET_DIR/.gitmodules"
       fi
     done < "$TEMP_DIR/repo/.gitmodules"
   fi
@@ -185,11 +233,15 @@ if ! grep -qF ">>> solana-ai-kit config" "$GITIGNORE"; then
     printf '\n# >>> solana-ai-kit config — gitignored by default; run /commit-claude-config to version it >>>\n'
     printf '.gitmodules\n'
     printf '%s/\n' "$CONFIG_DIR"
-    printf 'CLAUDE.md\n'
+    printf '%s\n' "$INSTR_FILE"
     printf '.mcp.json\n'
     printf '# <<< solana-ai-kit config <<<\n'
   } >> "$GITIGNORE"
   ok "Kit config gitignored by default — run /commit-claude-config to version it"
+elif [ "$AGENTS_ONLY" = true ] && ! sed -n '/>>> solana-ai-kit config/,/<<< solana-ai-kit config/p' "$GITIGNORE" | grep -qxF "$INSTR_FILE"; then
+  # Older --agents installs listed CLAUDE.md in the block; add AGENTS.md
+  awk -v f="$INSTR_FILE" '/^# <<< solana-ai-kit config <<</ { print f } { print }' "$GITIGNORE" > "$GITIGNORE.tmp" \
+    && cat "$GITIGNORE.tmp" > "$GITIGNORE" && rm -f "$GITIGNORE.tmp"
 fi
 
 # 3) Local-only — never committed (.env holds API keys once filled; .env.example stays tracked)
@@ -222,22 +274,33 @@ BOX_LINES=(
   "Next steps:"
   "  1. cd $TARGET_DIR"
   "  2. Edit .env to add your API keys (Helius, RPC, etc.)"
-  "  3. Run 'claude' to start Claude Code with Solana config"
-  "  4. Try /build-program or /audit-solana commands"
+)
+if [ "$AGENTS_ONLY" = true ]; then
+  BOX_LINES+=(
+    "  3. Start Codex, opencode or another AGENTS.md-aware agent here;"
+    "     it reads AGENTS.md and the skills in $CONFIG_DIR/skills/"
+  )
+else
+  BOX_LINES+=(
+    "  3. Run 'claude' to start Claude Code with Solana config"
+    "  4. Try /build-program or /audit-solana commands"
+    ""
+    "This is the full install. If you also enable the solana-ai-kit"
+    "plugin, prefer one path — both double-load commands/hooks/MCP"
+    "(run /doctor to check)."
+  )
+fi
+BOX_LINES+=(
   ""
-  "This is the full install. If you also enable the solana-ai-kit"
-  "plugin, prefer one path — both double-load commands/hooks/MCP"
-  "(run /doctor to check)."
-  ""
-  "$CONFIG_DIR/, CLAUDE.md, .mcp.json and .gitmodules are gitignored"
+  "$CONFIG_DIR/, $INSTR_FILE, .mcp.json and .gitmodules are gitignored"
   "by default to keep your repo clean. To version the kit config,"
   "run /commit-claude-config (or edit .gitignore)."
 )
 if [ "$AGENTS_ONLY" = true ]; then
   BOX_LINES+=("")
-  BOX_LINES+=("Note: Installed into $CONFIG_DIR/ (--agents mode).")
-  BOX_LINES+=("The .md files also work as system prompts or context for any AI tool")
-  BOX_LINES+=("(Cursor, Windsurf, Copilot, etc.).")
+  BOX_LINES+=("Note: Installed into $CONFIG_DIR/ (--agents mode). $CONFIG_DIR/agents/,")
+  BOX_LINES+=("$CONFIG_DIR/commands/ and .mcp.json keep Claude Code's format; other tools")
+  BOX_LINES+=("can use them as prompts or context.")
 fi
 BOX_W=0
 for line in "${BOX_LINES[@]}"; do

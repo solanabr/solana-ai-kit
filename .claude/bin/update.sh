@@ -91,6 +91,10 @@ for dir in $UPDATE_DIRS; do
   fi
 done
 
+# NOTE: the loop above just overwrote bin/, i.e. this file. Bash reads a running
+# script by byte offset, so an older update.sh carries on with the new code from
+# here. Keep every byte above this comment unchanged; add new logic below it.
+
 # The kit no longer ships rules/. Its old rule files used `globs:`, which Claude Code
 # ignores, so they loaded into every session. Remove those copies; rules the user
 # wrote are left alone.
@@ -107,6 +111,47 @@ for f in anchor.md dotnet.md pinocchio.md rust.md typescript.md; do
 done
 [ "$DRY_RUN" = true ] || rmdir "$TARGET_DIR/$CONFIG_NAME/rules" 2>/dev/null || true
 
+# --agents installs: the kit ships .claude/ paths. Point what was just copied at
+# .agents/ (same rewrite as install.sh). Left alone: ~/.claude/, the vendored
+# ext/ repos, bin/, and lines that already name .agents/ (they handle both modes).
+agents_paths() {
+  local f
+  for f in "$@"; do
+    [ -f "$f" ] && grep -q '\.claude/' "$f" || continue
+    sed -E '/\.agents\//!{s#(^|[^[:alnum:]_./~-])\.claude/#\1.agents/#g;s#([$][{]CLAUDE_PROJECT_DIR:-[.][}])/\.claude/#\1/.agents/#g;}' \
+      "$f" > "$f.tmp" && cat "$f.tmp" > "$f" && rm -f "$f.tmp"
+  done
+}
+INSTR_FILE="CLAUDE.md"
+if [ "$CONFIG_NAME" = ".agents" ]; then
+  INSTR_FILE="AGENTS.md"
+  agents_paths "$TEMP_DIR/repo/CLAUDE-solana.md" "$TEMP_DIR/repo/.gitmodules"
+  if [ "$DRY_RUN" = false ]; then
+    while IFS= read -r rel; do agents_paths "$TARGET_DIR/$CONFIG_NAME/$rel"; done < <(
+      cd "$TEMP_DIR/repo/.claude" && find agents commands rules skills -path skills/ext -prune -o -type f -print 2>/dev/null
+    )
+    # Older --agents installs registered ext/ under .claude/ paths; drop those
+    # stale entries unless a regular .claude/ install still uses them.
+    if [ -f "$TARGET_DIR/.gitmodules" ] && [ ! -d "$TARGET_DIR/.claude/skills/ext" ]; then
+      STALE="$(git config -f "$TARGET_DIR/.gitmodules" --get-regexp '^submodule\..*\.path$' 2>/dev/null \
+        | awk '$2 ~ /^\.claude\/skills\/ext\// { sub(/\.path$/, "", $1); print $1 }' || true)"
+      for section in $STALE; do git config -f "$TARGET_DIR/.gitmodules" --remove-section "$section"; done
+      if [ -n "$STALE" ]; then
+        CHANGES="$CHANGES  [migrated] .gitmodules ext/ entries now point at .agents/skills/ext/\n"
+      fi
+    fi
+  fi
+fi
+
+# ext/ skills are vendored copies: drop submodule gitfiles copied from the
+# fetched clone whose gitdir doesn't exist here.
+if [ "$DRY_RUN" = false ] && [ -d "$TARGET_DIR/$CONFIG_NAME/skills/ext" ]; then
+  while IFS= read -r gitfile; do
+    gitdir="$(sed -n 's/^gitdir: //p' "$gitfile")"
+    (cd "$(dirname "$gitfile")" && [ -n "$gitdir" ] && [ -d "$gitdir" ]) || rm -f "$gitfile"
+  done < <(find "$TARGET_DIR/$CONFIG_NAME/skills/ext" -name .git -type f)
+fi
+
 # Merge .gitmodules (don't overwrite — user may have their own submodules)
 if [ -f "$TEMP_DIR/repo/.gitmodules" ]; then
   if [ ! -f "$TARGET_DIR/.gitmodules" ]; then
@@ -117,22 +162,23 @@ if [ -f "$TEMP_DIR/repo/.gitmodules" ]; then
       cp "$TEMP_DIR/repo/.gitmodules" "$TARGET_DIR/.gitmodules"
     fi
   else
-    # Append submodule entries that don't already exist in target
+    # Append submodule entries that don't already exist in target. One pass with a
+    # flag: a nested read loop would swallow the next [submodule] header.
     ADDED_SUBMODS=""
+    COPYING=false
     while IFS= read -r line; do
       if [[ "$line" =~ ^\[submodule\ \"(.+)\"\] ]]; then
+        COPYING=false
         submod="${BASH_REMATCH[1]}"
         if ! grep -qF "[submodule \"$submod\"]" "$TARGET_DIR/.gitmodules"; then
           ADDED_SUBMODS="$ADDED_SUBMODS $submod"
+          COPYING=true
           if [ "$DRY_RUN" = false ]; then
-            echo "" >> "$TARGET_DIR/.gitmodules"
-            echo "$line" >> "$TARGET_DIR/.gitmodules"
-            while IFS= read -r detail; do
-              [[ "$detail" =~ ^\[submodule ]] && break
-              [ -n "$detail" ] && echo "$detail" >> "$TARGET_DIR/.gitmodules"
-            done
+            printf '\n%s\n' "$line" >> "$TARGET_DIR/.gitmodules"
           fi
         fi
+      elif [ "$COPYING" = true ] && [ -n "$line" ] && [ "$DRY_RUN" = false ]; then
+        printf '%s\n' "$line" >> "$TARGET_DIR/.gitmodules"
       fi
     done < "$TEMP_DIR/repo/.gitmodules"
     if [ -n "$ADDED_SUBMODS" ]; then
@@ -183,21 +229,35 @@ if [ -f "$TEMP_DIR/repo/.env.example" ]; then
   fi
 fi
 
-# CLAUDE.md handling — don't overwrite, offer upstream version for manual merge
+# Instruction file (CLAUDE.md, or AGENTS.md for --agents) — don't overwrite,
+# offer the upstream version for manual merge
 if [ -f "$TEMP_DIR/repo/CLAUDE-solana.md" ]; then
-  if [ -f "$TARGET_DIR/CLAUDE.md" ]; then
-    if ! diff -q "$TEMP_DIR/repo/CLAUDE-solana.md" "$TARGET_DIR/CLAUDE.md" >/dev/null 2>&1; then
+  if [ -f "$TARGET_DIR/$INSTR_FILE" ]; then
+    if ! diff -q "$TEMP_DIR/repo/CLAUDE-solana.md" "$TARGET_DIR/$INSTR_FILE" >/dev/null 2>&1; then
       if [ "$DRY_RUN" = false ]; then
-        cp "$TEMP_DIR/repo/CLAUDE-solana.md" "$TARGET_DIR/CLAUDE.md.upstream"
+        cp "$TEMP_DIR/repo/CLAUDE-solana.md" "$TARGET_DIR/$INSTR_FILE.upstream"
       fi
-      CHANGES="$CHANGES  [notice] New upstream CLAUDE.md available at CLAUDE.md.upstream — review and merge manually\n"
+      CHANGES="$CHANGES  [notice] New upstream $INSTR_FILE available at $INSTR_FILE.upstream — review and merge manually\n"
     fi
   else
     if [ "$DRY_RUN" = false ]; then
-      cp "$TEMP_DIR/repo/CLAUDE-solana.md" "$TARGET_DIR/CLAUDE.md"
+      cp "$TEMP_DIR/repo/CLAUDE-solana.md" "$TARGET_DIR/$INSTR_FILE"
     fi
-    CHANGES="$CHANGES  [created] CLAUDE.md\n"
+    CHANGES="$CHANGES  [created] $INSTR_FILE\n"
+    if [ "$INSTR_FILE" = "AGENTS.md" ] && [ -f "$TARGET_DIR/CLAUDE.md" ]; then
+      CHANGES="$CHANGES  [notice] --agents installs now use AGENTS.md; CLAUDE.md is no longer updated\n"
+    fi
   fi
+fi
+
+# Older --agents installs listed CLAUDE.md in the .gitignore config block; add AGENTS.md
+GITIGNORE="$TARGET_DIR/.gitignore"
+if [ "$INSTR_FILE" = "AGENTS.md" ] && [ "$DRY_RUN" = false ] && [ -f "$GITIGNORE" ] \
+  && grep -qF ">>> solana-ai-kit config" "$GITIGNORE" \
+  && ! sed -n '/>>> solana-ai-kit config/,/<<< solana-ai-kit config/p' "$GITIGNORE" | grep -qxF "$INSTR_FILE"; then
+  awk -v f="$INSTR_FILE" '/^# <<< solana-ai-kit config <<</ { print f } { print }' "$GITIGNORE" > "$GITIGNORE.tmp" \
+    && cat "$GITIGNORE.tmp" > "$GITIGNORE" && rm -f "$GITIGNORE.tmp"
+  CHANGES="$CHANGES  [updated] .gitignore — $INSTR_FILE added to the kit config block\n"
 fi
 
 # CLAUDE.local.md is created organically by Claude when needed (gitignored)
