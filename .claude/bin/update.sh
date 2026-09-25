@@ -91,6 +91,22 @@ for dir in $UPDATE_DIRS; do
   fi
 done
 
+# The kit no longer ships rules/. Its old rule files used `globs:`, which Claude Code
+# ignores, so they loaded into every session. Remove those copies; rules the user
+# wrote are left alone.
+for f in anchor.md dotnet.md pinocchio.md rust.md typescript.md; do
+  OLD="$TARGET_DIR/$CONFIG_NAME/rules/$f"
+  if [ -f "$OLD" ] && grep -q '^globs:' "$OLD"; then
+    if [ "$DRY_RUN" = true ]; then
+      CHANGES="$CHANGES  [would remove] $CONFIG_NAME/rules/$f (retired kit rule)\n"
+    else
+      rm "$OLD"
+      CHANGES="$CHANGES  [removed] $CONFIG_NAME/rules/$f (retired kit rule)\n"
+    fi
+  fi
+done
+[ "$DRY_RUN" = true ] || rmdir "$TARGET_DIR/$CONFIG_NAME/rules" 2>/dev/null || true
+
 # Merge .gitmodules (don't overwrite — user may have their own submodules)
 if [ -f "$TEMP_DIR/repo/.gitmodules" ]; then
   if [ ! -f "$TARGET_DIR/.gitmodules" ]; then

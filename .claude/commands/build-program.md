@@ -1,188 +1,25 @@
 ---
-description: "Build Solana program (Anchor or native)"
+description: "Build Solana programs (Anchor, Pinocchio, native), incl. verifiable builds"
 ---
 
-You are building a Solana program. Follow these steps:
+Build the program(s) in this workspace ($ARGUMENTS: optional program name) so `target/deploy/*.so`, and for Anchor `target/idl/*.json`, are ready for tests and deploys. Toolchain errors not covered below: [common-errors.md](../skills/ext/solana-dev/skills/solana-dev/references/common-errors.md).
 
-## Related Skills
+## Steps
 
-- [programs/anchor.md](../skills/ext/solana-dev/skills/solana-dev/references/programs/anchor.md) - Anchor build patterns
-- [programs/pinocchio.md](../skills/ext/solana-dev/skills/solana-dev/references/programs/pinocchio.md) - Pinocchio build optimization
+1. Build:
+   - Anchor: `anchor build` (`-p <name>` for one program). For a new, never-deployed program, run `anchor keys sync` after the first build and rebuild, so `declare_id!` and `Anchor.toml` match `target/deploy/<name>-keypair.json`. Skip it for a deployed program whose keypair is not in `target/deploy/`: it would rewrite `declare_id!` to a fresh address.
+   - Pinocchio or native: `cargo build-sbf`.
+   - Anything headed to mainnet: `anchor build --verifiable`. It needs Docker, writes `target/verifiable/<name>.so`, and is deployed with `anchor deploy --verifiable`. Non-Anchor programs use `solana-verify build`.
+2. Check the output: each `.so` and its size (deploy rent scales with it: `solana rent <bytes>`), the IDL for Anchor programs, and the program IDs (`solana address -k target/deploy/<name>-keypair.json`).
+3. `cargo fmt --check` and `cargo clippy --all-targets -- -D warnings`.
 
-## Step 1: Identify Program Type
+## Failure fixes
 
-Check which framework is being used:
+- Platform-tools corrupted or half-downloaded: `cargo build-sbf --force-tools-install`.
+- `feature edition2024 is required` or "requires rustc 1.xx": `cargo build-sbf` uses the Rust/Cargo bundled in platform-tools, not your rustup toolchain. Pin the offending crate (`cargo update -p <crate> --precise <older version>`) or move to newer platform-tools (`agave-install update`, or `--tools-version`).
+- `overflow-checks must be specified`: set `overflow-checks = true` under `[profile.release]` in the workspace `Cargo.toml`. It also makes unchecked arithmetic panic instead of silently wrapping.
+- Binary too large: `lto = "fat"` and `codegen-units = 1` in `[profile.release]`; `opt-level = "s"` or `"z"` trades CU for size; drop heavy dependencies.
 
-```bash
-# Check for Anchor
-if [ -f "Anchor.toml" ]; then
-    echo "Anchor program detected"
-fi
+## Output
 
-# Check for Cargo
-if [ -f "Cargo.toml" ]; then
-    echo "Native Rust program detected"
-fi
-```
-
-## Step 2: Build Program
-
-### For Anchor Programs
-
-```bash
-# Clean build
-anchor clean
-anchor build
-
-# Build specific program
-anchor build -p program-name
-
-# Build with verifiable build
-anchor build --verifiable
-
-# Check build output
-ls -lh target/deploy/*.so
-```
-
-### For Native Rust Programs
-
-```bash
-# Build BPF program
-cargo build-sbf
-
-# Build with specific BPF SDK
-cargo build-sbf --bpf-sdk /path/to/bpf-sdk
-
-# Check output
-ls -lh target/deploy/*.so
-```
-
-## Step 3: Verify Build
-
-```bash
-# Check program size (should be < 400KB ideally)
-ls -lh target/deploy/*.so | awk '{print $5, $9}'
-
-# Verify program ID
-solana address -k target/deploy/program-keypair.json
-
-# If Anchor, verify IDL generated
-ls -lh target/idl/*.json
-```
-
-## Step 4: Run Format and Lint
-
-After successful build:
-
-```bash
-# Format code
-cargo fmt
-
-# Run clippy
-cargo clippy -- -W clippy::all
-
-# Check for warnings
-cargo clippy --all-targets --all-features -- -D warnings
-```
-
-## Common Build Issues
-
-### Compilation Errors
-- Check Rust version: `rustc --version` (need 1.79+)
-- Update dependencies: `cargo update`
-- Clean and rebuild: `anchor clean && anchor build`
-
-### Binary Size Too Large
-```bash
-# Check current size
-ls -lh target/deploy/*.so
-
-# Optimize in Cargo.toml:
-# [profile.release]
-# opt-level = "z"
-# lto = "fat"
-# codegen-units = 1
-```
-
-### Missing Dependencies
-```bash
-# For Anchor
-npm install
-
-# For Rust
-cargo fetch
-```
-
-### BPF SDK Issues
-```bash
-# Update Solana CLI
-agave-install update
-
-# Reinstall BPF SDK
-cargo build-sbf --force-tools-install
-```
-
-## Build Optimization
-
-### For Production
-
-```toml
-# Add to Cargo.toml
-[profile.release]
-overflow-checks = true
-lto = "fat"
-codegen-units = 1
-opt-level = 3
-
-[profile.release.build-override]
-opt-level = 3
-```
-
-### Measure Build Time
-
-```bash
-# Time the build
-time anchor build
-
-# Or with cargo
-time cargo build-sbf
-```
-
-## Verifiable Build (Anchor)
-
-**CRITICAL for production and security audits:**
-
-Verifiable builds ensure your program binary can be reproduced identically by anyone, proving no hidden code was injected during compilation. This is essential for:
-- Security audits (auditors can verify deployed bytecode matches source)
-- User trust (anyone can verify what's deployed)
-- Mainnet deployments (industry best practice)
-
-```bash
-# Create verifiable build (ALWAYS use for mainnet!)
-anchor build --verifiable
-
-# This produces identical builds across machines
-# Uses Docker to ensure reproducible compilation environment
-
-# Verify a deployed program matches source
-anchor verify <program-id> --provider.cluster mainnet
-```
-
-**When to use verifiable builds:**
-- ✅ Always for mainnet deployments
-- ✅ For security audits
-- ✅ Before professional code reviews
-- ⚠️ Optional for devnet testing (but good practice)
-- ❌ Not needed for local development iteration
-
-**Note:** First verifiable build may take longer as it downloads Docker image, but subsequent builds are faster.
-
-## After Successful Build
-
-- [ ] Program compiled without errors
-- [ ] Binary size acceptable (< 400KB preferred)
-- [ ] Clippy shows no warnings
-- [ ] Code is formatted
-- [ ] IDL generated (if Anchor)
-- [ ] Verifiable build successful (for mainnet)
-- [ ] Ready for testing
+Programs built, `.so` sizes, program IDs, IDL status, fmt and clippy results.

@@ -59,6 +59,33 @@ for f in .claude/commands/*.md; do
 done
 echo ""
 
+# --- Description budget ---
+# Agent and command descriptions are listed to the model in every session, so keep
+# them to routing essentials. Bodies load only when used.
+echo "[Descriptions]"
+long_desc=0
+while IFS=$'\t' read -r len limit file; do
+  if [ "$len" -gt "$limit" ]; then
+    echo "  FAIL: $file description is $len chars (limit $limit)"
+    FAIL=$((FAIL + 1))
+    long_desc=$((long_desc + 1))
+  fi
+done < <(python3 - <<'PY'
+import glob, re
+for pattern, limit in ((".claude/agents/*.md", 250), (".claude/commands/*.md", 100)):
+    for path in sorted(glob.glob(pattern)):
+        text = open(path, encoding="utf-8").read()
+        front = text.split("\n---", 1)[0] if text.startswith("---") else ""
+        m = re.search(r"^description:\s*(.*)$", front, re.M)
+        desc = m.group(1).strip().strip("\"'") if m else ""
+        print(f"{len(desc)}\t{limit}\t{path}")
+PY
+)
+if [ "$long_desc" -eq 0 ]; then
+  check "Agent descriptions <= 250 chars, command descriptions <= 100 chars" 0
+fi
+echo ""
+
 # --- Skill references ---
 echo "[Skills]"
 if [ -f .claude/skills/SKILL.md ]; then
@@ -155,19 +182,24 @@ fi
 echo ""
 
 # --- Rules frontmatter ---
+# Claude Code reads only `paths:` from a rule. A rule without it (including one
+# that uses `globs:`) loads into every session and every subagent.
 echo "[Rules]"
-for f in .claude/rules/*.md; do
-  name="$(basename "$f")"
-  has_globs=1
-
-  if head -1 "$f" | grep -q "^---"; then
-    frontmatter="$(awk '/^---$/{c++;next} c==1{print; if(NR>22)exit}' "$f")"
-    # Accept either globs: or paths:
-    (echo "$frontmatter" | grep -qE "^(globs|paths):") && has_globs=0
+eager_rules=0
+while IFS= read -r f; do
+  frontmatter=""
+  if head -1 "$f" | grep -q "^---$"; then
+    frontmatter="$(awk '/^---$/{c++;next} c==1{print}' "$f")"
   fi
-
-  check "$name has globs/paths in frontmatter" $has_globs
-done
+  if ! echo "$frontmatter" | grep -q "^paths:"; then
+    echo "  FAIL: $f has no paths: frontmatter, so it loads every session"
+    FAIL=$((FAIL + 1))
+    eager_rules=$((eager_rules + 1))
+  fi
+done < <(find .claude/rules -name '*.md' 2>/dev/null)
+if [ "$eager_rules" -eq 0 ]; then
+  check "No always-loaded rules (every rule is path-scoped with paths:)" 0
+fi
 echo ""
 
 # --- Summary ---

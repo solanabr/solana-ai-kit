@@ -10,24 +10,26 @@ This repository contains Claude Code configuration for Solana development projec
 
 ## This Repo's Purpose
 
-You are maintaining the **solana-ai-kit** repository - a template/library of Claude Code configurations for Solana development. Your role is to improve, test, and maintain the agents, skills, commands, MCP servers, and rules that other projects will use.
+You are maintaining the **solana-ai-kit** repository - a template/library of Claude Code configurations for Solana development. Your role is to improve, test, and maintain the agents, skills, commands, and MCP servers that other projects will use.
 
 ## Token Loading Model
 <!-- WHY: Understanding when each file loads determines your token budget.
      CLAUDE.md is a user message (not system prompt) — shorter = better adherence.
-     Rules without globs: load at session start, so keep them minimal. -->
+     Claude Code reads only `paths:` from a rule; `globs:` is ignored, so such a rule
+     loads at session start and in every subagent (the kit's former rules did: ~17K tokens). -->
 
 | File | When loaded | Budget guidance |
 |------|-------------|-----------------|
-| `CLAUDE.md` | Session start; delivered as user message (uncached) | Keep <200 lines; costs every turn |
-| `CLAUDE-solana.md` | Session start (user projects) | Keep <120 lines; uncached; HTML comments stripped (free) |
+| `CLAUDE.md` | Session start and every subagent; user message (uncached) | Keep <200 lines; costs every turn |
+| `CLAUDE-solana.md` | Session start and every subagent (user projects) | Keep <60 lines; only what a strong model can't infer; HTML comments stripped (free) |
 | `MEMORY.md` | Session start | 200-line / 25KB cap; index pointers only |
-| `.claude/rules/*.md` (with `globs:`) | Lazy — on matching file read | Can be detailed; zero startup cost |
-| `.claude/rules/*.md` (no `globs:`) | Session start | Minimal — always loaded |
-| `.claude/agents/*.md` | On agent spawn | Can be detailed |
-| `.claude/commands/*.md` | On invocation | Can be detailed |
-| `.claude/skills/SKILL.md` | On invocation | Medium; HTML comments NOT stripped |
-| `.claude/skills/*.md` | On-demand via links | Can be detailed |
+| `.claude/rules/*.md` | `paths:` → when Claude reads a matching file; no `paths:` → every session and subagent | Kit ships none; `validate.sh` fails on an unscoped rule |
+| Agent `description` | Every session (Agent tool list) | Routing only, ≤250 chars (`validate.sh`) |
+| Command `description` | Every session (skill listing) unless `disable-model-invocation: true` | One line, ≤100 chars (`validate.sh`); user-only side-effect commands set `disable-model-invocation: true` |
+| `.claude/agents/*.md` body | On agent spawn | Only what the model wouldn't know; link ext/ skills |
+| `.claude/commands/*.md` body | On invocation | Terse steps with the exact non-obvious commands |
+| `.claude/skills/SKILL.md` | When read (not auto-listed: not in a `<name>/` dir; CLAUDE.md points to it) | Routing table; HTML comments NOT stripped |
+| `.claude/skills/*.md` | On-demand via links | Can be detailed; don't duplicate ext/ |
 | Subdirectory `CLAUDE.md` | Lazy — when Claude reads files in that dir | Monorepo module configs |
 
 ## Communication Style
@@ -50,7 +52,8 @@ You are maintaining the **solana-ai-kit** repository - a template/library of Cla
 - Run `bash validate.sh && bash tests/run_all.sh` before every commit
 - Check QUICK-START.md and README.md after any structural change
 - Test install.sh in a temp dir after modifying it
-- Keep CLAUDE-solana.md under 120 lines — it loads on every user conversation
+- Keep CLAUDE-solana.md under 60 lines — it loads in every user session and subagent
+- Write for a strong model: add only what it wouldn't know or would get wrong, link ext/ references instead of pasting patterns, and state rules calmly (no NEVER/ALWAYS/CRITICAL; give the reason)
 
 ## Ripple Map
 <!-- CRITICAL: This is the #1 cause of stale docs. When adding/removing
@@ -80,12 +83,12 @@ When X changes, also update Y:
 
 | Component | Location | Key Rule |
 |-----------|----------|----------|
-| **Agents** | `.claude/agents/` | Non-overlapping responsibilities; spawn other agents for cross-domain work |
+| **Agents** | `.claude/agents/` | Non-overlapping responsibilities; spawn other agents for cross-domain work; description ≤ 2 sentences |
 | **Skills** | `.claude/skills/` | Progressive loading; reference from `SKILL.md`; prefer code over prose |
-| **Commands** | `.claude/commands/` | Atomic (one command, one purpose); document inputs/outputs |
-| **Rules** | `.claude/rules/` | Minimal — they load on every matching file; use `globs` in frontmatter |
+| **Commands** | `.claude/commands/` | Atomic (one command, one purpose); document inputs/outputs; one-line description |
+| **Rules** | `.claude/rules/` | The kit ships none. A project rule needs `paths:` frontmatter (`globs:` is ignored, so the rule loads every session) |
 | **MCP Servers** | `.mcp.json` | Document env vars; test connectivity; update setup-mcp command |
-| **Plugin** | `.claude-plugin/marketplace.json` + `plugin/` | In-repo marketplace + symlinked core-plugin subtree (agents/commands/.mcp.json/local skills are **symlinks** into `.claude/`; only `hooks/hooks.json` + plugin-variant `skills/SKILL.md` are real files). Keep `plugin.json` version = `.claude/VERSION`. `plugin/skills/SKILL.md` must have NO `ext/` links (submodules absent in plugin installs). Validate: `claude plugin validate .` + `./plugin`. `install.sh` stays the full install (rules/permissions/submodules) |
+| **Plugin** | `.claude-plugin/marketplace.json` + `plugin/` | In-repo marketplace + symlinked core-plugin subtree (agents/commands/.mcp.json/local skills are **symlinks** into `.claude/`; only `hooks/hooks.json` + plugin-variant `skills/SKILL.md` are real files). Keep `plugin.json` version = `.claude/VERSION`. `plugin/skills/SKILL.md` must have NO `ext/` links (submodules absent in plugin installs). Validate: `claude plugin validate .` + `./plugin`. `install.sh` stays the full install (CLAUDE.md/permissions/submodules) |
 
 ## Agent Teams
 
@@ -134,4 +137,4 @@ All changes on feature branches: `git checkout -b <type>/<scope>-<description>-<
 
 ---
 
-**Main config**: `CLAUDE-solana.md` | **Agents**: `.claude/agents/` | **Skills**: `.claude/skills/` | **Commands**: `.claude/commands/` | **MCP**: `.mcp.json` | **Rules**: `.claude/rules/`
+**Main config**: `CLAUDE-solana.md` | **Agents**: `.claude/agents/` | **Skills**: `.claude/skills/` | **Commands**: `.claude/commands/` | **MCP**: `.mcp.json`

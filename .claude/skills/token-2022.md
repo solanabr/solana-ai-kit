@@ -1,707 +1,107 @@
 ---
 name: token-2022
-description: Comprehensive guide to SPL Token-2022 (Token Extensions) — transfer hooks, confidential transfers, metadata, transfer fees, and all extension types with practical Anchor/native patterns.
+description: "Token-2022 (Token Extensions) gotchas: extension init order and sizing, transfer hooks and extra account metas, fees, metadata, venue compatibility, and supporting both token programs in Anchor 1.x."
 ---
 
 # Token-2022 (Token Extensions)
 
-SPL Token-2022 is the next-generation token program (`TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb`). Superset of SPL Token with extensions that add functionality at the mint or account level.
+What goes wrong when creating or integrating Token-2022 mints. Related references:
+- Kit client API (sizes, ATA derivation, fetching): [kit/programs/token-2022.md](ext/solana-dev/skills/solana-dev/references/kit/programs/token-2022.md)
+- Security review of extension mints (fee accounting, permanent delegate, mint close and reinit, `.closable()`, metadata spoofing): [security.md, Token-2022 section](ext/solana-dev/skills/solana-dev/references/security.md#token-2022-extension-security)
+- Confidential transfers: [confidential-transfers.md](ext/solana-dev/skills/solana-dev/references/confidential-transfers.md)
+- NFTs and collections usually fit Metaplex Core better than Token-2022 groups: [metaplex](ext/metaplex/skills/metaplex/SKILL.md)
 
-**Program IDs:**
-- Token-2022: `TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb`
-- SPL Token (legacy): `TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA`
+## Rules for every extension
 
-## 1. Transfer Hooks
+- Mint extensions are fixed at creation. Allocate exactly `getMintLen([...])` / `ExtensionType::try_calculate_account_len::<Mint>(&[...])`, run every extension initializer, then `InitializeMint2`, in one transaction. A size mismatch fails with `InvalidAccountData`; a bad combination fails with `InvalidExtensionCombination`.
+- Variable-length TokenMetadata is not part of that allocation: fund lamports for the final size and let the metadata instruction realloc.
+- Token accounts carry extensions the mint requires (TransferFeeAmount, TransferHookAccount, PausableAccount, ...). The ATA program and Anchor `init` with `token::`/`associated_token::` size them; manual creation must use `getAccountLenForMint` or the `GetAccountDataSize` instruction. Owner toggles (MemoTransfer, CpiGuard) on an account created without room for them need `Reallocate` first.
+- ATAs are derived with the token program as a seed. Pass the Token-2022 ID (`TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb`) to ATA derivation, `getMint`/`getAccount`, and ATA creation, or you get a different address.
+- Transfer with `transfer_checked`; plain `transfer` fails with `MintRequiredForTransfer` on fee and hook mints. `transfer_checked_with_fee` asserts the expected fee.
+- Integrations read the mint's extensions up front and allow-list what they support: `getExtensionTypes(mint.tlvData)` (web3.js), `mint.data.extensions` (Kit), `anchor_spl::token_interface::get_mint_extension_data::<T>(&mint_info)` on-chain.
 
-Execute custom logic on every token transfer via a CPI to your program.
-
-### Anchor Transfer Hook Program
+## Supporting both token programs (Anchor 1.x)
 
 ```rust
-use anchor_lang::prelude::*;
-use anchor_spl::token_2022;
-use spl_transfer_hook_interface::instruction::TransferHookInstruction;
-
-declare_id!("YourHookProgram111111111111111111111111111");
-
-#[program]
-pub mod transfer_hook {
-    use super::*;
-
-    // Called by Token-2022 on every transfer
-    pub fn transfer_hook(ctx: Context<TransferHook>, amount: u64) -> Result<()> {
-        // Custom logic: logging, royalties, allowlists, etc.
-        let counter = &mut ctx.accounts.counter;
-        counter.transfers += 1;
-        Ok(())
-    }
-
-    // Required: tells Token-2022 what extra accounts to include
-    pub fn initialize_extra_account_meta_list(
-        ctx: Context<InitExtraAccountMetaList>,
-    ) -> Result<()> {
-        let extra_metas = &[
-            ExtraAccountMeta::new_with_seeds(
-                &[Seed::Literal { bytes: b"counter".to_vec() }],
-                false, // is_signer
-                true,  // is_writable
-            )?,
-        ];
-        ExtraAccountMetaList::init::<ExecuteInstruction>(
-            &mut ctx.accounts.extra_account_meta_list.try_borrow_mut_data()?,
-            extra_metas,
-        )?;
-        Ok(())
-    }
-}
-
-#[derive(Accounts)]
-pub struct TransferHook<'info> {
-    #[account(token::mint = mint, token::authority = owner)]
-    pub source: InterfaceAccount<'info, token_2022::TokenAccount>,
-    pub mint: InterfaceAccount<'info, token_2022::Mint>,
-    #[account(token::mint = mint)]
-    pub destination: InterfaceAccount<'info, token_2022::TokenAccount>,
-    pub owner: UncheckedAccount<'info>,
-    /// CHECK: validated by transfer hook interface
-    pub extra_account_meta_list: UncheckedAccount<'info>,
-    #[account(mut, seeds = [b"counter"], bump)]
-    pub counter: Account<'info, TransferCounter>,
-}
-```
-
-### Client-Side: Adding Extra Accounts
-
-```typescript
-import {
-  createTransferCheckedWithTransferHookInstruction,
-  getExtraAccountMetaAddress,
-  getExtraAccountMetas,
-} from "@solana/spl-token";
-
-// Automatically resolves extra accounts from on-chain meta list
-const ix = await createTransferCheckedWithTransferHookInstruction(
-  connection,
-  sourceAta,
-  mint,
-  destinationAta,
-  owner.publicKey,
-  amount,
-  decimals,
-  [],                  // multiSigners
-  "confirmed",
-  TOKEN_2022_PROGRAM_ID
-);
-```
-
-**Pitfalls:**
-- Hook program must implement the `spl-transfer-hook-interface` exactly — wrong discriminators = silent failures
-- Extra account meta list must be initialized before any transfers
-- Transfer hooks add CU cost to every transfer — keep logic minimal
-
-## 2. Confidential Transfers
-
-Zero-knowledge proof-based transfers that hide amounts on-chain.
-
-### Setup Flow
-
-```typescript
-import {
-  createMint,
-  createAccount,
-  enableConfidentialTransfers,
-  configureConfidentialTransferAccount,
-  depositConfidentialTokens,
-  transferConfidentialTokens,
-  withdrawConfidentialTokens,
-} from "@solana/spl-token";
-
-// 1. Create mint with confidential transfer extension
-const mint = await createMint(
-  connection, payer, mintAuthority, null, 9,
-  undefined, undefined, TOKEN_2022_PROGRAM_ID,
-  [{ extensionType: ExtensionType.ConfidentialTransferMint }]
-);
-
-// 2. Configure the mint for confidential transfers
-await confidentialTransferInitializeMint(
-  connection, payer, mint,
-  auditorElGamalPubkey, // optional auditor
-);
-
-// 3. Configure each token account
-await configureConfidentialTransferAccount(
-  connection, payer, tokenAccount, owner, TOKEN_2022_PROGRAM_ID
-);
-
-// 4. Deposit (public → confidential balance)
-await depositConfidentialTokens(
-  connection, payer, tokenAccount, mint, amount, owner, TOKEN_2022_PROGRAM_ID
-);
-
-// 5. Transfer (confidential → confidential)
-await transferConfidentialTokens(
-  connection, payer,
-  sourceAccount, mint, destinationAccount,
-  amount, owner, TOKEN_2022_PROGRAM_ID
-);
-
-// 6. Withdraw (confidential → public)
-await withdrawConfidentialTokens(
-  connection, payer, tokenAccount, mint, amount, owner, TOKEN_2022_PROGRAM_ID
-);
-```
-
-**Pitfalls:**
-- ZK proof generation is CPU-intensive on client — can take seconds
-- Both sender and receiver accounts must be configured for confidential transfers
-- Auditor key is optional but recommended for compliance
-- Pending balance must be applied before it can be transferred
-
-## 3. Transfer Fee
-
-Automatically collect fees on every transfer.
-
-### Creating Mint with Transfer Fee
-
-```typescript
-import {
-  createInitializeTransferFeeConfigInstruction,
-  createInitializeMintInstruction,
-  harvestWithheldTokensToMint,
-  withdrawWithheldTokensFromMint,
-  ExtensionType,
-  getMintLen,
-  TOKEN_2022_PROGRAM_ID,
-} from "@solana/spl-token";
-
-const mintLen = getMintLen([ExtensionType.TransferFeeConfig]);
-const mintRent = await connection.getMinimumBalanceForRentExemption(mintLen);
-
-const tx = new Transaction().add(
-  SystemProgram.createAccount({
-    fromPubkey: payer.publicKey,
-    newAccountPubkey: mint.publicKey,
-    space: mintLen,
-    lamports: mintRent,
-    programId: TOKEN_2022_PROGRAM_ID,
-  }),
-  createInitializeTransferFeeConfigInstruction(
-    mint.publicKey,
-    feeAuthority.publicKey,     // can update fee
-    withdrawAuthority.publicKey, // can collect fees
-    500,    // 5% fee (basis points, max 10000)
-    BigInt(5_000_000_000),       // max fee cap
-    TOKEN_2022_PROGRAM_ID
-  ),
-  createInitializeMintInstruction(
-    mint.publicKey, 9, mintAuthority.publicKey, null,
-    TOKEN_2022_PROGRAM_ID
-  )
-);
-```
-
-### Collecting Fees
-
-```typescript
-// Step 1: Harvest withheld fees from token accounts → mint
-await harvestWithheldTokensToMint(
-  connection, payer, mint.publicKey, [account1, account2],
-  TOKEN_2022_PROGRAM_ID
-);
-
-// Step 2: Withdraw collected fees from mint → destination
-await withdrawWithheldTokensFromMint(
-  connection, payer, mint.publicKey,
-  feeCollectorAta,
-  withdrawAuthority,
-  TOKEN_2022_PROGRAM_ID
-);
-```
-
-**Pitfalls:**
-- Fee is withheld in the recipient's token account, not deducted from sender
-- `transferChecked` is required — plain `transfer` will fail
-- Max fee cap prevents excessive fees on large transfers
-
-## 4. Interest-Bearing Tokens
-
-Display an interest-accruing UI balance without on-chain token minting.
-
-```typescript
-import {
-  createInitializeInterestBearingMintInstruction,
-  amountToUiAmount,
-} from "@solana/spl-token";
-
-// Initialize mint with interest rate (basis points)
-const ix = createInitializeInterestBearingMintInstruction(
-  mint.publicKey,
-  rateAuthority.publicKey,
-  350, // 3.5% annual rate in basis points
-  TOKEN_2022_PROGRAM_ID
-);
-
-// Calculate display amount with accrued interest
-const uiAmount = amountToUiAmount(connection, mint.publicKey, rawAmount);
-```
-
-**Pitfalls:**
-- Interest is cosmetic — no new tokens are minted. Supply doesn't change
-- Only affects `amountToUiAmount`/`uiAmountToAmount` calculations
-- Rate authority can update the rate; set to `null` to lock it
-
-## 5. Metadata Pointer + Token Metadata
-
-Store token metadata directly on the mint — no Metaplex needed.
-
-```typescript
-import {
-  createInitializeMetadataPointerInstruction,
-  createInitializeMintInstruction,
-  TYPE_SIZE, LENGTH_SIZE,
-} from "@solana/spl-token";
-import {
-  createInitializeInstruction,
-  createUpdateFieldInstruction,
-  pack,
-} from "@solana/spl-token-metadata";
-
-// Metadata points to the mint itself
-const metadataPointerIx = createInitializeMetadataPointerInstruction(
-  mint.publicKey,
-  updateAuthority.publicKey,
-  mint.publicKey, // metadata lives on the mint
-  TOKEN_2022_PROGRAM_ID
-);
-
-const metadata = {
-  mint: mint.publicKey,
-  name: "My Token",
-  symbol: "MTK",
-  uri: "https://example.com/metadata.json",
-  additionalMetadata: [["description", "A cool token"]],
-};
-
-const metadataLen = TYPE_SIZE + LENGTH_SIZE + pack(metadata).length;
-const mintLen = getMintLen([ExtensionType.MetadataPointer]) + metadataLen;
-
-const tx = new Transaction().add(
-  SystemProgram.createAccount({ /* ... */ space: mintLen, /* ... */ }),
-  metadataPointerIx,
-  createInitializeMintInstruction(mint.publicKey, 9, mintAuth, null, TOKEN_2022_PROGRAM_ID),
-  createInitializeInstruction({
-    programId: TOKEN_2022_PROGRAM_ID,
-    mint: mint.publicKey,
-    metadata: mint.publicKey,
-    name: metadata.name,
-    symbol: metadata.symbol,
-    uri: metadata.uri,
-    mintAuthority: mintAuth,
-    updateAuthority: updateAuthority.publicKey,
-  }),
-  createUpdateFieldInstruction({
-    programId: TOKEN_2022_PROGRAM_ID,
-    metadata: mint.publicKey,
-    updateAuthority: updateAuthority.publicKey,
-    field: "description",
-    value: "A cool token",
-  })
-);
-```
-
-**Pitfalls:**
-- Metadata pointer must be initialized BEFORE `InitializeMint`
-- Account space must include metadata length — calculate with `pack()`
-- `additionalMetadata` is key-value pairs, not arbitrary JSON
-
-## 6. Default Account State
-
-All new token accounts start frozen — useful for regulated tokens.
-
-```typescript
-import {
-  createInitializeDefaultAccountStateInstruction,
-  AccountState,
-} from "@solana/spl-token";
-
-const ix = createInitializeDefaultAccountStateInstruction(
-  mint.publicKey,
-  AccountState.Frozen,
-  TOKEN_2022_PROGRAM_ID
-);
-// Add before InitializeMint in transaction
-```
-
-**Pitfalls:**
-- Requires freeze authority on the mint to thaw accounts
-- Every new ATA will be frozen — ensure your onboarding flow thaws after KYC/approval
-
-## 7. Immutable Owner
-
-Prevents the token account owner from being reassigned. ATAs have this by default.
-
-```typescript
-import { createInitializeImmutableOwnerInstruction } from "@solana/spl-token";
-
-// Add before InitializeAccount instruction
-const ix = createInitializeImmutableOwnerInstruction(
-  tokenAccount.publicKey,
-  TOKEN_2022_PROGRAM_ID
-);
-```
-
-**Pitfalls:**
-- Already default for Associated Token Accounts under Token-2022
-- Only needed for manually created accounts
-- Cannot be added after account initialization
-
-## 8. CPI Guard
-
-Prevents token account from being manipulated via CPI (cross-program invocation).
-
-```typescript
-import { createEnableCpiGuardInstruction } from "@solana/spl-token";
-
-const ix = createEnableCpiGuardInstruction(
-  tokenAccount,
-  owner.publicKey,
-  [],
-  TOKEN_2022_PROGRAM_ID
-);
-```
-
-When enabled, CPI calls cannot:
-- Transfer tokens from this account
-- Burn tokens from this account
-- Approve a delegate
-- Close the account
-- Set the close authority
-
-**Pitfalls:**
-- User must disable CPI guard before interacting with DeFi protocols that use CPI
-- Only the account owner (via top-level instruction) can disable it
-
-## 9. Permanent Delegate
-
-A delegate that can never be revoked — can transfer or burn any amount.
-
-```typescript
-import { createInitializePermanentDelegateInstruction } from "@solana/spl-token";
-
-const ix = createInitializePermanentDelegateInstruction(
-  mint.publicKey,
-  permanentDelegate.publicKey,
-  TOKEN_2022_PROGRAM_ID
-);
-// Add before InitializeMint
-```
-
-**Use cases:** Compliance (freeze/seize), recovery mechanisms, auto-revocation of licenses.
-
-**Pitfalls:**
-- Extremely powerful — the delegate can drain any token account for this mint
-- Users may reject tokens with permanent delegates — impacts trust
-- Cannot be removed once set
-
-## 10. Non-Transferable Tokens (Soulbound)
-
-Tokens that cannot be transferred after minting — only burn is allowed.
-
-```typescript
-import { createInitializeNonTransferableMintInstruction } from "@solana/spl-token";
-
-const ix = createInitializeNonTransferableMintInstruction(
-  mint.publicKey,
-  TOKEN_2022_PROGRAM_ID
-);
-// Add before InitializeMint
-```
-
-**Use cases:** Achievements, certifications, reputation scores, membership badges.
-
-**Pitfalls:**
-- Tokens can still be burned — use with freeze authority if you need to prevent that
-- Cannot be combined with transfer hooks (transfers are blocked entirely)
-
-## 11. Group / Member Pointer
-
-Create on-chain token collections — a group mint points to group data, member mints point back to their group.
-
-```typescript
-import {
-  createInitializeGroupPointerInstruction,
-  createInitializeMemberPointerInstruction,
-} from "@solana/spl-token";
-
-// Group mint
-const groupIx = createInitializeGroupPointerInstruction(
-  groupMint.publicKey,
-  groupAuthority.publicKey,
-  groupMint.publicKey, // group data on the mint itself
-  TOKEN_2022_PROGRAM_ID
-);
-
-// Member mint
-const memberIx = createInitializeMemberPointerInstruction(
-  memberMint.publicKey,
-  memberAuthority.publicKey,
-  memberMint.publicKey,
-  TOKEN_2022_PROGRAM_ID
-);
-```
-
-**Pitfalls:**
-- Relatively new — tooling support may lag behind other extensions
-- Group size must be updated when adding members
-
-## 12. Required Memo on Transfer
-
-Every transfer to this account must include a memo instruction in the same transaction.
-
-```typescript
-import { createEnableRequiredMemoTransfersInstruction } from "@solana/spl-token";
-
-const ix = createEnableRequiredMemoTransfersInstruction(
-  tokenAccount,
-  owner.publicKey,
-  [],
-  TOKEN_2022_PROGRAM_ID
-);
-```
-
-Sending a transfer:
-
-```typescript
-import { createMemoInstruction } from "@solana/spl-memo";
-
-const tx = new Transaction().add(
-  createMemoInstruction("Payment for invoice #1234", [sender.publicKey]),
-  createTransferCheckedInstruction(
-    sourceAta, mint, destinationAta, sender.publicKey,
-    amount, decimals, [], TOKEN_2022_PROGRAM_ID
-  )
-);
-```
-
-**Pitfalls:**
-- Memo instruction must come BEFORE the transfer in the transaction
-- Breaks compatibility with programs that don't include memos
-
-## Detecting Extensions
-
-### Check Mint Extensions
-
-```typescript
-import {
-  getMint,
-  getExtensionTypes,
-  getExtensionData,
-  ExtensionType,
-  TOKEN_2022_PROGRAM_ID,
-} from "@solana/spl-token";
-
-const mintInfo = await getMint(connection, mintPubkey, "confirmed", TOKEN_2022_PROGRAM_ID);
-const extensions = getExtensionTypes(mintInfo.tlvData);
-
-// Check specific extension
-const hasTransferFee = extensions.includes(ExtensionType.TransferFeeConfig);
-const hasTransferHook = extensions.includes(ExtensionType.TransferHook);
-const hasMetadata = extensions.includes(ExtensionType.MetadataPointer);
-
-// Get extension data
-if (hasTransferFee) {
-  const feeConfig = getTransferFeeConfig(mintInfo);
-  console.log(`Fee: ${feeConfig.newerTransferFee.transferFeeBasisPoints} bps`);
-}
-```
-
-### Check Account Extensions
-
-```typescript
-import { getAccount, getExtensionTypes } from "@solana/spl-token";
-
-const accountInfo = await getAccount(
-  connection, tokenAccount, "confirmed", TOKEN_2022_PROGRAM_ID
-);
-const extensions = getExtensionTypes(accountInfo.tlvData);
-const hasCpiGuard = extensions.includes(ExtensionType.CpiGuard);
-```
-
-## Frontend Handling
-
-### Transfer Hook Extra Accounts
-
-```typescript
-import { addExtraAccountMetasForExecute } from "@solana/spl-token";
-
-// Build a basic transfer instruction, then add extra accounts
-const ix = createTransferCheckedInstruction(
-  source, mint, destination, owner, amount, decimals, [], TOKEN_2022_PROGRAM_ID
-);
-
-// Resolves and appends extra accounts from on-chain meta list
-await addExtraAccountMetasForExecute(
-  connection, ix, TOKEN_2022_PROGRAM_ID,
-  source, mint, destination, owner, amount
-);
-```
-
-### Displaying Token Metadata
-
-```typescript
-import { getTokenMetadata } from "@solana/spl-token-metadata";
-
-const metadata = await getTokenMetadata(connection, mintPubkey);
-if (metadata) {
-  console.log(metadata.name, metadata.symbol, metadata.uri);
-  // Additional metadata as Map<string, string>
-  for (const [key, value] of metadata.additionalMetadata) {
-    console.log(`${key}: ${value}`);
-  }
-}
-```
-
-## Testing with LiteSVM
-
-```rust
-use litesvm::LiteSVM;
-
-#[test]
-fn test_token_2022_transfer_fee() {
-    let mut svm = LiteSVM::new();
-    // Load Token-2022 program
-    svm.add_program_from_file(
-        spl_token_2022::ID,
-        "path/to/spl_token_2022.so"
-    );
-
-    let payer = Keypair::new();
-    svm.airdrop(&payer.pubkey(), 10_000_000_000).unwrap();
-
-    // Create mint with transfer fee extension
-    let mint = Keypair::new();
-    let space = ExtensionType::try_calculate_account_len::<Mint>(
-        &[ExtensionType::TransferFeeConfig]
-    ).unwrap();
-
-    let create_ix = system_instruction::create_account(
-        &payer.pubkey(), &mint.pubkey(),
-        svm.minimum_balance_for_rent_exemption(space),
-        space as u64, &spl_token_2022::ID,
-    );
-
-    let fee_ix = spl_token_2022::extension::transfer_fee::instruction::initialize_transfer_fee_config(
-        &spl_token_2022::ID, &mint.pubkey(),
-        Some(&fee_authority.pubkey()),
-        Some(&withdraw_authority.pubkey()),
-        500, // 5%
-        5_000_000_000, // max fee
-    ).unwrap();
-
-    let init_ix = spl_token_2022::instruction::initialize_mint(
-        &spl_token_2022::ID, &mint.pubkey(),
-        &mint_authority.pubkey(), None, 9,
-    ).unwrap();
-
-    let tx = Transaction::new_signed_with_payer(
-        &[create_ix, fee_ix, init_ix],
-        Some(&payer.pubkey()),
-        &[&payer, &mint],
-        svm.latest_blockhash(),
-    );
-    svm.send_transaction(tx).unwrap();
-}
-```
-
-### Anchor Test Pattern
-
-```typescript
-import { startAnchor } from "solana-bankrun";
-import { BankrunProvider } from "anchor-bankrun";
-
-const context = await startAnchor(".", [], []);
-const provider = new BankrunProvider(context);
-
-// Token-2022 is available by default in bankrun
-// Create mints and accounts using @solana/spl-token with TOKEN_2022_PROGRAM_ID
-```
-
-## Migration from SPL Token
-
-| SPL Token | Token-2022 | Notes |
-|-----------|-----------|-------|
-| `TOKEN_PROGRAM_ID` | `TOKEN_2022_PROGRAM_ID` | Different program ID |
-| `createTransferInstruction` | `createTransferCheckedInstruction` | Must use checked variant |
-| `getMint(conn, mint)` | `getMint(conn, mint, commitment, TOKEN_2022_PROGRAM_ID)` | Pass program ID explicitly |
-| `getAccount(conn, addr)` | `getAccount(conn, addr, commitment, TOKEN_2022_PROGRAM_ID)` | Pass program ID explicitly |
-| `getAssociatedTokenAddress(mint, owner)` | `getAssociatedTokenAddress(mint, owner, false, TOKEN_2022_PROGRAM_ID)` | Different ATA derivation |
-| Fixed account size (165 bytes) | Variable size (extensions) | Use `getMintLen([...extensions])` |
-
-### Anchor CPI to Token-2022
-
-```rust
-use anchor_spl::token_2022::{self, Token2022, TransferChecked};
+use anchor_spl::token_interface::{self, Mint, TokenAccount, TokenInterface, TransferChecked};
 
 #[derive(Accounts)]
 pub struct Pay<'info> {
-    #[account(mut)]
+    #[account(mut, token::mint = mint, token::token_program = token_program)]
     pub from: InterfaceAccount<'info, TokenAccount>,
-    #[account(mut)]
+    #[account(mut, token::mint = mint, token::token_program = token_program)]
     pub to: InterfaceAccount<'info, TokenAccount>,
+    #[account(mint::token_program = token_program)]
     pub mint: InterfaceAccount<'info, Mint>,
     pub authority: Signer<'info>,
-    pub token_program: Program<'info, Token2022>,
+    pub token_program: Interface<'info, TokenInterface>, // Token or Token-2022
 }
 
 pub fn pay(ctx: Context<Pay>, amount: u64) -> Result<()> {
-    token_2022::transfer_checked(
-        CpiContext::new(
-            ctx.accounts.token_program.to_account_info(),
-            TransferChecked {
-                from: ctx.accounts.from.to_account_info(),
-                to: ctx.accounts.to.to_account_info(),
-                mint: ctx.accounts.mint.to_account_info(),
-                authority: ctx.accounts.authority.to_account_info(),
-            },
-        ),
-        amount,
-        ctx.accounts.mint.decimals,
-    )
+    let accounts = TransferChecked {
+        from: ctx.accounts.from.to_account_info(),
+        mint: ctx.accounts.mint.to_account_info(),
+        to: ctx.accounts.to.to_account_info(),
+        authority: ctx.accounts.authority.to_account_info(),
+    };
+    // 1.x: CpiContext takes the program Pubkey, not an AccountInfo
+    let cpi = CpiContext::new(ctx.accounts.token_program.key(), accounts);
+    token_interface::transfer_checked(cpi, amount, ctx.accounts.mint.decimals)
 }
 ```
 
-### Supporting Both Token Programs
+- `token::token_program`, `mint::token_program` and `associated_token::token_program` bind each account to the program that was passed in.
+- Credit what arrived, not `amount`: with a transfer fee the destination receives less. `.reload()` after the CPI and use the balance delta.
+- Extension constraints on `init`: `extensions::metadata_pointer::{authority, metadata_address}`, `extensions::transfer_hook::{authority, program_id}`, `extensions::group_pointer::{authority, group_address}`, `extensions::group_member_pointer::{authority, member_address}`, `extensions::close_authority::authority`, `extensions::permanent_delegate::delegate`. Extensions without a constraint (e.g. TransferFeeConfig, NonTransferable): create the account with `try_calculate_account_len::<PodMint>`, call the matching `anchor_spl::token_interface::*_initialize` CPIs, then `initialize_mint2`.
+- The `spl-token-2022` and `spl-tlv-account-resolution` versions that pair with anchor-lang 1.x still return `solana-program-error` 2.x errors (Anchor uses 3.x), so convert with `.map_err(...)` at the boundary. For direct `spl-*` dependencies see [migrating-v0.32-to-v1.md](ext/solana-dev/skills/solana-dev/references/anchor/migrating-v0.32-to-v1.md), section 17.
+
+## Transfer hooks
 
 ```rust
-use anchor_spl::token_interface::{self, TokenInterface, TokenAccount, Mint, TransferChecked};
+use spl_discriminator::SplDiscriminate;
+use spl_tlv_account_resolution::{account::ExtraAccountMeta, seeds::Seed, state::ExtraAccountMetaList};
+use spl_transfer_hook_interface::instruction::ExecuteInstruction;
 
-#[derive(Accounts)]
-pub struct Pay<'info> {
-    #[account(mut)]
-    pub from: InterfaceAccount<'info, TokenAccount>,
-    #[account(mut)]
-    pub to: InterfaceAccount<'info, TokenAccount>,
-    pub mint: InterfaceAccount<'info, Mint>,
-    pub authority: Signer<'info>,
-    pub token_program: Interface<'info, TokenInterface>, // accepts both
-}
+// Anchor 1.x removed #[interface]; InitializeExtraAccountMetaListInstruction works the same way
+#[instruction(discriminator = ExecuteInstruction::SPL_DISCRIMINATOR_SLICE)]
+pub fn transfer_hook(ctx: Context<TransferHook>, amount: u64) -> Result<()> { /* ... */ }
 
-pub fn pay(ctx: Context<Pay>, amount: u64) -> Result<()> {
-    token_interface::transfer_checked(
-        CpiContext::new(
-            ctx.accounts.token_program.to_account_info(),
-            TransferChecked {
-                from: ctx.accounts.from.to_account_info(),
-                to: ctx.accounts.to.to_account_info(),
-                mint: ctx.accounts.mint.to_account_info(),
-                authority: ctx.accounts.authority.to_account_info(),
-            },
-        ),
-        amount,
-        ctx.accounts.mint.decimals,
-    )
-}
+// Per-owner PDA: seeds reference Execute accounts by index (3 = source authority)
+let metas = vec![ExtraAccountMeta::new_with_seeds(
+    &[Seed::Literal { bytes: b"allow".to_vec() }, Seed::AccountKey { index: 3 }],
+    false, // is_signer
+    true,  // is_writable
+).map_err(|_| ProgramError::InvalidArgument)?];
+ExtraAccountMetaList::init::<ExecuteInstruction>(&mut meta_list.try_borrow_mut_data()?, &metas)
+    .map_err(|_| ProgramError::InvalidAccountData)?;
 ```
 
-Use `Interface<'info, TokenInterface>` to accept both SPL Token and Token-2022 in the same instruction. This is the recommended pattern for new programs.
+- Execute account order: 0 source, 1 mint, 2 destination, 3 source authority, 4 the ExtraAccountMetaList PDA (seeds `["extra-account-metas", mint]` under the hook program), then the extras in list order. Seeds can also use `Seed::AccountData` and `Seed::InstructionData` (the amount).
+- The base accounts arrive read-only with signer privileges dropped. Anything the hook writes must be an extra account marked writable in the list.
+- Create and initialize the meta-list PDA before the first transfer. Changing it later (`UpdateExtraAccountMetaList`) breaks clients and programs that cached the old list.
+- The hook runs after balances move (it sees post-transfer state) and is skipped on self-transfers. Check the `transferring` flag on the source/destination `TransferHookAccount`, plus the mint and ownership checks in security.md.
+- Clients resolve extras with Kit `getTransferCheckedWithTransferHookInstructionAsync` (`@solana-program/token-2022`) or web3.js `createTransferCheckedWithTransferHookInstruction`. Simulate before sending: the hook can reject for its own reasons.
+- A program that CPIs a transfer of a hook mint needs the hook program, the meta-list PDA and the extras (take them as `remaining_accounts`). `token_interface::transfer_checked` passes only the four base accounts, so use the token-2022 crate's `onchain::invoke_transfer_checked` or add them with `spl_transfer_hook_interface::onchain::add_extra_accounts_for_execute_cpi`.
+- Every transfer pays the hook's compute; keep it small.
+
+## Extension notes
+
+- **Transfer fee**: withheld in the destination account. The active fee is `get_epoch_fee(current_epoch)`, because `SetTransferFee` takes effect two epochs later; do not read `newer_transfer_fee` blindly. Collect with `harvest_withheld_tokens_to_mint` (permissionless), then `withdraw_withheld_tokens_from_mint` (withdraw authority). Accounts holding withheld fees cannot close.
+- **Metadata pointer + TokenMetadata**: initialize the pointer before `InitializeMint2`. TokenMetadata can only live in the mint itself and needs the mint authority's signature. Initialize and `update_field` realloc and assume the rent is already there: web3.js `tokenMetadataInitializeWithRentTransfer` / `tokenMetadataUpdateFieldWithRentTransfer`; in Anchor, top up to `Rent::minimum_balance(new_len)` before `token_metadata_initialize` / `token_metadata_update_field`. Readers check that pointer and `metadata.mint` reference each other.
+- **Default account state (Frozen)**: every new account, including ATAs other people create, starts frozen and only the freeze authority can thaw it. Build the thaw (KYC) path before launch.
+- **Permanent delegate**: can transfer or burn from any holder. Many venues and users treat such mints as custodial.
+- **Non-transferable**: holders can still burn and close. Pointless with fees, hooks or confidential transfers.
+- **Interest-bearing, scaled UI amount**: display-only; raw balances and supply never change (scaled UI can schedule a new multiplier at a timestamp). Show amounts through the extension-aware conversion (`amountToUiAmount`), not `amount / 10^decimals`.
+- **CPI Guard** (set by the owner): inside a CPI, transfers and burns need a delegate instead of the owner's signature, approve is blocked, and close must pay the owner. Protocols that pull tokens by CPI with the user's signature fail for these users; use a top-level approve plus a delegate transfer.
+- **Required memo** (set by the owner): an incoming transfer needs a memo immediately before it at the same level: a top-level memo for a top-level transfer, a memo CPI right before a CPI transfer.
+- **Immutable owner**: Token-2022 ATAs always have it; manually created accounts initialize it before `InitializeAccount`.
+- **Mint close authority**: closing needs zero supply; see the close-and-reinitialize risk in security.md.
+- **Pausable**: the pause authority halts transfers, mints and burns. Vaults holding the token must tolerate failed withdrawals while paused.
+- **Group / member**: `max_size` is enforced and adding a member needs the group update authority. Wallet and venue support is thin.
+- **Confidential transfers**: check which cluster has the ZK ElGamal proof program enabled before building (the reference tracks it). A transfer spans several transactions with proof context accounts, incoming amounts land in a pending balance until `ApplyPendingBalance`, a fee mint also needs ConfidentialTransferFeeConfig, and a transfer hook cannot see amounts.
+
+## Before launch
+
+- Check every target venue's extension policy. Example: Orca Whirlpools requires an issuer TokenBadge for PermanentDelegate, TransferHook, MintCloseAuthority, DefaultAccountState and Pausable, and does not support NonTransferable or group/member mints.
+- Authorities (fee config, withdraw, metadata and hook pointers, pause) outlive the launch. Put the ones you may still need on a multisig and revoke the rest.
+- Tests: LiteSVM or Mollusk for hook and fee logic ([testing.md](ext/solana-dev/skills/solana-dev/references/testing.md)). On a Surfpool fork, `surfnet_setTokenAccount` takes the Token-2022 program ID as its last param, and `surfnet_timeTravel` with `absoluteEpoch` crosses the two-epoch fee delay ([cheatcodes.md](ext/solana-dev/skills/solana-dev/references/surfpool/cheatcodes.md)).

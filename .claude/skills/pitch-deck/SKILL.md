@@ -48,7 +48,7 @@ Slide-by-slide order per audience: [pitch-structure.md](../ext/solana-new/skills
 
 ### 3. Narrative framework
 
-Pick ONE backbone and state why — PAS (obvious pain, hackathons), 6-Part Investor Arc (VC), BAB (before/after/bridge), Hero's Journey (founder-story-driven), Pixar (narrative momentum). Definitions, slide mappings, and crypto examples: [storytelling-frameworks.md](../ext/solana-new/skills/launch/create-pitch-deck/references/storytelling-frameworks.md).
+Pick one backbone and state why — PAS (obvious pain, hackathons), 6-Part Investor Arc (VC), BAB (before/after/bridge), Hero's Journey (founder-story-driven), Pixar (narrative momentum). Definitions, slide mappings, and crypto examples: [storytelling-frameworks.md](../ext/solana-new/skills/launch/create-pitch-deck/references/storytelling-frameworks.md).
 
 ### 4. Build slides + speaking notes
 

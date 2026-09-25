@@ -11,7 +11,7 @@
 Production-ready Claude Code configuration for full-stack Solana development. Combines best practices from multiple sources into an agent-optimized, token-efficient config you can install and adapt to your specific project.
 
 The idea here is to provide a generic CLAUDE.md that relies on subagents to plan and execute actions, dynamically loading markdown files, saving tokens and context in the end of the day. This config fully leverages the official Claude Code config recommendations:
-- Rules are only loaded whenever specific file types are involved;
+- Nothing loads up front except a small CLAUDE.md and one-line agent/command descriptions; agent, command and skill bodies load only when used;
 - SKILL.md is a mega hub to dynamically-disclosed skill files that are directly fetched from the best skill repos distributed across the ecosystem (Solana Foundation, Colosseum, Solana Mobile, SendAI, etc);
 - Plus, its CLAUDE-solana.md is than half the size of the usual CLAUDE.md, leaving space for its self improvements programmed into the agents, noting and learning from anti-patterns, errors, recurrency and more. For less important notes, CLAUDE.local.md is constantly maintained by agents as well and, on monorepos, per-folder CLAUDE.md is also maintained.
 
@@ -28,7 +28,7 @@ A complete `.claude/` configuration that turns Claude into a Solana development 
 - **7 MCP server integrations** for on-chain data (Helius), Solana docs (solana-dev), library docs (Context7), browser automation (Playwright), context optimization (context-mode), persistent memory (memsearch), and local-validator / mainnet-fork control (Surfpool)
 - **Agent teams** for multi-step workflows (architect → engineer → QA)
 - **Progressive skill loading** that only loads context when needed (saves tokens)
-- **Auto-loading rules** that enforce best practices based on file patterns
+- **A small always-on CLAUDE.md** carrying only the program-code house rules and workflow; everything else is on demand
 
 ## Quick Start
 
@@ -56,7 +56,7 @@ cd /path/to/your-project && git submodule update --init --recursive
 /plugin install solana-ai-kit@stbr
 # Commands then namespace as /solana-ai-kit:<name>. The plugin is the CORE kit
 # (agents/commands/local skills/MCP/hooks); the curl one-liner (Option 1) is the
-# FULL install, adding rules + permissions/sandbox + the 18 ext/ submodules.
+# FULL install, adding CLAUDE.md + permissions/sandbox + the 18 ext/ submodules.
 # Details: see "Install as a Claude Code plugin" below.
 
 # Start Claude Code
@@ -108,7 +108,7 @@ The plugin ships the **core kit**: the 15 agents, 30 commands, the local go-to-m
 
 What the plugin **cannot** carry (Claude Code plugins are plain git clones — they can't init submodules or ship a permissions/sandbox policy), so these stay exclusive to the **full install** (`install.sh`):
 
-- the lazy-loaded `.claude/rules/*` code-style law (Rust, Anchor, Pinocchio, TypeScript, .NET)
+- the project `CLAUDE.md` with the program-code house rules
 - the curated permissions allowlist + sandbox policy
 - the 18 `ext/` skill submodules (protocol, security, infra, ecosystem depth)
 
@@ -187,7 +187,8 @@ Pre-configured MCP servers in `.mcp.json` (API keys go in `.env`):
 - CLAUDE.md is delivered as a user message (not system prompt) — shorter = better adherence
 - Skills load progressively (not all at once)
 - Agents reference skills instead of duplicating content
-- Path-scoped rules lazy-load on file read (zero startup cost)
+- No always-loaded rules: Claude Code reads only `paths:` from a rule file and loads anything else every session, so the kit ships no rules and `validate.sh` fails on an unscoped one
+- Agent and command descriptions are listed in every session, so they stay one or two sentences
 - `CLAUDE.local.md` for private scratch notes (gitignored, never shared)
 - Subdirectory CLAUDE.md files lazy-load in monorepos
 - Decision frameworks live in agents, not global context
@@ -278,7 +279,6 @@ See [`skill-registry.json`](.claude/skills/skill-registry.json) for the complete
     │   ├── token-2022.md            # Token Extensions guide (local)
     │   ├── backend-async.md         # Axum/Tokio patterns (local)
     │   └── deployment.md            # Deployment workflows (local)
-    ├── rules/                   # Auto-loading constraints
     └── settings.json            # Permissions, hooks, agent teams
 ```
 

@@ -1,380 +1,101 @@
 ---
-description: "Reproduce and debug a user-reported failing transaction against forked cluster state, mapping the failure back to source code"
+description: "Replay a user's failing transaction on forked state and map the error to source"
 ---
 
-You are debugging a transaction that a user reports as failing. You have the project's source code locally; the goal is to reproduce the failure against forked cluster state, then map the on-chain error back to the exact line of Rust / IDL that produced it and suggest a fix.
-
-## Related Skills
-
-- [ext/solana-dev/skills/solana-dev/references/testing.md](../skills/ext/solana-dev/skills/solana-dev/references/testing.md) — Surfpool (mainnet fork), LiteSVM, Mollusk
-- [ext/solana-dev/skills/solana-dev/references/programs/anchor.md](../skills/ext/solana-dev/skills/solana-dev/references/programs/anchor.md) — Anchor error codes, constraint failures
-- [ext/solana-dev/skills/solana-dev/references/programs/pinocchio.md](../skills/ext/solana-dev/skills/solana-dev/references/programs/pinocchio.md) — Pinocchio error patterns
-- [ext/solana-dev/skills/solana-dev/references/security.md](../skills/ext/solana-dev/skills/solana-dev/references/security.md) — Common failure categories
+Debug the failing transaction described in $ARGUMENTS. The answer the developer needs is where in this repo it failed: the handler, constraint or `require!` with `file:line`, why it failed, and a fix. References: [testing.md](../skills/ext/solana-dev/skills/solana-dev/references/testing.md) (LiteSVM, Surfpool), [surfpool/cheatcodes.md](../skills/ext/solana-dev/skills/solana-dev/references/surfpool/cheatcodes.md), [transactions-v1.md](../skills/ext/solana-dev/skills/solana-dev/references/transactions-v1.md).
 
 ## Inputs
 
-Collect from the user (at least one of `signature` or `instruction` is required):
-
-| Input | Required | Notes |
-|-------|----------|-------|
-| `signature` | preferred | On-chain tx signature. Fastest path — fetch + replay. |
-| `wallet` | optional | User's pubkey. Auto-extracted from tx if signature given. |
-| `instruction` | fallback | Raw ix JSON when the tx never landed (serialized tx / accounts + data). |
-| `cluster` | optional | `mainnet` / `devnet`. Default: infer from `Anchor.toml` or `.env`. |
-| `rpc` | optional | Override RPC endpoint. Default: cluster default or project `.env`. |
-| `program` | optional | Program ID. Auto-detected from workspace. |
-
-If the user only pasted an error message, ask for the signature before proceeding — it's the difference between 30 seconds and guessing.
-
-## Step 1: Detect Project Layout
-
-```bash
-echo "Detecting project..."
-
-FRAMEWORK="unknown"
-if [ -f "Anchor.toml" ]; then
-    FRAMEWORK="anchor"
-    echo "Anchor project detected"
-elif [ -f "Cargo.toml" ] && grep -q "pinocchio" Cargo.toml 2>/dev/null; then
-    FRAMEWORK="pinocchio"
-    echo "Pinocchio project detected"
-elif [ -f "Cargo.toml" ] && grep -q "solana-program" Cargo.toml 2>/dev/null; then
-    FRAMEWORK="native"
-    echo "Native Solana program detected"
-else
-    echo "No Solana program workspace detected. Debug will proceed RPC-only (no source mapping)."
-fi
-
-# Infer cluster
-CLUSTER="${CLUSTER:-mainnet}"
-if [ -f "Anchor.toml" ]; then
-    DETECTED=$(grep -m1 'cluster' Anchor.toml | sed 's/.*= *//' | tr -d '"')
-    [ -n "$DETECTED" ] && CLUSTER="$DETECTED"
-fi
-echo "Cluster: $CLUSTER"
-
-# Collect program IDs + IDLs
-ls target/idl/*.json 2>/dev/null || echo "No IDLs found at target/idl/ — run 'anchor build' for best results"
-```
-
-## Step 2: Fetch the Failing Transaction
-
-If a signature was provided, fetch it with full detail. Use the project's RPC if configured; otherwise fall back to the cluster default.
-
-```bash
-SIG="<signature>"
-RPC="${RPC:-https://api.$CLUSTER.solana.com}"
-
-mkdir -p .claude/debug
-OUT=".claude/debug/tx-${SIG:0:8}.json"
-
-curl -s -X POST "$RPC" \
-  -H "Content-Type: application/json" \
-  -d "$(cat <<EOF
-{
-  "jsonrpc":"2.0","id":1,"method":"getTransaction",
-  "params":["$SIG",{"encoding":"json","maxSupportedTransactionVersion":0,"commitment":"confirmed"}]
-}
-EOF
-)" > "$OUT"
-
-# Sanity check
-jq -e '.result != null' "$OUT" >/dev/null || { echo "Tx not found or not yet confirmed"; exit 1; }
-```
-
-Extract from the JSON (Claude: read `$OUT` with `jq` or the Read tool):
-
-- `meta.err` — the error object (e.g. `{"InstructionError":[1,{"Custom":6003}]}`)
-- `meta.logMessages` — full program log output
-- `meta.preBalances` / `meta.postBalances`
-- `meta.preTokenBalances` / `meta.postTokenBalances`
-- `meta.innerInstructions` — CPI tree
-- `slot` — for fork replay
-- `transaction.message.accountKeys` — ordered account list
-- `transaction.message.instructions` — each with `programIdIndex`, `accounts`, `data`
-- `transaction.message.addressTableLookups` — resolve if present
-
-## Step 3: Identify the Failing Instruction
-
-From `meta.err`, extract the instruction index. For `InstructionError: [N, ...]`, instruction `N` failed.
-
-```bash
-FAILING_IX=$(jq -r '.result.meta.err.InstructionError[0]' "$OUT")
-FAILING_PROGRAM=$(jq -r --argjson i "$FAILING_IX" \
-  '.result.transaction.message.accountKeys[.result.transaction.message.instructions[$i].programIdIndex]' \
-  "$OUT")
-echo "Failing instruction #$FAILING_IX → program $FAILING_PROGRAM"
-```
-
-> **Note**: Index 0 is almost always `ComputeBudget` (`setComputeUnitLimit` / `setComputeUnitPrice`). The real failure is usually index ≥ 1. Trust `meta.err.InstructionError[0]`, not position.
-
-> **Address Table Lookups**: If `transaction.message.addressTableLookups` is non-empty, extend the account list before indexing: `accountKeys ++ meta.loadedAddresses.writable ++ meta.loadedAddresses.readonly`. Otherwise you'll resolve the wrong program for CPI-heavy txs.
-
-Compare `$FAILING_PROGRAM` against the project's program IDs (from `declare_id!` or `Anchor.toml`). If it matches, source mapping is possible. If not (e.g. Jupiter, Token Program), the failure is inside a CPI target — note this and proceed with log-based diagnosis.
-
-### Decode the instruction discriminator
-
-`instructions[N].data` is **base58-encoded** when fetched with `encoding: "json"` (what Step 2 uses). Decode before slicing.
-
-For the project's own program:
-
-- **Anchor**: first 8 bytes of decoded data = handler discriminator.
-  - Anchor ≥ 0.30: match directly against `target/idl/<program>.json` → `instructions[].discriminator`.
-  - Anchor < 0.30: IDL has no `discriminator` field. Compute it: `sha256("global:<handler_name>")[0..8]`, then match.
-- **Pinocchio / native**: typically first 1 byte. Match against the `match` arm in `process_instruction` (grep `src/lib.rs` or `src/entrypoint.rs`).
-
-Record the handler name.
-
-## Step 4: Map the Error to Source
-
-**Fast path — scan `meta.logMessages` first.** Anchor emits one of these formats depending on how the error was raised:
-
-```
-# From err!() / return Err(ErrorCode::X.into()) — includes source file:line directly
-Program log: AnchorError thrown in <path/to/file.rs>:<line>. Error Code: <CodeName>. Error Number: <N>. Error Message: "<msg>".
-
-# From a constraint violation in #[derive(Accounts)]
-Program log: AnchorError caused by account: <account_name>. Error Code: <CodeName>. Error Number: <N>.
-
-# Generic form
-Program log: AnchorError occurred. Error Code: <CodeName>. Error Number: <N>. Error Message: "<msg>".
-```
-
-When any of these are present, this skips discriminator math entirely: you get the error variant name and often the source location in one line. The `thrown in <file>:<line>` form is the gold standard — quote it directly in the report. Always scan for all three before falling back to error-code lookups.
-
-Based on `meta.err`:
-
-### Anchor `Custom(N)` codes
-
-Anchor user errors start at 6000. Match against the project's `#[error_code]` enum:
-
-```bash
-# For the matched program's crate
-grep -rn "#\[error_code\]" programs/ | head -5
-
-# Then list the enum variants in order; Custom(6000+i) → variant[i]
-```
-
-Claude: read the error enum file, count from 0, report `variant name + #[msg(...)] text + file:line`.
-
-### Anchor constraint errors (2000–2999)
-
-Well-known codes — map directly:
-
-| Code | Meaning | Where to look |
-|------|---------|---------------|
-| 2000 | ConstraintMut | Missing `mut` on an account |
-| 2001 | ConstraintHasOne | `has_one` mismatch |
-| 2002 | ConstraintSigner | Account not a signer |
-| 2003 | ConstraintRaw | Custom `constraint = ...` failed |
-| 2006 | ConstraintSeeds | PDA mismatch |
-| 2011 | ConstraintOwner | Wrong program owner |
-| 2012 | ConstraintRentExempt | Not rent-exempt |
-| 2019 | ConstraintTokenMint | Token account mint mismatch |
-| 3007 | AccountDiscriminatorMismatch | Wrong account type passed |
-| 3012 | AccountNotInitialized | Expected initialized account |
-
-Read the failing instruction's `#[derive(Accounts)]` struct and list the constraints in order; line up with the error.
-
-### Pinocchio / native `ProgramError`
-
-```bash
-grep -rn "ProgramError::Custom\|const ERROR_" programs/ src/ 2>/dev/null | head -20
-```
-
-Map `Custom(N)` to the const or enum-derived discriminant. For standard `ProgramError` variants (`InvalidAccountData`, `MissingRequiredSignature`, etc.), report the variant name directly.
-
-### Log-based hints
-
-Scan `meta.logMessages` for:
-
-- `Program log: AnchorError caused by account: <name>. Error Code: <Code>. Error Number: <N>.` — direct pointer to the failing account
-- `Program log: Left: X` / `Right: Y` — Anchor constraint comparisons
-- `Program log: <any msg!()>` — follow breadcrumbs the program author left
-- `Program <id> failed: <reason>`
-
-Quote the last 10–15 log lines in the report.
-
-### Common Pitfalls Encyclopedia
-
-<!-- Adapted from sendaifun/solana-new (debug-program), MIT -->
-Once the error is identified, check it against the top-20 below — most user-reported failures map to one of these. Use it to jump from symptom to root-cause hypothesis before reaching for a replay.
-
-| # | Symptom / error | Root cause | Fix |
-|---|-----------------|------------|-----|
-| 1 | `ConstraintSeeds` (2006) on a PDA account | Client derives the PDA with different seeds/order/encoding than the program | Mirror the program's seeds exactly in `findProgramAddressSync` — same order, same byte encoding |
-| 2 | `MissingRequiredSignature` / `ConstraintSigner` (2002) | Required signer missing from the tx signers list | Add the keypair via `.signers([...])` for every non-fee-payer signer |
-| 3 | `BlockhashNotFound` / `TransactionExpiredBlockheightExceeded` | Blockhash older than ~60s when the tx landed | Fetch `getLatestBlockhash()` right before sending; retry against `lastValidBlockHeight` |
-| 4 | `AccountNotInitialized` (3012) | Account never created, or init tx not confirmed before use | Run the initialize instruction first; don't reach for `init_if_needed` (reinit-attack risk) |
-| 5 | `DeclaredProgramIdMismatch` | `declare_id!` doesn't match the deployed program | `anchor keys sync && anchor build`, redeploy |
-| 6 | Token transfer fails / `TokenAccountNotFound` | Recipient has no ATA for that mint | `getOrCreateAssociatedTokenAccount` before transferring (~0.002 SOL rent) |
-| 7 | `ComputationalBudgetExceeded` / `ProgramFailedToComplete` | Instruction exceeds the CU limit (200k default) | Add `ComputeBudgetProgram.setComputeUnitLimit` sized from a simulation + 20% buffer |
-| 8 | `InsufficientFundsForRent` (0x4) | Account balance below the rent-exempt minimum | Fund with `getMinimumBalanceForRentExemption(dataSize)` at creation |
-| 9 | Token amounts off by 10^n | Hardcoded decimals instead of reading the mint | Read `getMint().decimals` (SOL = 9, USDC = 6, some mints 0) |
-| 10 | `AccountDataTooSmall` / borsh deserialize error | `space` too small for the account struct | Recompute: `<Struct>::DISCRIMINATOR.len() + <Struct>::INIT_SPACE` via `#[derive(InitSpace)]` |
-| 11 | `0x0` "already in use" on create | `init` on an account that already exists | Check existence client-side and skip the init instruction |
-| 12 | `ConstraintMut` (2000) | Handler writes to an account not marked `#[account(mut)]` | Add `mut` to the constraint (and `isWritable` client-side) |
-| 13 | `AccountOwnedByWrongProgram` on token ops | SPL Token vs Token-2022 mismatch | Check the mint's owner; pass the matching `token_program` everywhere |
-| 14 | `TransactionTooLarge` (>1232 bytes) | Too many accounts/instructions in one tx | Use Address Lookup Tables (versioned tx) or split the tx |
-| 15 | "wrong mint" in DeFi flows funded with SOL | Program expects wrapped SOL, got native | Wrap: create `NATIVE_MINT` ATA + transfer + `syncNative`; close the ATA to unwrap |
-| 16 | Tx sits "processing" then expires (mainnet) | Priority fee absent or too low for congestion | `setComputeUnitPrice` from the `getRecentPrioritizationFees` median |
-| 17 | Stale reads / "account not found" right after create | Commitment mismatch (read below the confirm level) | `confirmTransaction(sig, "confirmed")`, then read at the same commitment |
-| 18 | `InstructionFallbackNotFound` / garbage deserialization | Client IDL older than the deployed program | `anchor build`, re-copy `target/idl/*.json` to the client |
-| 19 | Lamport leak / "account still has data" on close | Manual close without zeroing data | Use Anchor's `#[account(mut, close = destination)]` |
-| 20 | `CallDepthExceeded` | CPI chain deeper than 4 levels | Flatten the call graph — combine operations or restructure |
-
-## Step 5: Local Replay (optional but recommended)
-
-Replay against forked state at `slot - 1` to confirm the diagnosis and enable iteration.
-
-### Option A: Surfpool (preferred — real fork)
-
-```bash
-SLOT=$(jq -r '.result.slot' "$OUT")
-FORK_SLOT=$((SLOT - 1))
-
-# Start surfpool forking from just before the failure
-surfpool start --fork-url "$RPC" --fork-slot "$FORK_SLOT" &
-SURFPOOL_PID=$!
-sleep 3
-
-# Replay the serialized transaction against the local fork
-# surfpool exposes an RPC on localhost:8899 that mirrors the forked state
-# A helper script can reuse .claude/debug/tx-*.json to rebuild + resend the ix
-
-# Clean up when done
-# kill $SURFPOOL_PID
-```
-
-### Option B: LiteSVM (fast, minimal — no fork)
-
-Useful when you want to isolate the instruction with synthetic accounts built from the captured pre-state:
-
-```rust
-// .claude/debug/replay.rs (scaffold — Claude should generate per-project)
-use litesvm::LiteSVM;
-use solana_sdk::{pubkey::Pubkey, account::Account, transaction::Transaction};
-
-fn main() {
-    let mut svm = LiteSVM::new();
-    // Load program bytes from target/deploy/<name>.so
-    svm.add_program_from_file(PROGRAM_ID, "target/deploy/program.so").unwrap();
-
-    // Seed each account with pre-state captured from meta.preBalances / account data
-    // (Claude: read account data via getAccountInfo at FORK_SLOT and inject here)
-
-    let tx: Transaction = /* reconstruct from captured instruction */;
-    let result = svm.send_transaction(tx);
-    println!("{:#?}", result);
-}
-```
-
-Claude: only scaffold Option B if Surfpool is unavailable; otherwise prefer A.
-
-## Step 6: Account State Diff
-
-For each writable account in the failing instruction:
-
-```bash
-# Extract writable accounts (those with isWritable=true in the message)
-# Compare pre vs expected-post balances and data
-
-jq -r '.result.meta | {
-  preBalances: .preBalances,
-  postBalances: .postBalances,
-  preTokenBalances: .preTokenBalances,
-  postTokenBalances: .postTokenBalances
-}' "$OUT"
-```
-
-Fetch current on-chain state for each writable account via `getAccountInfo`. Flag anomalies:
-
-- Owner != expected program
-- Insufficient lamports for rent exemption
-- Uninitialized account (all zeros) where handler expects initialized
-- Discriminator mismatch
-- Stale data (e.g. last_update older than expected)
-
-## Step 7: Build the Report
-
-Output a single structured markdown report to stdout. Do **not** write a file unless the user asks.
-
-```
-## Debug report: <short-sig or "reconstructed">
-
-- Cluster: <mainnet|devnet>
-- Slot: <N>
-- Fee payer: <pubkey>
-- Wallet: <user pubkey>
-
-### Failure
-Instruction #<i> → program `<id>` (<project-name> / <external>)
-Handler: `<handler_name>` — <path/to/file.rs>:<line>
-Error: <ErrorName> (code <N>) — "<#[msg] text>"
-  defined at <path/to/errors.rs>:<line>
-
-### Root cause (likely)
-<one-paragraph explanation tying the error to the handler's logic and the observed account state>
-
-Relevant guard: <path/to/handler.rs>:<line>
-```rust
-require!(<condition>, ErrorCode::<Variant>);
-```
-
-### Account state (writable)
-| Account | Role | Pre | Post (expected) | Status |
-|---|---|---|---|---|
-| <pubkey> | vault PDA | 0 lamports | rent-exempt | ❌ uninitialized |
-| ... | ... | ... | ... | ... |
-
-### Program logs (tail)
-```
-<last 10–15 lines from meta.logMessages>
-```
-
-### Reproduction
-```
-surfpool start --fork-url <rpc> --fork-slot <N-1>
-# then replay: <command or steps>
-```
-
-### Suggested next steps
-1. <actionable fix, with file:line pointer>
-2. <client-side mitigation if relevant>
-3. <test to add so this fails fast next time>
-```
+| Input | Notes |
+|---|---|
+| `signature` | Preferred: fetch and diagnose in seconds. If the user only pasted an error message, ask for it first. |
+| `instruction` + `wallet` | When the tx never landed: the serialized tx, or accounts plus data. |
+| `cluster`, `rpc` | Default from `Anchor.toml` `[provider]` or `.env`. Public RPCs rate-limit, so prefer the project's provider (e.g. Helius). |
+| `program` | Default: IDs from `declare_id!` / `Anchor.toml`. |
 
 ## Modes
 
-### Mode A: signature provided (80% case)
-Full flow: Steps 1 → 2 → 3 → 4 → 6 → 7. Step 5 (replay) is optional; skip if the on-chain diagnosis is already conclusive.
+- **A, signature given:** steps 1-4 and 6. Replay (5) only when the on-chain evidence is inconclusive.
+- **B, never landed:** build the tx from the instruction, replay it (5), then map the error from the replay logs (3-4) and check state (6).
+- **C, failing program is not in this repo** (Jupiter, Token program...): skip source mapping, diagnose from logs and account state, and say the root cause is outside this codebase.
 
-### Mode B: no signature (tx never landed)
-User provides the raw instruction + wallet. Steps 1 → 3 (skip fetch) → 5 (replay is now mandatory since there's no on-chain record) → 4 (map error from replay logs) → 6 → 7.
+## Steps
 
-### Mode C: unknown program
-If the failing program isn't the project's own (e.g. failure inside a Jupiter/Token CPI), skip source mapping but still run Steps 4 (log-based) and 6 (state diff), and flag that the root cause is outside this codebase.
+1. **Fetch** with `getTransaction` and `{"encoding":"json","maxSupportedTransactionVersion":1,"commitment":"confirmed"}`. The version must be the integer `1`: with `0` or omitted, v1 transactions fail with `-32015`. Cache the response as `.claude/debug/tx-<first 8 chars of sig>.json` and re-read it from there. Use `meta.err`, `meta.logMessages`, pre/post balances and token balances, `meta.innerInstructions`, `slot`, `message.accountKeys`, `message.instructions`, and `message.transactionConfig` (v1 transactions carry the CU limit and priority fee there instead of ComputeBudget instructions).
+2. **Failing instruction:** the index is `meta.err.InstructionError[0]`; don't go by position (legacy and v0 txs usually start with ComputeBudget instructions). For v0 txs with lookup tables, index into `accountKeys ++ meta.loadedAddresses.writable ++ meta.loadedAddresses.readonly`, or CPI-heavy txs resolve the wrong program. A program ID that is not ours means mode C.
+3. **Handler:** instruction `data` is base58 in `json` encoding; decode it first. Anchor: match the first 8 bytes against `instructions[].discriminator` in `target/idl/<program>.json` (this also covers custom discriminators). Pinocchio/native: usually the first byte, matched against the `process_instruction` dispatch.
+4. **Error to source**, logs first:
+   - `AnchorError thrown in <file>:<line>` is the exact location; quote it.
+   - `AnchorError caused by account: <name>` points at a constraint on that `#[derive(Accounts)]` field; the `Left:` / `Right:` lines show the compared values.
+   - The program's own `Program log:` lines and `Program <id> failed: <reason>`.
+
+   Then map `Custom(N)` for Anchor programs:
+
+   | Code | Meaning |
+   |---|---|
+   | 100-103 | Instruction missing, fallback not found, (de)serialization failed: client and program out of sync |
+   | 2000s | Constraints: 2000 mut, 2001 has_one, 2002 signer, 2003 `constraint =`, 2004 owner, 2005 rent-exempt, 2006 seeds, 2011 close, 2012 address, 2014 token mint, 2015 token owner, 2016-2018 mint authority / freeze authority / decimals, 2019 space, 2021-2023 token program |
+   | 2500-2506 | `require!` family (`require_eq!`, `require_keys_eq!`, `require_gt!`, ...) |
+   | 3000s | Accounts: 3002 discriminator mismatch, 3003 did not deserialize, 3005 not enough keys, 3006 not mutable, 3007 owned by wrong program, 3010 not signer, 3012 not initialized |
+   | 4100, 4102 | `DeclaredProgramIdMismatch`, `InvalidNumericConversion` |
+   | 6000+ | The program's `#[error_code]` enum (one per program in Anchor 1.x): variant index N - 6000. Report the variant, its `#[msg]` text and `file:line`. |
+
+   Pinocchio/native: map `Custom(N)` to the program's error enum or constants; standard `ProgramError` variants map by name.
+5. **Replay** (optional in A, required in B). Run `surfpool start --rpc-url <rpc> --no-tui --no-deploy --skip-signature-verification --log-bytes-limit 0` in the background (`--network devnet` for devnet). `--no-deploy` keeps the on-chain program the user hit; drop it later to test the local fix. Execute with `simulateTransaction` (`sigVerify: false`, `replaceRecentBlockhash: true`, `encoding: "base64"`) or `surfnet_profileTransaction` (logs, CU, pre/post account snapshots); the kit's Surfpool MCP server exposes the same cheatcodes.
+   - The fork fetches current state, not state at the failing slot. If the replay passes, the state changed since: rebuild the pre-state with `surfnet_setAccount` / `surfnet_setTokenAccount`, and `surfnet_timeTravel` for clock-dependent checks.
+   - LiteSVM, when Surfpool is unavailable or to lock the fix in as a test: load the accounts plus `target/deploy/<name>.so`. Take the accounts from `surfnet_exportSnapshot` with `{"scope":{"preTransaction":"<sig>"}}` after sending the tx to the fork with `sendTransaction` (swap in a fresh blockhash; signatures are not checked), which gives the exact pre-state, or from `getAccountInfo` (current state, same caveat).
+6. **Account state:** for each writable account of the failing instruction check owner, rent-exempt lamports, initialization (non-zero data, expected discriminator) and stale fields such as timestamps or oracle prices.
+
+## Common pitfalls
+
+<!-- Adapted from sendaifun/solana-new (debug-program), MIT -->
+Most user reports map to one of these; check the diagnosis against them before replaying.
+
+1. `ConstraintSeeds` (2006): the client derives the PDA with different seeds, order or byte encoding than the program.
+2. `ConstraintSigner` (2002) / `MissingRequiredSignature`: a required signer is missing from the tx.
+3. `BlockhashNotFound` / block height exceeded: blockhash fetched too early; fetch it right before sending and retry until `lastValidBlockHeight`.
+4. `AccountNotInitialized` (3012): the init instruction never ran or was not confirmed yet (the fix is not `init_if_needed`).
+5. `DeclaredProgramIdMismatch` (4100): `declare_id!` differs from the deployed ID; `anchor keys sync`, rebuild, redeploy.
+6. Token transfer fails on the recipient side: its ATA does not exist; create it idempotently first.
+7. `ComputationalBudgetExceeded`: over the CU limit (legacy/v0 default: 200k per instruction); set the limit from a simulation plus margin.
+8. `MaxLoadedAccountsDataSizeExceeded` on a v1 tx: unset v1 limits are zero; set `computeUnitLimit` and `loadedAccountsDataSizeLimit` in the transaction config.
+9. `InsufficientFundsForRent`: an account funded below the rent-exempt minimum for its size.
+10. Amounts off by 10^n: hardcoded decimals instead of the mint's `decimals`.
+11. `AccountDidNotDeserialize` (3003) / `AccountDataTooSmall`: `space` is not `DISCRIMINATOR.len() + INIT_SPACE`, or the struct grew without a realloc.
+12. System error 0, "already in use": creating an account that exists; check before sending the init.
+13. `ConstraintMut` (2000) / `AccountNotMutable` (3006): the account is not `mut` in the program or not writable in the client.
+14. `AccountOwnedByWrongProgram` (3007) or `IncorrectProgramId` on token ops: SPL Token vs Token-2022 mismatch; pass the mint owner's token program everywhere.
+15. Transaction too large: 1232 bytes for legacy/v0 (use lookup tables or split); v1 allows 4096 bytes where the wallet supports it.
+16. Wrong mint in SOL-funded DeFi flows: the program expects wrapped SOL; wrap (`NATIVE_MINT` ATA, transfer, `syncNative`) and close the ATA to unwrap.
+17. Tx expires unprocessed on mainnet: missing or low priority fee (`setComputeUnitPrice` from `getRecentPrioritizationFees` for v0; `priorityFee` total for v1).
+18. A just-created account reads as missing: commitment mismatch; confirm and read at the same commitment.
+19. `InstructionFallbackNotFound` (101) or garbled decoding: the client IDL is older than the deployed program; rebuild and regenerate the client.
+20. Lamports or data left after close: a manual close without zeroing; use `close = destination`.
+21. `CallDepthExceeded`: CPI nesting deeper than the runtime allows; flatten the call chain.
+
+## Report
+
+Print it in chat; write a file only if the user asks.
+
+```
+## Debug report: <short sig | reconstructed>
+Cluster, slot, fee payer, wallet
+### Failure
+Instruction #i -> program <id> (<this repo | external>), handler `<name>` at <file>:<line>
+Error: <Name> (<N>) "<msg>", defined at <file>:<line>
+### Root cause (likely)
+<paragraph tying the error to the handler's logic and the observed state>; guard at <file>:<line>
+### Writable accounts
+| account | role | observed | expected | status |
+### Program logs (last 10-15 lines)
+### Reproduction
+<surfpool command and replay call, or the LiteSVM test>
+### Next steps
+1. Fix, with file:line  2. Client-side mitigation  3. Regression test to add
+```
 
 ## Guardrails
 
-- **Never** ask the user for a private key. Simulation and replay require no signatures.
-- **Never** broadcast a transaction. This command is read + replay only.
-- Cache fetched tx JSON under `.claude/debug/` so Claude can re-read without hitting RPC again.
-- If RPC rate-limits, suggest setting `RPC=<helius/quicknode>` and retry.
-- If the program at `FAILING_PROGRAM` is not in the workspace, say so explicitly — don't invent source mappings.
-
-## Checklist
-
-- [ ] Transaction fetched and `meta.err` extracted
-- [ ] Failing instruction index and program identified
-- [ ] Handler name resolved via IDL / discriminator match
-- [ ] Error code mapped to source (variant name + `#[msg]` text + file:line)
-- [ ] Writable account state diff produced
-- [ ] Program logs tail captured
-- [ ] Root cause hypothesis stated with file:line pointer
-- [ ] Reproduction steps included
-- [ ] At least one suggested fix with source location
-
----
-
-**Remember**: The dev's question is "where in *my* code did this fail?" Your job is to answer that with file paths and line numbers, not generic advice.
+- Never ask for a private key; simulation and replay need no signatures.
+- Never broadcast to a real cluster. This command is read and replay only.
+- If the failing program is not in the workspace, say so instead of inventing a source mapping.

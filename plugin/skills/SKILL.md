@@ -1,68 +1,57 @@
 ---
 name: solana-ai-kit
-description: Skill hub for the solana-ai-kit Claude Code plugin. Routes the bundled go-to-market skills and the opt-in add-on catalog, and points to upstream marketplaces (and the install.sh full install) for protocol, security, and ecosystem depth. Progressive disclosure — read only what you need.
+description: Skill hub for the solana-ai-kit Claude Code plugin. Routes the bundled go-to-market skills and the opt-in add-on catalog, and points to upstream marketplaces or the install.sh full install for protocol, security and ecosystem depth.
 user-invocable: true
 ---
 
-# Solana AI Kit — Plugin Skill Hub
+# Solana AI Kit plugin skill hub
 
-This is the **plugin variant** of the kit's skill hub. It ships only the skills that travel cleanly in a plugin (go-to-market wrappers + the opt-in add-on catalog). For the full depth — protocol/security/ecosystem skills, `.claude/rules/*`, and the curated permissions/sandbox policy — use the **full install** (see "Getting more depth" below).
+This is the plugin variant of the kit's skill hub. It ships only the skills that travel cleanly in a plugin: the go-to-market skills and the opt-in add-on catalog. The protocol, security and ecosystem skills, the project CLAUDE.md with the program-code house rules, and the curated permissions and sandbox policy come with the full install (see "Getting more depth").
 
-**Source precedence (when multiple skills cover one topic):**
-1. `.claude/rules/*` are law for code style — but rules ship **only** with the full install (`install.sh`), not this plugin. If you installed via the plugin, the house code-style rules are not loaded; prefer them when present.
-2. Protocol-OFFICIAL skill is primary for that protocol's API/SDK usage (jup-ag→Jupiter, metaplex-foundation→Metaplex, helius-labs→Helius). In plugin form, add the relevant upstream marketplace (below).
-3. Foundation/platform skills (Solana Foundation `solana-dev`) are primary for general concepts (Anchor, Pinocchio, testing, clients) — add its marketplace.
-4. Community versions (sendai et al.) are secondary references.
+When sources overlap: a protocol's official skill wins for its own SDK (Jupiter, Metaplex, Helius); the Solana Foundation `solana-dev` skill wins for general Solana work (Anchor, Pinocchio, testing, clients); community skills such as sendai fill gaps only. In plugin form, add the relevant upstream marketplace first.
 
-## Bundled skills (shipped with this plugin)
+## Bundled skills
 
-These load automatically when the plugin is enabled. Commands and skills are namespaced under `solana-ai-kit:` (e.g. `/solana-ai-kit:deploy`).
+These load when the plugin is enabled. Commands and skills are namespaced under `solana-ai-kit:` (for example `/solana-ai-kit:deploy`).
 
-### Idea, Pitch & Go-To-Market
+- [idea-sprint/SKILL.md](idea-sprint/SKILL.md): what to build; blunt interview, crypto-necessity gate, 3 scored candidates, go/no-go
+- [pitch-deck/SKILL.md](pitch-deck/SKILL.md): audience-aware decks (hackathon, VC, grant, accelerator) with speaking notes and objection prep
+- [hackathon/SKILL.md](hackathon/SKILL.md): scannable submissions, demo scripts under 3 minutes, track choice, Superteam Earn grants
+- [skill-registry.json](skill-registry.json): catalog of opt-in add-on skills, plugins and MCPs that are not bundled. Search it by domain or tag and run an entry's install command only after the user confirms.
 
-Local wrappers, adapted from sendaifun/solana-new (MIT, telemetry removed):
+These three skills are adapted from sendaifun/solana-new (MIT, telemetry removed).
 
-- [idea-sprint/SKILL.md](idea-sprint/SKILL.md) — What to build: blunt interview, crypto-necessity gate, 3 scored candidates (/15), go/no-go with pivot suggestions
-- [pitch-deck/SKILL.md](pitch-deck/SKILL.md) — Audience-aware decks (hackathon/VC/grant/accelerator): narrative frameworks, slides + speaking notes, objection prep
-- [hackathon/SKILL.md](hackathon/SKILL.md) — Scannable submissions, <3-min demo scripts, least-crowded-track selection, Superteam Earn grants
+## Getting more depth
 
-### Extended add-ons (opt-in catalog)
+Plugins cannot carry git submodules, so the 18 external skill packs (the `ext` submodules) are not bundled here. Two ways to get them:
 
-- [skill-registry.json](skill-registry.json) — structured, machine-readable catalog of opt-in add-on skills/plugins/MCPs (frontend/design, UX/writing, testing, data, dev-workflow, extra protocols/MCPs) NOT bundled by default. Install on the user's request, at their own expense. Search it by domain/tags, then run the entry's install command only on explicit confirmation.
-
-## Getting more depth (protocol / security / ecosystem skills)
-
-Plugins cannot carry git submodules, so the 18 external skill packs (the `ext` submodules) are **not** bundled here. Two ways to get them:
-
-### Option A — Add the upstream marketplaces (routing, not copying)
-
-Several of the upstream skill packs publish their own Claude Code marketplaces. Add the ones you need, then `/plugin install` the specific skill plugins:
+### Option A: add the upstream marketplaces
 
 | Domain | Add the marketplace | Then install |
 |--------|---------------------|--------------|
-| DeFi protocols, infra, data (Jupiter, Raydium, Kamino, perps, oracles, cross-chain…) | `/plugin marketplace add sendaifun/skills` | the protocol plugins you need (one per skill) |
+| DeFi protocols, infra, data (Jupiter, Raydium, Kamino, perps, oracles, cross-chain) | `/plugin marketplace add sendaifun/skills` | the protocol plugins you need |
 | AppSec scanning (SAST, SCA, secrets) | `/plugin marketplace add ghostsecurity/skills` | `ghost` |
 | Security auditing, vulnerability scanning | `/plugin marketplace add trailofbits/skills` | the audit plugins you need |
 | Infrastructure (Workers, Agents SDK, MCP servers) | `/plugin marketplace add cloudflare/skills` | `cloudflare` |
 
-For Jupiter, Metaplex, and Helius the official skill repos are the primary sources — check the add-on catalog (`skill-registry.json`) for their current upstream locations and `/plugin marketplace add` targets. Route to a **marketplace** and install the plugin; do not point at an upstream repo's `SKILL.md` directly.
+For Jupiter, Metaplex and Helius the official skill repos are the primary sources; `skill-registry.json` lists their current upstream locations and `/plugin marketplace add` targets. Route to a marketplace and install the plugin rather than pointing at an upstream repo's `SKILL.md`.
 
-### Option B — Full install (recommended for project teams)
+### Option B: full install (recommended for project teams)
 
-Run the installer in your project to get everything the plugin can't carry — the 18 external skill submodules, the lazy-loaded `.claude/rules` files (Rust, Anchor, Pinocchio, TypeScript, .NET code-style law), and the curated permissions + sandbox policy:
+Run the installer in your project to get what the plugin can't carry: the 18 external skill submodules, the project CLAUDE.md, and the curated permissions and sandbox policy.
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/solanabr/solana-ai-kit/main/install.sh | bash
 ```
 
-See the project README ("External Skill Submodules" and "Install as a Claude Code plugin") for when to pick the plugin vs. the full install — they are complementary, not competing. If you run **both** in the same project, `/solana-ai-kit:doctor` warns about duplicate commands/hooks/MCP and advises picking one.
+The project README ("External Skill Submodules" and "Install as a Claude Code plugin") explains when to pick the plugin or the full install; they are complementary. If both are active in one project, `/solana-ai-kit:doctor` flags the duplicate commands, hooks and MCP servers.
 
-## Task Routing (bundled skills)
+## Task routing
 
-| User asks about... | Skill |
-|--------------------|-------|
+| User asks about | Skill |
+|-----------------|-------|
 | Idea validation, "what should I build" | idea-sprint/SKILL.md |
 | Pitch deck, demo day, investor or grant slides | pitch-deck/SKILL.md |
 | Hackathon submission, demo script, track choice | hackathon/SKILL.md |
-| Opt-in add-on skills/plugins/MCPs, "should I add X", extra capability not bundled | skill-registry.json |
-| Protocol SDK depth (Jupiter, Metaplex, Helius, Raydium…), security audits, infra | add the upstream marketplace (Option A) or do the full install (Option B) |
+| An add-on skill, plugin or MCP that isn't bundled | skill-registry.json |
+| Protocol SDK depth, security audits, infra | Option A marketplaces or the Option B full install |

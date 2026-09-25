@@ -65,5 +65,3 @@ Losing the track doesn't mean losing the funding. Same artifacts (description, d
 - **Superteam Earn** (earn.superteam.fun) — bounties + grants up to ~$10k USDC equivalent, fast cycles, regional Superteams
 - **Solana Foundation grants** — milestone-based, public-good angle; reuse the scannable description with an ecosystem-benefit paragraph
 - Grant-shaped ideas dataset: [superteam-ideas.json](../ext/solana-new/skills/data/ideas/superteam-ideas.json)
-
-Note: upstream `apply-grant` ships no inert reference files (SKILL.md only — excluded from routing), so grant guidance lives here.

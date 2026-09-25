@@ -46,7 +46,7 @@ assert_count "$TEMP_DIR/.claude/commands" "*.md" "30" "Command count correct aft
 
 # Verify specific files have content (not empty from bad copy)
 assert_file_exists "$TEMP_DIR/.claude/agents/anchor-engineer.md" "Specific agent exists after 2nd install"
-assert_file_exists "$TEMP_DIR/.claude/rules/rust.md" "Rules exist after 2nd install"
+assert_file_exists "$TEMP_DIR/.claude/skills/SKILL.md" "Skills hub exists after 2nd install"
 
 # Verify user files were NOT overwritten (protected on reinstall)
 assert_file_contains "$TEMP_DIR/.claude/settings.json" "user_custom" "User settings.json preserved on 2nd install"
