@@ -68,7 +68,7 @@ When X changes, also update Y:
 | Change an agent/command **`model:`** | README.md Agents table Model column + routing note (`tests/test_model_routing.sh` enforces allowed values, no Fable, README drift) |
 | Add/remove **MCP server** | README.md MCP table, CLAUDE-solana.md MCP list, QUICK-START.md MCP list, .env.example, .claude/commands/setup-mcp.md |
 | Add/remove **.env.example key** | `.claude/commands/setup-mcp.md` |
-| Add/remove **submodule** | .gitmodules, README.md submodules table + tree, QUICK-START.md tree, .claude/skills/SKILL.md routing |
+| Add/remove **submodule** | .gitmodules, `.claude/skills/skill-registry.json` entry (`tier` core/extension, `path`, `triggers`, install command), README.md submodules table + tree, QUICK-START.md tree, .claude/skills/SKILL.md routing. For an extension, every line that links into it names `bash .claude/bin/skills.sh add <id>`, and the hub's Extensions table gets a row (`tests/test_skill_extensions.sh` enforces both) |
 | Modify **install.sh** | Test: `bash tests/test_install.sh` in temp dir |
 | Modify **CLAUDE-solana.md** | This ships to ALL user projects — different audience than this repo |
 | Bump **`.claude/VERSION`** | Also bump `plugin/.claude-plugin/plugin.json` `version` and `.claude-plugin/marketplace.json` `metadata.version` (both must match VERSION semver — `tests/test_plugin.sh` enforces), and the README.md version badge (`tests/test_cross_references.sh` enforces). The plugin is pinned by `plugin.json` `version` + the semver `vX.Y.Z` git tag; do NOT run `claude plugin tag` (it creates a redundant `{name}--vX.Y.Z` tag that duplicates the semver tag). |
