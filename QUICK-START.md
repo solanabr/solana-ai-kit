@@ -25,14 +25,17 @@ That's it. Claude now has Solana superpowers.
 
 ## Optional: Configure MCP Servers
 
-After setup, run `/setup-mcp` in Claude Code to configure:
+On by default (Claude Code asks once before it starts them):
 - **Helius** — On-chain data, DAS API, webhooks (needs API key from helius.dev)
 - **solana-dev** — Solana Foundation official docs and API references (no key needed)
 - **Context7** — Library documentation lookup (no key needed)
-- **Playwright** — Browser automation for dApp testing (no key needed)
-- **context-mode** — Context window optimization for large responses (no key needed)
-- **memsearch** — Persistent AI memory across sessions (no key needed)
-- **Surfpool** — Agent-driven local validator / mainnet-fork control (no key needed; requires the `surfpool` CLI installed)
+
+Opt-in, because each needs a browser, a CLI or a workflow choice. Run `/setup-mcp` to set the Helius key and add any of these:
+- **Playwright** — Browser automation for dApp testing
+- **Surfpool** — Agent-driven local validator / mainnet-fork control (requires the `surfpool` CLI)
+- **context-mode** — Keeps large tool output out of the context window
+
+The kit pins no effort level, agent teams or LSP plugins; README's "Settings the kit leaves to you" shows how to turn them on.
 
 ---
 
@@ -45,7 +48,7 @@ Prefer Claude Code's plugin system? solana-ai-kit is its own marketplace. From i
 /plugin install solana-ai-kit@stbr
 ```
 
-The plugin ships the core kit — agents, commands, the local go-to-market + registry skills, the 7 MCP servers, and the dev hooks. Commands namespace as `/solana-ai-kit:<name>` (e.g. `/solana-ai-kit:deploy`).
+The plugin ships the core kit — agents, commands, the local go-to-market + registry skills, the 3 default MCP servers, and the dev hooks. Commands namespace as `/solana-ai-kit:<name>` (e.g. `/solana-ai-kit:deploy`).
 
 Plugins are plain git clones, so they can't carry the 18 `ext/` submodules, the project `CLAUDE.md` with its program-code house rules, or the permissions/sandbox policy — those need the **full install** (the `install.sh` one-liner above). For protocol-skill depth in plugin form, add the upstream marketplaces instead (`/plugin marketplace add sendaifun/skills`, etc.). Running both the plugin and the full install in one project double-loads commands/hooks/MCP — `/doctor` flags it; pick one.
 
@@ -117,7 +120,7 @@ Each agent runs on Opus, Sonnet, or your own session model (never a pinned Fable
 
 ### Agent Teams
 
-Create multi-agent workflows:
+Agent teams are experimental and off by default. Opt in with `{"env": {"CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"}}` in `.claude/settings.local.json`, then create multi-agent workflows:
 ```
 "Create an agent team: solana-architect for design, anchor-engineer for code, solana-qa-engineer for tests"
 ```
@@ -275,7 +278,7 @@ Edit `.claude/settings.json` to customize allowed commands.
 
 ### Configure MCP Servers
 
-Edit `.env` to add API keys for MCP servers (Helius, Solana Agent Kit). Run `/setup-mcp` for guided setup.
+Edit `.env` to add API keys for MCP servers (Helius). Run `/setup-mcp` for guided setup and the optional servers.
 
 ---
 

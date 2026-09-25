@@ -26,7 +26,7 @@ Open the matching entry in `.claude/skills/SKILL.md`. It routes to current refer
 
 ## MCP
 
-Helius, solana-dev, Context7, Playwright, context-mode, memsearch and Surfpool are configured in `.mcp.json`. Keys belong in `.env`, never in `.mcp.json`; `/setup-mcp` sets them up.
+Helius, solana-dev and Context7 are configured in `.mcp.json`; Playwright, Surfpool and context-mode are opt-in. Keys belong in `.env`, never in `.mcp.json`; `/setup-mcp` sets them up and adds the optional servers.
 
 ## Project Learnings
 

@@ -92,7 +92,7 @@ When X changes, also update Y:
 
 ## Agent Teams
 
-Teams are dynamic — created via natural language, not static config (`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` enabled in settings.json). See README.md for recommended team patterns.
+Teams are dynamic — created via natural language, not static config. They are an experimental Claude Code feature the kit leaves off; users opt in with `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` in `.claude/settings.local.json`. See README.md for recommended team patterns.
 
 ## Branch Workflow
 
@@ -133,6 +133,7 @@ All changes on feature branches: `git checkout -b <type>/<scope>-<description>-<
 
 - `.claude/VERSION` follows semver; bump on every release. `.claude/CHANGELOG.md` tracks what changed.
 - `/dream` triggers memory consolidation (merges, prunes, deduplicates MEMORY.md). Run after major refactors.
+- `settings.json` ships security policy (sandbox, permissions, hooks) and attribution only. Don't pin session behavior (effort, env toggles, plugins, MCP auto-approval); `validate.sh` rejects the retired keys, and a key you retire needs a matching entry in update.sh's retired-defaults migration. Default MCP servers must start with no key and no extra install; the rest are opt-in in README.
 - Model routing: `model: opus` = deep reasoning, `model: sonnet` = implementation/mechanical/docs, no `model:` line = inherit the session model (strongest-model work). Commands get `model: sonnet` only when mechanical and run at session start (a mid-session switch drops the prompt cache). Never hardcode `fable`/`claude-fable-*`; `modelDefaults` is not a Claude Code setting.
 
 ---

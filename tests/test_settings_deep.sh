@@ -62,11 +62,14 @@ except (KeyError, IndexError, TypeError):
 
 # --- Environment variables ---
 echo "[env]"
-assert_eq "1" "$(json_get '["env"]["CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS"]')" "env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS == 1"
-# Deliberately unset: the effort env var overrides /effort for every user, and
-# coordinator mode strips the main agent's own tools (every action becomes a subagent).
-assert_eq "__MISSING__" "$(json_get '["env"]["CLAUDE_CODE_COORDINATOR_MODE"]')" "env.CLAUDE_CODE_COORDINATOR_MODE not set"
-assert_eq "__MISSING__" "$(json_get '["env"]["CLAUDE_CODE_EFFORT_LEVEL"]')" "env.CLAUDE_CODE_EFFORT_LEVEL not pinned"
+# Deliberately unset: the effort env var overrides /effort for every user, coordinator
+# mode strips the main agent's own tools (every action becomes a subagent), agent teams
+# are experimental and turn subagents Claude names into teammates, and the two output
+# caps only restated Claude Code's defaults. Users opt in via .claude/settings.local.json.
+for var in CLAUDE_CODE_EFFORT_LEVEL CLAUDE_CODE_COORDINATOR_MODE CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS \
+           BASH_MAX_OUTPUT_LENGTH MAX_MCP_OUTPUT_TOKENS; do
+  assert_eq "__MISSING__" "$(json_get "[\"env\"][\"$var\"]")" "env.$var not set"
+done
 
 # --- Sandbox ---
 echo "[sandbox]"
@@ -79,12 +82,14 @@ assert_contains "$DENY_WRITE" "~/.gnupg" "sandbox.filesystem.denyWrite contains 
 assert_contains "$DENY_WRITE" "~/.aws" "sandbox.filesystem.denyWrite contains ~/.aws"
 assert_contains "$DENY_WRITE" "~/.config/solana/id.json" "sandbox.filesystem.denyWrite contains solana key"
 
-# --- Plugins ---
-echo "[plugins]"
-PLUGINS="$(json_get '["enabledPlugins"]')"
-assert_contains "$PLUGINS" "rust-analyzer" "enabledPlugins has rust-analyzer"
-assert_contains "$PLUGINS" "typescript-lsp" "enabledPlugins has typescript-lsp"
-assert_contains "$PLUGINS" "csharp-lsp" "enabledPlugins has csharp-lsp"
+# --- Plugins, MCP approval, attribution ---
+echo "[user choices]"
+# LSP plugins need their own language server binary; Claude Code offers the matching
+# plugin once the binary is on PATH. Project MCP servers get Claude Code's approval prompt.
+assert_eq "__MISSING__" "$(json_get '["enabledPlugins"]')" "no enabledPlugins (LSP plugins are per-user opt-in)"
+assert_eq "__MISSING__" "$(json_get '["enableAllProjectMcpServers"]')" "no enableAllProjectMcpServers (keep the MCP approval prompt)"
+assert_eq "__MISSING__" "$(json_get '["defaultMode"]')" "no top-level defaultMode (not a setting; permissions.defaultMode is)"
+assert_eq '{"commit": "", "pr": ""}' "$(json_get '["attribution"]')" "attribution hides the commit trailer and PR text"
 
 # --- Permissions ---
 echo "[permissions]"

@@ -14,7 +14,7 @@ Harness setup (Kit LiteSVM plugin, embedded Surfpool under vitest): [testing.md]
    - One test at a time: keep a surfnet up (`anchor test --detach` or `anchor localnet`), then `anchor run test -- --grep <pattern>` (`-t` for jest; keep the pattern free of spaces). `anchor run` exports the `ANCHOR_PROVIDER_URL` and `ANCHOR_WALLET` that `AnchorProvider.env()` reads. Typing the wallet path yourself trips the kit's secrets hook, which blocks commands naming `~/.config/solana/id.json`.
    - The Anchor TS package is `@anchor-lang/core`. Imports from `@coral-xyz/anchor`, including deep `dist/cjs/idl` imports, are pre-1.0 and need updating.
    - Kit program tests: `@solana/kit-plugin-litesvm` for in-process tests, `@solana/surfpool/kit` for an embedded surfnet per suite with `client.cheatcodes`. Run Surfpool-backed files serially (vitest `fileParallelism: false` or a separate config).
-   - Frontend: the package's `test` script (vitest or jest). E2E: `npx playwright test`, or drive the running app through the Playwright MCP. Wallet extensions do not load in headless browsers; register a test Wallet Standard wallet backed by a local keypair behind a test-only flag, against localnet or devnet.
+   - Frontend: the package's `test` script (vitest or jest). E2E: `npx playwright test`, or drive the running app through the Playwright MCP if it is configured (`/setup-mcp` adds it). Wallet extensions do not load in headless browsers; register a test Wallet Standard wallet backed by a local keypair behind a test-only flag, against localnet or devnet.
 3. Rerun only the failing file or test name.
 
 ## Reading failures

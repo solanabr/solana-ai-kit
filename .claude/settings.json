@@ -1,8 +1,4 @@
 {
-  "env": {
-    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
-  },
-
   "sandbox": {
     "enabled": true,
     "filesystem": {
@@ -47,16 +43,6 @@
         "~/AppData/Roaming/Opera Software"
       ]
     }
-  },
-
-  "enableAllProjectMcpServers": true,
-
-  "defaultMode": "default",
-
-  "enabledPlugins": {
-    "rust-analyzer-lsp@claude-plugins-official": true,
-    "typescript-lsp@claude-plugins-official": true,
-    "csharp-lsp@claude-plugins-official": true
   },
 
   "attribution": {

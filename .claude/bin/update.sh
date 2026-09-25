@@ -149,6 +149,109 @@ if [ -f "$TEMP_DIR/repo/.claude/VERSION" ]; then
   CHANGES="$CHANGES  [updated] $CONFIG_NAME/VERSION → $NEW_VERSION\n"
 fi
 
+# Retired kit defaults. This script never overwrites settings.json or .mcp.json, so
+# installs from kit <= 2.1.0 keep the overrides the kit no longer sets. Remove each one
+# only while it still holds the kit's own value; anything the user changed stays.
+case "$CURRENT_VERSION" in
+  unknown|1.*|2.0.*|2.1.0)
+    if command -v python3 >/dev/null 2>&1; then
+      cat > "$TEMP_DIR/retire_kit_defaults.py" <<'PY'
+import json, sys
+
+dry_run, target, config = sys.argv[1] == "true", sys.argv[2], sys.argv[3]
+OLD_ENV = {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": ["1"],
+    "CLAUDE_CODE_COORDINATOR_MODE": ["1"],
+    "CLAUDE_CODE_EFFORT_LEVEL": ["max", "auto"],
+    "BASH_MAX_OUTPUT_LENGTH": ["30000"],
+    "MAX_MCP_OUTPUT_TOKENS": ["25000"],
+}
+OLD_KEYS = {
+    "enableAllProjectMcpServers": True,
+    "defaultMode": "default",
+    "modelDefaults": {"agent": "opus", "command": "sonnet"},
+}
+OLD_PLUGINS = ["rust-analyzer-lsp", "typescript-lsp", "csharp-lsp"]
+OLD_SERVERS = {
+    "playwright": {"command": "npx", "args": ["-y", "@playwright/mcp@latest", "--headless"]},
+    "context-mode": {"command": "npx", "args": ["-y", "context-mode@latest"]},
+    "memsearch": {"command": "npx", "args": ["-y", "memsearch-mcp@latest"]},
+    "surfpool": {"command": "surfpool", "args": ["mcp"]},
+}
+
+
+def same(a, b):  # exact match: 1 does not count as true
+    return type(a) is type(b) and a == b
+
+
+def strip_settings(d):
+    gone = []
+    env = d.get("env")
+    if isinstance(env, dict):
+        for key, olds in OLD_ENV.items():
+            if any(same(env.get(key), v) for v in olds):
+                del env[key]
+                gone.append("env." + key)
+        if gone and not env:
+            del d["env"]
+    for key, old in OLD_KEYS.items():
+        if key in d and same(d[key], old):
+            del d[key]
+            gone.append(key)
+    plugins = d.get("enabledPlugins")
+    if isinstance(plugins, dict):
+        before = len(gone)
+        for name in OLD_PLUGINS:
+            if plugins.get(name + "@claude-plugins-official") is True:
+                del plugins[name + "@claude-plugins-official"]
+                gone.append("enabledPlugins." + name)
+        if len(gone) > before and not plugins:
+            del d["enabledPlugins"]
+    return gone
+
+
+def strip_servers(d):
+    servers = d.get("mcpServers")
+    if not isinstance(servers, dict):
+        return []
+    gone = [name for name, old in OLD_SERVERS.items() if same(servers.get(name), old)]
+    for name in gone:
+        del servers[name]
+    return ["mcpServers." + name for name in gone]
+
+
+removed = False
+for rel, strip in ((config + "/settings.json", strip_settings), (".mcp.json", strip_servers)):
+    path = target + "/" + rel
+    try:
+        with open(path, encoding="utf-8") as f:
+            data = json.load(f)
+    except (OSError, ValueError):
+        continue  # missing, or not plain JSON: leave it alone
+    gone = strip(data) if isinstance(data, dict) else []
+    if not gone:
+        continue
+    if not dry_run:
+        try:
+            with open(path, "w", encoding="utf-8") as f:
+                f.write(json.dumps(data, indent=2, ensure_ascii=False) + "\n")
+        except OSError as e:
+            print("  [skipped] %s: could not write (%s)" % (rel, e.strerror))
+            continue
+    removed = True
+    print("  [%s] %s: %s" % ("would remove" if dry_run else "removed", rel, ", ".join(gone)))
+if removed:
+    print("  [notice] Retired kit defaults. To keep one, set it in %s/settings.local.json;"
+          " re-add an MCP server with: claude mcp add <name> -- <command>" % config)
+PY
+      RETIRED="$(python3 "$TEMP_DIR/retire_kit_defaults.py" "$DRY_RUN" "$TARGET_DIR" "$CONFIG_NAME")" || RETIRED=""
+      [ -z "$RETIRED" ] || CHANGES="$CHANGES$RETIRED\n"
+    else
+      CHANGES="$CHANGES  [skipped] retired kit defaults left in place (python3 not found)\n"
+    fi
+    ;;
+esac
+
 # CHANGELOG.md stays in source repo — not shipped to user projects
 
 # Merge .env.example — append new vars without overwriting user edits
